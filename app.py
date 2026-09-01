@@ -562,52 +562,72 @@ elif st.session_state.current_screen == 2:
 
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        with st.form("body_profile_form"):
-            st.markdown("### 👤 Body Profile Information")
-            
-            user_height = st.selectbox(
-                "1. Select Your Height Range:",
-                options=["5'0\" - 5'2\"", "5'3\" - 5'5\"", "5'6\" - 5'8\"", "5'9\"+"],
-                index=1,
-                key="input_height"
-            )
+        st.markdown("### 👤 Body Profile Information")
+        
+        user_height = st.selectbox(
+            "1. Select Your Height Range:",
+            options=["5'0\" - 5'2\"", "5'3\" - 5'5\"", "5'6\" - 5'8\"", "5'9\"+"],
+            index=1,
+            key="input_height"
+        )
 
-            user_size = st.radio(
-                "2. Select Your Usual Size:",
-                options=["XS", "S", "M", "L", "XL"],
-                index=1,
-                horizontal=True,
-                key="input_size"
-            )
+        user_size = st.radio(
+            "2. Select Your Usual Size:",
+            options=["XS", "S", "M", "L", "XL"],
+            index=1,
+            horizontal=True,
+            key="input_size"
+        )
 
-            st.markdown("<br>### 📅 Event Details")
-            
-            user_occ = st.selectbox(
-                "3. What is your occasion?",
-                options=["Wedding Guest", "Festival", "Office Party", "Date Night", "Casual"],
-                index=0,
-                key="input_occasion"
-            )
-            
-            user_date = st.date_input(
-                "4. When is your event?",
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("### 📅 Event Details")
+        
+        user_occ = st.selectbox(
+            "3. What is your occasion?",
+            options=["Wedding Guest", "Festival", "Office Party", "Date Night", "Casual"],
+            index=0,
+            key="input_occasion"
+        )
+        
+        date_option = st.selectbox(
+            "4. When is your event?",
+            options=[
+                "In 5 days (Recommended)",
+                "In 3 days",
+                "In 1 week",
+                "In 2 weeks",
+                "Select Specific Date on Calendar"
+            ],
+            index=0,
+            key="input_date_option"
+        )
+
+        if date_option == "In 3 days":
+            selected_event_date = date.today() + timedelta(days=3)
+        elif date_option == "In 5 days (Recommended)":
+            selected_event_date = date.today() + timedelta(days=5)
+        elif date_option == "In 1 week":
+            selected_event_date = date.today() + timedelta(days=7)
+        elif date_option == "In 2 weeks":
+            selected_event_date = date.today() + timedelta(days=14)
+        else:
+            selected_event_date = st.date_input(
+                "Pick Calendar Date:",
                 value=st.session_state.body_profile["event_date"],
                 min_value=date.today(),
-                key="input_date"
+                key="input_custom_date"
             )
 
-            st.markdown("<br>", unsafe_allow_html=True)
-            submit = st.form_submit_button("Save Profile & Unlock Decision Panel →", type="primary", use_container_width=True)
-            
-            if submit:
-                st.session_state.body_profile = {
-                    "height": st.session_state.input_height,
-                    "size": st.session_state.input_size,
-                    "occasion": st.session_state.input_occasion,
-                    "event_date": st.session_state.input_date
-                }
-                st.session_state.current_screen = 3
-                st.rerun()
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("Save Profile & Unlock Decision Panel →", type="primary", use_container_width=True):
+            st.session_state.body_profile = {
+                "height": user_height,
+                "size": user_size,
+                "occasion": user_occ,
+                "event_date": selected_event_date
+            }
+            st.session_state.current_screen = 3
+            st.rerun()
 
         st.markdown("<br>", unsafe_allow_html=True)
         if st.button("← Back to Selection", use_container_width=True):
