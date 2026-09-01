@@ -3,7 +3,6 @@ from datetime import date, timedelta
 from PIL import Image
 import os
 import base64
-import textwrap
 from typing import TypedDict, List
 
 # Define Product and ScoredProduct Data Models
@@ -79,6 +78,11 @@ def calculate_winner_scoring(
     )
     return scored_products
 
+# Helper to clean multi-line HTML strings so no line starts with 4+ spaces (preventing Markdown code block parsing)
+def clean_html(html_str: str) -> str:
+    lines = [line.strip() for line in html_str.strip().split("\n") if line.strip()]
+    return "\n".join(lines)
+
 # Set page configuration
 st.set_page_config(
     page_title="Myntra — Wishlist Decision Panel",
@@ -88,7 +92,7 @@ st.set_page_config(
 )
 
 # Inject Custom CSS for Pure White Live Myntra Theme (#FFFFFF Page, #FF3F6C Pink Primary, #282C3F Text)
-st.markdown(textwrap.dedent("""
+st.markdown("""
 <style>
     /* Pure White Page Canvas */
     .stApp {
@@ -438,7 +442,7 @@ st.markdown(textwrap.dedent("""
         }
     }
 </style>
-""").strip(), unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 # ---------------------------------------------------------
 # MOCK PRODUCT CATALOG DATASET (5 Kurtas)
@@ -532,7 +536,7 @@ PRODUCTS: List[Product] = [
 if "current_screen" not in st.session_state:
     st.session_state.current_screen = 1  # Screen 1: Product Catalog
 
-# Wishlist Items saved by user on Screen 1 (Defaults to 1, 3, 5 so Wishlist is pre-populated, but user can add/remove freely)
+# Wishlist Items saved by user on Screen 1
 if "wishlist_ids" not in st.session_state:
     st.session_state.wishlist_ids = [1, 3, 5]
 
@@ -559,51 +563,51 @@ def get_image_base64(image_path: str) -> str:
     return ""
 
 # ---------------------------------------------------------
-# REAL LIVE MYNTRA TOP NAVBAR
+# REAL LIVE MYNTRA TOP NAVBAR (Cleaned of all code-block spaces)
 # ---------------------------------------------------------
 cart_count = len(st.session_state.cart_items)
 wishlist_count = len(st.session_state.wishlist_ids)
 
-st.markdown(textwrap.dedent(f"""
+header_html = f"""
 <div class="myntra-pure-header">
-    <div class="myntra-brand-group">
-        <div class="myntra-logo-title">
-            <span class="logo-pink">myntra</span>
-            <span style="font-size:11px; font-weight:600; color:#535766; margin-left:4px;">| DECISION PANEL</span>
-        </div>
-        <div class="myntra-cat-links">
-            <span class="cat-link">MEN</span>
-            <span class="cat-link">WOMEN</span>
-            <span class="cat-link">KIDS</span>
-            <span class="cat-link">HOME</span>
-            <span class="cat-link">BEAUTY</span>
-            <span class="cat-link">STUDIO <span class="cat-badge-pink">NEW</span></span>
-        </div>
-    </div>
-    
-    <div class="myntra-search-box">
-        <span style="color:#696E79;">🔍</span>
-        <input type="text" class="myntra-search-input" placeholder="Search for products, brands and more" readonly />
-    </div>
-
-    <div class="myntra-header-right">
-        <div class="nav-icon-box">
-            <span>👤</span>
-            <span>Profile</span>
-        </div>
-        <div class="nav-icon-box">
-            <span>❤️</span>
-            <span>Wishlist</span>
-            <span class="counter-badge">{wishlist_count}</span>
-        </div>
-        <div class="nav-icon-box">
-            <span>🛍️</span>
-            <span>Bag</span>
-            <span class="counter-badge">{cart_count}</span>
-        </div>
-    </div>
+<div class="myntra-brand-group">
+<div class="myntra-logo-title">
+<span class="logo-pink">myntra</span>
+<span style="font-size:11px; font-weight:600; color:#535766; margin-left:4px;">| DECISION PANEL</span>
 </div>
-""").strip(), unsafe_allow_html=True)
+<div class="myntra-cat-links">
+<span class="cat-link">MEN</span>
+<span class="cat-link">WOMEN</span>
+<span class="cat-link">KIDS</span>
+<span class="cat-link">HOME</span>
+<span class="cat-link">BEAUTY</span>
+<span class="cat-link">STUDIO <span class="cat-badge-pink">NEW</span></span>
+</div>
+</div>
+<div class="myntra-search-box">
+<span style="color:#696E79;">🔍</span>
+<input type="text" class="myntra-search-input" placeholder="Search for products, brands and more" readonly />
+</div>
+<div class="myntra-header-right">
+<div class="nav-icon-box">
+<span>👤</span>
+<span>Profile</span>
+</div>
+<div class="nav-icon-box">
+<span>❤️</span>
+<span>Wishlist</span>
+<span class="counter-badge">{wishlist_count}</span>
+</div>
+<div class="nav-icon-box">
+<span>🛍️</span>
+<span>Bag</span>
+<span class="counter-badge">{cart_count}</span>
+</div>
+</div>
+</div>
+"""
+
+st.markdown(clean_html(header_html), unsafe_allow_html=True)
 
 # Navigation Bar Tabs
 nav_col1, nav_col2, nav_col3, nav_col4, nav_col5 = st.columns(5)
@@ -634,13 +638,14 @@ st.markdown("<br>", unsafe_allow_html=True)
 # SCREEN 1: PRODUCT CATALOG — CHOOSE & SAVE TO WISHLIST
 # =========================================================
 if st.session_state.current_screen == 1:
-    st.markdown(textwrap.dedent("""
+    banner_html = """
     <div style="background:#FFFFFF; border-radius:4px; padding:18px 24px; margin-bottom:16px; border:1px solid #EAEAEC; box-shadow:0 2px 8px rgba(0,0,0,0.03);">
-        <h2 style="color:#282C3F; margin-bottom:2px; font-weight:800;">Women's Ethnic Kurta Store</h2>
-        <p style="color:#FF3F6C; font-weight:800; font-size:15px; margin-bottom:4px;">UP TO 60% OFF ON FESTIVE & WEDDING COLLECTION</p>
-        <p style="color:#535766; font-size:13px; margin:0;">Browse items below and click <b>♡ Save to Wishlist</b> on items you like.</p>
+    <h2 style="color:#282C3F; margin-bottom:2px; font-weight:800;">Women's Ethnic Kurta Store</h2>
+    <p style="color:#FF3F6C; font-weight:800; font-size:15px; margin-bottom:4px;">UP TO 60% OFF ON FESTIVE & WEDDING COLLECTION</p>
+    <p style="color:#535766; font-size:13px; margin:0;">Browse items below and click <b>♡ Save to Wishlist</b> on items you like.</p>
     </div>
-    """).strip(), unsafe_allow_html=True)
+    """
+    st.markdown(clean_html(banner_html), unsafe_allow_html=True)
 
     cols = st.columns(5)
     for idx, prod in enumerate(PRODUCTS):
@@ -650,46 +655,43 @@ if st.session_state.current_screen == 1:
             
             img_b64 = get_image_base64(prod["image_path"])
             
-            # Overlay Rating Badge (Bottom-left of image)
             rating_overlay_html = f"""
             <div class="img-rating-badge">
-                <span>{prod['rating']}</span>
-                <span class="star-icon-green">★</span>
-                <span>|</span>
-                <span>{prod['rating_count']}</span>
+            <span>{prod['rating']}</span>
+            <span class="star-icon-green">★</span>
+            <span>|</span>
+            <span>{prod['rating_count']}</span>
             </div>
             """
             
             img_container_html = f"""
             <div style="position:relative; width:100%; height:200px; margin-bottom:8px;">
-                <img src="{img_b64}" style="width:100%; height:200px; border-radius:4px; object-fit:cover;" />
-                {rating_overlay_html}
+            <img src="{img_b64}" style="width:100%; height:200px; border-radius:4px; object-fit:cover;" />
+            {rating_overlay_html}
             </div>
             """ if img_b64 else ''
             
             discount_pct = int(((prod["original_price"] - prod["price"]) / prod["original_price"]) * 100)
             
-            # Card HTML
-            st.markdown(textwrap.dedent(f"""
+            card_html = f"""
             <div class="{card_class}">
-                {img_container_html}
-                <div class="card-brand-name">{prod['brand']}</div>
-                <div class="card-title-text">{prod['name']}</div>
-                <div class="price-wrap">
-                    <span class="price-current">₹{prod['price']:,}</span>
-                    <span class="price-mrp">₹{prod['original_price']:,}</span>
-                    <span class="price-off">({discount_pct}% OFF)</span>
-                </div>
+            {img_container_html}
+            <div class="card-brand-name">{prod['brand']}</div>
+            <div class="card-title-text">{prod['name']}</div>
+            <div class="price-wrap">
+            <span class="price-current">₹{prod['price']:,}</span>
+            <span class="price-mrp">₹{prod['original_price']:,}</span>
+            <span class="price-off">({discount_pct}% OFF)</span>
             </div>
-            """).strip(), unsafe_allow_html=True)
+            </div>
+            """
+            st.markdown(clean_html(card_html), unsafe_allow_html=True)
             
             st.markdown("<div style='height:6px;'></div>", unsafe_allow_html=True)
             
-            # Interactive Save to Wishlist Button per Card
             if is_in_wishlist:
                 if st.button("❤️ WISHLISTED", key=f"cat_btn_{prod['id']}", type="primary", use_container_width=True):
                     st.session_state.wishlist_ids.remove(prod["id"])
-                    # If item was also selected for comparison, remove it
                     if prod["id"] in st.session_state.selected_ids:
                         st.session_state.selected_ids.remove(prod["id"])
                     st.rerun()
@@ -700,7 +702,6 @@ if st.session_state.current_screen == 1:
 
     st.markdown("<br><hr style='border-color:#EAEAEC;'><br>", unsafe_allow_html=True)
 
-    # Bottom Sticky Action Button to Open Wishlist
     c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
         if st.session_state.wishlist_ids:
@@ -716,12 +717,13 @@ if st.session_state.current_screen == 1:
 elif st.session_state.current_screen == 2:
     wishlist_products = [p for p in PRODUCTS if p["id"] in st.session_state.wishlist_ids]
 
-    st.markdown(textwrap.dedent(f"""
+    w_head_html = f"""
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <h3 style="margin:0; color:#282C3F; font-weight:800;">MY WISHLIST <span style="font-size:14px; color:#7E818C; font-weight:500;">({len(wishlist_products)} Items)</span></h3>
-        <span style="font-size:12px; color:#FF3F6C; font-weight:700;">Select 2 to 4 items to Compare</span>
+    <h3 style="margin:0; color:#282C3F; font-weight:800;">MY WISHLIST <span style="font-size:14px; color:#7E818C; font-weight:500;">({len(wishlist_products)} Items)</span></h3>
+    <span style="font-size:12px; color:#FF3F6C; font-weight:700;">Select 2 to 4 items to Compare</span>
     </div>
-    """).strip(), unsafe_allow_html=True)
+    """
+    st.markdown(clean_html(w_head_html), unsafe_allow_html=True)
 
     if not wishlist_products:
         st.info("Your wishlist is currently empty. Go back to the Catalog Feed and save items!")
@@ -739,34 +741,35 @@ elif st.session_state.current_screen == 2:
                 
                 rating_overlay_html = f"""
                 <div class="img-rating-badge">
-                    <span>{prod['rating']}</span>
-                    <span class="star-icon-green">★</span>
-                    <span>|</span>
-                    <span>{prod['rating_count']}</span>
+                <span>{prod['rating']}</span>
+                <span class="star-icon-green">★</span>
+                <span>|</span>
+                <span>{prod['rating_count']}</span>
                 </div>
                 """
                 
                 img_container_html = f"""
                 <div style="position:relative; width:100%; height:200px; margin-bottom:8px;">
-                    <img src="{img_b64}" style="width:100%; height:200px; border-radius:4px; object-fit:cover;" />
-                    {rating_overlay_html}
+                <img src="{img_b64}" style="width:100%; height:200px; border-radius:4px; object-fit:cover;" />
+                {rating_overlay_html}
                 </div>
                 """ if img_b64 else ''
                 
                 discount_pct = int(((prod["original_price"] - prod["price"]) / prod["original_price"]) * 100)
                 
-                st.markdown(textwrap.dedent(f"""
+                w_card_html = f"""
                 <div class="{card_class}">
-                    {img_container_html}
-                    <div class="card-brand-name">{prod['brand']}</div>
-                    <div class="card-title-text">{prod['name']}</div>
-                    <div class="price-wrap">
-                        <span class="price-current">₹{prod['price']:,}</span>
-                        <span class="price-mrp">₹{prod['original_price']:,}</span>
-                        <span class="price-off">({discount_pct}% OFF)</span>
-                    </div>
+                {img_container_html}
+                <div class="card-brand-name">{prod['brand']}</div>
+                <div class="card-title-text">{prod['name']}</div>
+                <div class="price-wrap">
+                <span class="price-current">₹{prod['price']:,}</span>
+                <span class="price-mrp">₹{prod['original_price']:,}</span>
+                <span class="price-off">({discount_pct}% OFF)</span>
                 </div>
-                """).strip(), unsafe_allow_html=True)
+                </div>
+                """
+                st.markdown(clean_html(w_card_html), unsafe_allow_html=True)
                 
                 st.markdown("<div style='height:6px;'></div>", unsafe_allow_html=True)
                 
@@ -784,7 +787,6 @@ elif st.session_state.current_screen == 2:
 
         st.markdown("<br><hr style='border-color:#EAEAEC;'><br>", unsafe_allow_html=True)
 
-        # Sticky Bottom Compare Action Bar
         sel_count = len(st.session_state.selected_ids)
         c1, c2, c3 = st.columns([1, 2, 1])
         with c2:
@@ -799,12 +801,13 @@ elif st.session_state.current_screen == 2:
 # SCREEN 3: LAYER 6 — BODY PROFILE SETUP
 # =========================================================
 elif st.session_state.current_screen == 3:
-    st.markdown(textwrap.dedent("""
+    p_head_html = """
     <div style="background:#FFFFFF; border-radius:6px; padding:24px; max-width:600px; margin:0 auto; box-shadow:0 4px 14px rgba(0,0,0,0.05); border:1px solid #EAEAEC;">
-        <h3 style="color:#282C3F; margin-bottom:4px; text-align:center; font-weight:800;">Layer 6: One-Time Body Profile Setup</h3>
-        <p style="color:#535766; font-size:13px; text-align:center; margin-bottom:20px;">Save your profile once to unlock body-type filtered fit intelligence & keywords across your entire wishlist.</p>
+    <h3 style="color:#282C3F; margin-bottom:4px; text-align:center; font-weight:800;">Layer 6: One-Time Body Profile Setup</h3>
+    <p style="color:#535766; font-size:13px; text-align:center; margin-bottom:20px;">Save your profile once to unlock body-type filtered fit intelligence & keywords across your entire wishlist.</p>
     </div>
-    """).strip(), unsafe_allow_html=True)
+    """
+    st.markdown(clean_html(p_head_html), unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
@@ -874,14 +877,15 @@ elif st.session_state.current_screen == 4:
 
     h_col1, h_col2 = st.columns([3, 1])
     with h_col1:
-        st.markdown(f"<h3 style='margin:0; color:#282C3F; font-weight:800;'>WISHLIST DECISION PANEL</h3>", unsafe_allow_html=True)
-        st.markdown(f"""
+        st.markdown("<h3 style='margin:0; color:#282C3F; font-weight:800;'>WISHLIST DECISION PANEL</h3>", unsafe_allow_html=True)
+        d_badge_html = f"""
         <div style="background:#FFF5F7; border:1px solid #FF3F6C; border-radius:20px; padding:4px 12px; font-size:12px; font-weight:700; color:#FF3F6C; display:inline-flex; align-items:center; gap:6px; margin-top:6px;">
-            <span>👤 Body Filter: <b>{user_size} · {user_height}</b></span>
-            <span>|</span>
-            <span>Occasion: <b>{user_occ}</b></span>
+        <span>👤 Body Filter: <b>{user_size} · {user_height}</b></span>
+        <span>|</span>
+        <span>Occasion: <b>{user_occ}</b></span>
         </div>
-        """, unsafe_allow_html=True)
+        """
+        st.markdown(clean_html(d_badge_html), unsafe_allow_html=True)
     with h_col2:
         if st.button("⚙️ EDIT PROFILE", use_container_width=True):
             st.session_state.current_screen = 3
@@ -889,7 +893,6 @@ elif st.session_state.current_screen == 4:
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Side-by-Side Columns Matrix
     num_items = len(selected_products)
     comp_cols = st.columns(num_items)
 
@@ -911,42 +914,35 @@ elif st.session_state.current_screen == 4:
             fit_summary = f"\"People your size ({user_size} · {user_height}) say: {prod['fit_summary_template']} · {prod['fit_review_count']} matching reviews.\""
             chips_html = "".join([f'<span class="keyword-pill">{kw}</span>' for kw in prod['keywords']])
 
-            column_card_html = textwrap.dedent(f"""
+            column_card_html = f"""
             <div class="{col_class}">
             {winner_html}
             <div style="margin-top: 8px;"></div>
             {img_html}
             <div class="card-brand-name">{prod['brand']}</div>
             <div class="card-title-text">{prod['name']}</div>
-            
             <div class="attr-label">Price</div>
             <div class="price-wrap">
             <span class="price-current">₹{prod['price']:,}</span>
             <span class="price-mrp">₹{prod['original_price']:,}</span>
             <span class="price-off">({discount_pct}% OFF)</span>
             </div>
-            
             <div class="attr-label">Average Rating</div>
             <div class="attr-value">★ {prod['rating']} ({prod['rating_count']:,} reviews)</div>
-            
             <div class="attr-label">Size Availability ({user_size})</div>
             <div class="attr-value">{size_str}</div>
-            
             <div class="attr-label">Estimated Delivery</div>
             <div class="attr-value">{del_str}</div>
-            
             <div class="attr-label">Layer 2: Fit Summary ({user_size} · {user_height})</div>
             <div class="attr-value" style="font-style: italic; color:#2B6CB0; font-size:11px;">{fit_summary}</div>
-            
             <div class="attr-label">Layer 3: Review Keywords</div>
             <div style="margin-bottom: 8px;">{chips_html}</div>
             </div>
-            """).strip()
+            """
 
-            st.markdown(column_card_html, unsafe_allow_html=True)
+            st.markdown(clean_html(column_card_html), unsafe_allow_html=True)
             st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
-            # Layer 5: Direct Add to Cart CTA
             if is_winner:
                 if prod["id"] in [p["id"] for p in st.session_state.cart_items]:
                     st.button("✓ IN YOUR BAG", key=f"c_btn_{prod['id']}", type="primary", disabled=True, use_container_width=True)
@@ -958,19 +954,17 @@ elif st.session_state.current_screen == 4:
             else:
                 st.button("SAVE TO WISHLIST", key=f"s_btn_{prod['id']}", use_container_width=True)
 
-    # Layer 4: One-Line AI Recommendation Banner
-    rec_bar_html = textwrap.dedent(f"""
+    rec_bar_html = f"""
     <div class="rec-banner-white">
-        <div class="rec-title-bold">
-            Based on ratings and fit reviews from people your size (<span class="text-pink">{user_size} · {user_height}</span>), <span class="text-pink">{winner_item['brand']} {winner_item['name']}</span> has the highest confidence score.
-        </div>
-        <div class="rec-subtitle">
-            4.5★ rating, 48 body-matched fit reviews, guaranteed size availability, and delivery before your event date.
-        </div>
+    <div class="rec-title-bold">
+    Based on ratings and fit reviews from people your size (<span class="text-pink">{user_size} · {user_height}</span>), <span class="text-pink">{winner_item['brand']} {winner_item['name']}</span> has the highest confidence score.
     </div>
-    """).strip()
-    
-    st.markdown(rec_bar_html, unsafe_allow_html=True)
+    <div class="rec-subtitle">
+    4.5★ rating, 48 body-matched fit reviews, guaranteed size availability, and delivery before your event date.
+    </div>
+    </div>
+    """
+    st.markdown(clean_html(rec_bar_html), unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("VIEW BAG & CHECKOUT →", type="primary", use_container_width=True):
@@ -996,49 +990,51 @@ elif st.session_state.current_screen == 5:
                 img_html = f'<img src="{img_b64}" style="width:70px; height:90px; border-radius:4px; object-fit:cover;" />' if img_b64 else ''
                 discount_pct = int(((item["original_price"] - item["price"]) / item["original_price"]) * 100)
 
-                st.markdown(textwrap.dedent(f"""
+                bag_item_html = f"""
                 <div style="background:#FFFFFF; border-radius:4px; padding:14px; margin-bottom:12px; display:flex; gap:14px; border:1px solid #EAEAEC;">
-                    {img_html}
-                    <div>
-                        <div style="font-weight:800; font-size:14px; color:#282C3F;">{item['brand']}</div>
-                        <div style="font-size:12px; color:#535766; margin-bottom:6px;">{item['name']}</div>
-                        <div style="font-size:12px; color:#535766;">Size: <b>{st.session_state.body_profile['size']}</b> | Qty: <b>1</b></div>
-                        <div style="margin-top:6px;">
-                            <span style="font-weight:700; font-size:14px; color:#282C3F;">₹{item['price']:,}</span>
-                            <span style="font-size:11px; text-decoration:line-through; color:#7E818C; margin-left:6px;">₹{item['original_price']:,}</span>
-                            <span style="font-size:11px; font-weight:700; color:#FF905A; margin-left:6px;">({discount_pct}% OFF)</span>
-                        </div>
-                    </div>
+                {img_html}
+                <div>
+                <div style="font-weight:800; font-size:14px; color:#282C3F;">{item['brand']}</div>
+                <div style="font-size:12px; color:#535766; margin-bottom:6px;">{item['name']}</div>
+                <div style="font-size:12px; color:#535766;">Size: <b>{st.session_state.body_profile['size']}</b> | Qty: <b>1</b></div>
+                <div style="margin-top:6px;">
+                <span style="font-weight:700; font-size:14px; color:#282C3F;">₹{item['price']:,}</span>
+                <span style="font-size:11px; text-decoration:line-through; color:#7E818C; margin-left:6px;">₹{item['original_price']:,}</span>
+                <span style="font-size:11px; font-weight:700; color:#FF905A; margin-left:6px;">({discount_pct}% OFF)</span>
                 </div>
-                """).strip(), unsafe_allow_html=True)
+                </div>
+                </div>
+                """
+                st.markdown(clean_html(bag_item_html), unsafe_allow_html=True)
 
         with col2:
             subtotal = sum(i["price"] for i in st.session_state.cart_items)
             mrp_total = sum(i["original_price"] for i in st.session_state.cart_items)
             discount_total = mrp_total - subtotal
 
-            st.markdown(textwrap.dedent(f"""
+            price_summary_html = f"""
             <div style="background:#FFFFFF; border-radius:4px; padding:16px; border:1px solid #EAEAEC;">
-                <div style="font-weight:800; font-size:12px; color:#7E818C; text-transform:uppercase; margin-bottom:12px;">PRICE DETAILS ({len(st.session_state.cart_items)} Items)</div>
-                <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px; color:#282C3F;">
-                    <span>Total MRP</span>
-                    <span>₹{mrp_total:,}</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px; color:#03A685;">
-                    <span>Discount on MRP</span>
-                    <span>-₹{discount_total:,}</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px; color:#282C3F;">
-                    <span>Convenience Fee</span>
-                    <span style="color:#03A685; font-weight:700;">FREE</span>
-                </div>
-                <hr style="border-color:#EAEAEC; margin:12px 0;">
-                <div style="display:flex; justify-content:space-between; font-size:15px; font-weight:800; color:#282C3F; margin-bottom:16px;">
-                    <span>Total Amount</span>
-                    <span>₹{subtotal:,}</span>
-                </div>
+            <div style="font-weight:800; font-size:12px; color:#7E818C; text-transform:uppercase; margin-bottom:12px;">PRICE DETAILS ({len(st.session_state.cart_items)} Items)</div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px; color:#282C3F;">
+            <span>Total MRP</span>
+            <span>₹{mrp_total:,}</span>
             </div>
-            """).strip(), unsafe_allow_html=True)
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px; color:#03A685;">
+            <span>Discount on MRP</span>
+            <span>-₹{discount_total:,}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px; color:#282C3F;">
+            <span>Convenience Fee</span>
+            <span style="color:#03A685; font-weight:700;">FREE</span>
+            </div>
+            <hr style="border-color:#EAEAEC; margin:12px 0;">
+            <div style="display:flex; justify-content:space-between; font-size:15px; font-weight:800; color:#282C3F; margin-bottom:16px;">
+            <span>Total Amount</span>
+            <span>₹{subtotal:,}</span>
+            </div>
+            </div>
+            """
+            st.markdown(clean_html(price_summary_html), unsafe_allow_html=True)
 
             st.markdown("<div style='height:10px;'></div>", unsafe_allow_html=True)
             if st.button("PLACE ORDER", type="primary", use_container_width=True):
@@ -1048,12 +1044,13 @@ elif st.session_state.current_screen == 5:
 # ---------------------------------------------------------
 # STICKY BOTTOM NAV BAR (Real Myntra Look)
 # ---------------------------------------------------------
-st.markdown(textwrap.dedent("""
+bottom_nav_html = """
 <div class="myntra-bottom-bar">
-    <div class="bottom-item">🏠<br>Home</div>
-    <div class="bottom-item">📂<br>Categories</div>
-    <div class="bottom-item">🎬<br>Studio</div>
-    <div class="bottom-item active">❤️<br>Wishlist</div>
-    <div class="bottom-item">👤<br>Profile</div>
+<div class="bottom-item">🏠<br>Home</div>
+<div class="bottom-item">📂<br>Categories</div>
+<div class="bottom-item">🎬<br>Studio</div>
+<div class="bottom-item active">❤️<br>Wishlist</div>
+<div class="bottom-item">👤<br>Profile</div>
 </div>
-""").strip(), unsafe_allow_html=True)
+"""
+st.markdown(clean_html(bottom_nav_html), unsafe_allow_html=True)
