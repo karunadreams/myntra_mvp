@@ -76,53 +76,50 @@ This document outlines the **end-to-end phase-wise architecture**, detailing sys
 The decision panel consists of 6 integrated functional layers operating seamlessly across 3 distinct screens:
 
 ```
-Screen 1: Wishlist Grid (Layer 1)
+Screen 1: Wishlist Grid (Layer 1 Selection)
        │
        ▼
-Screen 2: Context Setup (Occasion, Date, Size)
+Screen 2: One-Time Body Profile Setup (Layer 6)
        │
        ▼
-Screen 3: Decision Panel (Layers 2, 3, 4, 5, 6)
-  ├── Layer 2: Side-by-Side Comparison Matrix & Silent Scoring Engine
-  ├── Layer 3: Fit Summary per Item
-  ├── Layer 4: Review Keyword Chips
-  ├── Layer 5: One-Line Passive Recommendation Bar
-  └── Layer 6: Instant Add to Cart CTA (Winner-focused)
+Screen 3: Decision Panel (Layers 1, 2, 3, 4, 5)
+  ├── Layer 1: Side-by-Side Comparison Table
+  ├── Layer 2: Fit Intelligence from Body-Type Filtered Reviews
+  ├── Layer 3: Review Intelligence Keywords (Body Filtered)
+  ├── Layer 4: One-Line AI Recommendation (Passive)
+  └── Layer 5: Direct Add to Cart from Comparison Screen
 ```
 
 ### 2.1 Layer Specifications
 
-#### Layer 1: Select to Compare (Wishlist Screen)
-- Displays 5 mock wishlist items in an interactive card grid.
-- Allows user to select 2 to 4 items.
-- Enforces maximum selection cap of 4 items with warning alerts.
-- Displays sticky/fixed bottom CTA: `Compare Selected (N items)` activated when $2 \le N \le 4$.
+#### Layer 1: Side-by-Side Comparison Table
+- User selects 2-4 wishlisted items via checkbox/toggle -> taps Compare.
+- Single screen comparison displaying: product thumbnail, price (discounted + struck-through original + discount % badge), average rating, size availability (green/red indicators), and estimated delivery date.
+- Directly replaces Shrinidhi's manual screenshot workaround.
 
-#### Layer 2: Side-by-Side Comparison Matrix
-- Renders selected items as columns with aligned attribute rows:
-  - **Thumbnail, Brand & Product Title**
-  - **Price Row**: Discounted Price + Struck-through Original Price + Discount % Badge
-  - **Rating Row**: Star Rating + Total Ratings count
-  - **Size Availability**: ✅ Available in [User's Size] / ❌ Not Available
-  - **Occasion Match**: ✅ Great for [Selected Occasion] / ⚠️ Not Ideal
-  - **Delivery Details**: Expected Delivery Date + Days Remaining
-  - **Event Deadline Status**: 🟢 Arrives before event / 🔴 Arrives after event
+#### Layer 2: Fit Intelligence from Body-Type Filtered Reviews
+- Displays body-type filtered fit summaries derived from matching profiles.
+- Format: *"People your size (S · 5'3") say: Runs small, order one size up · 23 reviews."*
+- Unlocked by Layer 6 body profile setup without requiring AR.
 
-#### Layer 3: Fit Summary per Item
-- Scannable single-line fit verdict derived from aggregated customer feedback (e.g., *"True to size, roomy shoulders"*).
+#### Layer 3: Review Intelligence Keywords
+- Displays 3 extracted review keyword tags per item derived from matching body types (e.g., `Fits true to size · Color matches photos · Good for a petite frame`).
+- Addresses Insight I4 by giving immediate sentiment signal.
 
-#### Layer 4: Review Keyword Chips
-- 3–4 rounded pill tags per product summarizing key sentiment (e.g., `True to size`, `Flowy fabric`, `Color true to photo`).
+#### Layer 4: One-Line AI Recommendation (Passive)
+- Single passive recommendation line at bottom:
+  > *"Based on ratings and fit reviews from people your size (S · 5'3"), **[Brand] [Item Name]** has the highest confidence score."*
+- Zero typing, no chatbot. Recreates Isha's WhatsApp validation directly inside the app.
 
-#### Layer 5: One-Line Passive Recommendation Bar
-- Full-width dark navy recommendation bar summarizing the winning item:
-  > *"Based on your occasion and size, **[Brand] [Item Name]** is your best match."*
-  > *"Sub-line: It is available in your size, arrives before your event, and is well-rated for [Occasion]."*
+#### Layer 5: Direct Add to Cart from Comparison Screen
+- Prominent Myntra Pink `Add to Cart` CTA on the highest confidence score item column.
+- Outlined `Save for Later` CTAs on remaining columns.
+- One-tap decision connects directly to purchase without navigating back.
 
-#### Layer 6: Direct Add to Cart CTA
-- Winning product column features prominent solid Myntra Pink `Add to Cart` CTA.
-- Non-winner columns feature subtle grey `Save for Later` secondary CTAs.
-- Interaction triggers state change to `✓ Added` and renders success toast (`Added to cart! ✓ Complete your purchase on Myntra.`).
+#### Layer 6: One-Time Body Profile Setup
+- 30-second profile setup on first Compare use: height range + usual size.
+- Saved permanently in session state.
+- Unlocks Layers 2, 3, and 4 across the entire wishlist.
 
 ---
 
