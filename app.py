@@ -81,77 +81,318 @@ def calculate_winner_scoring(
 
 # Set page configuration
 st.set_page_config(
-    page_title="Myntra Wishlist & Decision Panel",
+    page_title="Myntra — Wishlist & Decision Panel",
     page_icon="🛍️",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Inject Custom CSS for Native Myntra App UI & Theme (Light #F5F5F6 + #FFFFFF Surface, Pink #FF3F6C Accent)
+# Inject Custom CSS for Exact Live Myntra Website UI/UX Design System
 st.markdown(textwrap.dedent("""
 <style>
-    /* Global Container & Light Canvas Styling */
+    /* Global Canvas Background */
     .stApp {
         background-color: #F5F5F6;
         color: #282C3F;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
-    /* Main Viewport Mobile Constraints container */
-    .myntra-viewport {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding-bottom: 70px;
-    }
-
-    /* Top App Header (Native Myntra Look) */
-    .myntra-nav-header {
+    /* Top Navigation Header (Exact Real Myntra Navbar) */
+    .myntra-live-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 12px 20px;
+        padding: 12px 28px;
         background: #FFFFFF;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+        box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.05);
         position: sticky;
         top: 0;
         z-index: 999;
+        border-bottom: 1px solid #EAEAEC;
     }
 
-    .myntra-brand-logo {
-        font-size: 20px;
+    .myntra-brand-area {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+    }
+
+    .myntra-m-logo {
+        font-size: 22px;
         font-weight: 900;
         letter-spacing: 0.5px;
         color: #282C3F;
         display: flex;
         align-items: center;
-        gap: 6px;
-    }
-    
-    .myntra-pink-tag {
-        color: #FF3F6C;
-        font-style: italic;
+        gap: 4px;
+        text-decoration: none;
     }
 
-    .myntra-header-icons {
+    .myntra-logo-pink {
+        color: #FF3F6C;
+        font-weight: 900;
+    }
+
+    .myntra-nav-categories {
         display: flex;
         align-items: center;
-        gap: 16px;
-        color: #282C3F;
+        gap: 24px;
         font-size: 14px;
         font-weight: 700;
+        color: #282C3F;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
     }
 
-    .icon-badge {
+    .nav-cat-item {
+        cursor: pointer;
+        padding-bottom: 2px;
+    }
+
+    .nav-cat-item:hover {
+        border-bottom: 2px solid #FF3F6C;
+    }
+
+    .nav-cat-badge {
+        font-size: 9px;
+        color: #FF3F6C;
+        font-weight: 800;
+        vertical-align: super;
+        margin-left: 2px;
+    }
+
+    /* Live Search Input Box */
+    .myntra-search-container {
+        display: flex;
+        align-items: center;
+        background: #F5F5F6;
+        border-radius: 4px;
+        padding: 8px 14px;
+        width: 380px;
+        gap: 10px;
+    }
+
+    .myntra-search-input {
+        border: none;
+        background: transparent;
+        width: 100%;
+        font-size: 14px;
+        color: #282C3F;
+        outline: none;
+    }
+
+    .myntra-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+    }
+
+    .action-icon-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 12px;
+        font-weight: 700;
+        color: #282C3F;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .badge-counter {
+        position: absolute;
+        top: -4px;
+        right: -8px;
         background: #FF3F6C;
         color: #FFFFFF;
         border-radius: 50%;
-        padding: 2px 6px;
+        width: 16px;
+        height: 16px;
         font-size: 10px;
         font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Wishlist Product Card (Exact Myntra Specs) */
+    .myntra-card-surface {
+        background: #FFFFFF;
+        border: 1px solid #EAEAEC;
+        border-radius: 4px;
+        padding: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        position: relative;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .myntra-card-surface:hover {
+        box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.1);
+    }
+
+    .myntra-card-surface.selected {
+        border: 2.5px solid #FF3F6C;
+        background: #FFF5F7;
+    }
+
+    /* Rating Overlay Badge (Exact Bottom-Left Overlay on Image) */
+    .img-rating-overlay {
+        position: absolute;
+        bottom: 8px;
+        left: 8px;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(4px);
+        border-radius: 2px;
+        padding: 2px 6px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #282C3F;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .star-green {
+        color: #03A685;
+        font-size: 12px;
+    }
+
+    .card-brand-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #282C3F;
+        text-transform: uppercase;
+        margin-top: 8px;
+        margin-bottom: 2px;
+    }
+
+    .card-product-desc {
+        font-size: 14px;
+        color: #535766;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 8px;
+    }
+
+    .price-flex-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 8px;
+    }
+
+    .price-bold {
+        font-size: 15px;
+        font-weight: 700;
+        color: #282C3F;
+    }
+
+    .price-mrp-struck {
+        font-size: 12px;
+        text-decoration: line-through;
+        color: #7E818C;
+    }
+
+    .price-discount-orange {
+        font-size: 12px;
+        font-weight: 700;
+        color: #FF905A;
+    }
+
+    /* Decision Panel Column Surface */
+    .decision-col-surface {
+        background: #FFFFFF;
+        border: 1px solid #EAEAEC;
+        border-radius: 6px;
+        padding: 14px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+        position: relative;
+    }
+
+    .decision-col-surface.winner {
+        border: 2.5px solid #FF3F6C;
+        box-shadow: 0 4px 20px rgba(255, 63, 108, 0.25);
+    }
+
+    .winner-top-badge {
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #FF3F6C;
+        color: #FFFFFF;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.6px;
+        padding: 4px 14px;
+        border-radius: 12px;
+        text-transform: uppercase;
+        box-shadow: 0 2px 6px rgba(255, 63, 108, 0.35);
+    }
+
+    .attr-header-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #7E818C;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 10px;
+        margin-bottom: 2px;
+    }
+
+    .attr-val-text {
+        font-size: 13px;
+        font-weight: 600;
+        color: #282C3F;
+    }
+
+    .chip-pill {
+        display: inline-block;
+        background: #F5F5F6;
+        color: #3E4152;
+        border-radius: 12px;
+        padding: 3px 9px;
+        font-size: 11px;
+        font-weight: 600;
+        margin: 2px;
+        border: 1px solid #EAEAEC;
+    }
+
+    /* Passive Recommendation Banner */
+    .rec-banner-card {
+        background: #FFFFFF;
+        border: 1.5px solid #FF3F6C;
+        border-radius: 8px;
+        padding: 18px 24px;
+        margin-top: 24px;
+        margin-bottom: 20px;
+        text-align: center;
+        box-shadow: 0 4px 14px rgba(255, 63, 108, 0.12);
+    }
+
+    .rec-card-title {
+        font-size: 16px;
+        font-weight: 800;
+        color: #282C3F;
+        margin-bottom: 4px;
+    }
+
+    .rec-pink-text {
+        color: #FF3F6C;
+    }
+
+    .rec-card-sub {
+        font-size: 13px;
+        color: #535766;
     }
 
     /* Sticky Bottom Nav Bar */
-    .myntra-bottom-nav {
+    .myntra-bottom-navbar {
         position: fixed;
         bottom: 0;
         left: 0;
@@ -165,215 +406,37 @@ st.markdown(textwrap.dedent("""
         box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
     }
 
-    .nav-item {
+    .b-nav-item {
         display: flex;
         flex-direction: column;
         align-items: center;
         font-size: 11px;
         font-weight: 700;
-        color: #535766;
+        color: #696E79;
         cursor: pointer;
         text-decoration: none;
     }
 
-    .nav-item.active {
+    .b-nav-item.active {
         color: #FF3F6C;
     }
 
-    /* Native Wishlist Card Surface (Light Mode) */
-    .wishlist-card-native {
-        background: #FFFFFF;
-        border-radius: 8px;
-        padding: 10px;
-        border: 1px solid #EAEAEC;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-        transition: border 0.2s ease, box-shadow 0.2s ease;
-        position: relative;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-
-    .wishlist-card-native.selected {
-        border: 2.5px solid #FF3F6C;
-        background: #FFF5F7;
-    }
-
-    .card-brand-native {
-        font-size: 14px;
-        font-weight: 800;
-        color: #282C3F;
-        text-transform: uppercase;
-        margin-top: 6px;
-        margin-bottom: 1px;
-    }
-
-    .card-title-native {
-        font-size: 12px;
-        color: #535766;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        margin-bottom: 6px;
-    }
-
-    .price-row-native {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        margin-bottom: 6px;
-    }
-
-    .price-discounted {
-        font-size: 14px;
-        font-weight: 800;
-        color: #282C3F;
-    }
-
-    .price-original {
-        font-size: 11px;
-        text-decoration: line-through;
-        color: #94969F;
-    }
-
-    .price-off-badge {
-        font-size: 11px;
-        font-weight: 700;
-        color: #FF905A;
-    }
-
-    .rating-pill-native {
-        display: inline-flex;
-        align-items: center;
-        gap: 3px;
-        background: #F5F5F6;
-        border-radius: 4px;
-        padding: 2px 6px;
-        font-size: 11px;
-        font-weight: 700;
-        color: #282C3F;
-        margin-bottom: 8px;
-    }
-
-    /* Side-by-Side Decision Panel Styling */
-    .comp-column-native {
-        background: #FFFFFF;
-        color: #282C3F;
-        border-radius: 12px;
-        padding: 14px;
-        border: 1px solid #EAEAEC;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-        position: relative;
-    }
-
-    .comp-column-native.winner {
-        border: 2.5px solid #FF3F6C;
-        box-shadow: 0 4px 20px rgba(255, 63, 108, 0.2);
-    }
-
-    .winner-badge-native {
-        position: absolute;
-        top: -12px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: #FF3F6C;
-        color: #FFFFFF;
-        font-size: 10px;
-        font-weight: 800;
-        letter-spacing: 0.5px;
-        padding: 3px 12px;
-        border-radius: 14px;
-        text-transform: uppercase;
-        box-shadow: 0 2px 6px rgba(255, 63, 108, 0.3);
-    }
-
-    .row-header-native {
-        font-size: 11px;
-        font-weight: 700;
-        color: #7E818C;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-top: 10px;
-        margin-bottom: 2px;
-    }
-
-    .row-val-native {
-        font-size: 12px;
-        font-weight: 600;
-        color: #282C3F;
-    }
-
-    .chip-native {
-        display: inline-block;
-        background: #F5F5F6;
-        color: #3E4152;
-        border-radius: 12px;
-        padding: 3px 8px;
-        font-size: 10px;
-        font-weight: 600;
-        margin: 2px;
-        border: 1px solid #EAEAEC;
-    }
-
-    /* Layer 4 Passive AI Recommendation Banner (Myntra Light Theme) */
-    .rec-banner-native {
-        background: #FFFFFF;
-        border: 1.5px solid #FF3F6C;
-        border-radius: 10px;
-        padding: 16px 20px;
-        margin-top: 24px;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 14px rgba(255, 63, 108, 0.1);
-        text-align: center;
-    }
-
-    .rec-title-native {
-        font-size: 15px;
-        font-weight: 800;
-        color: #282C3F;
-        margin-bottom: 4px;
-    }
-
-    .rec-pink-highlight {
-        color: #FF3F6C;
-    }
-
-    .rec-sub-native {
-        font-size: 12px;
-        color: #535766;
-    }
-
-    /* Profile Badge pill */
-    .profile-pill-native {
-        background: #FFF5F7;
-        border: 1px solid #FF3F6C;
-        border-radius: 20px;
-        padding: 4px 12px;
-        font-size: 12px;
-        font-weight: 700;
-        color: #FF3F6C;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    /* Native Buttons */
+    /* Button Customization */
     .stButton > button {
-        border-radius: 6px;
-        font-weight: 800;
+        border-radius: 4px;
+        font-weight: 700;
         letter-spacing: 0.5px;
         text-transform: uppercase;
         transition: all 0.2s ease;
     }
 
-    /* Mobile Responsiveness Rules */
+    /* Mobile Viewport Media Queries */
     @media (max-width: 768px) {
-        .myntra-nav-header {
+        .myntra-live-header {
             padding: 10px 14px;
         }
-        .comp-column-native {
-            padding: 10px;
+        .myntra-nav-categories, .myntra-search-container {
+            display: none;
         }
         div[data-testid="column"] {
             min-width: 250px !important;
@@ -472,10 +535,10 @@ PRODUCTS: List[Product] = [
 # SESSION STATE INITIALIZATION
 # ---------------------------------------------------------
 if "current_screen" not in st.session_state:
-    st.session_state.current_screen = 1  # Default to Home (Screen 1)
+    st.session_state.current_screen = 1
 
 if "selected_ids" not in st.session_state:
-    st.session_state.selected_ids = [1, 3]  # Pre-select 2 items for seamless test
+    st.session_state.selected_ids = [1, 3]
 
 if "body_profile" not in st.session_state:
     st.session_state.body_profile = {
@@ -496,29 +559,53 @@ def get_image_base64(image_path: str) -> str:
     return ""
 
 # ---------------------------------------------------------
-# TOP NATIVE MYNTRA APP HEADER
+# REAL LIVE MYNTRA TOP HEADER
 # ---------------------------------------------------------
 cart_count = len(st.session_state.cart_items)
 wishlist_count = len(PRODUCTS)
 
 st.markdown(textwrap.dedent(f"""
-<div class="myntra-nav-header">
-    <div class="myntra-brand-logo">
-        <span style="color:#FF3F6C; font-weight:900;">myntra</span>
-        <span style="font-size:12px; font-weight:600; color:#535766;">| WISHLIST DECISION PANEL</span>
+<div class="myntra-live-header">
+    <div class="myntra-brand-area">
+        <div class="myntra-m-logo">
+            <span class="myntra-logo-pink">myntra</span>
+            <span style="font-size:11px; font-weight:600; color:#535766; margin-left:4px;">| DECISION PANEL</span>
+        </div>
+        <div class="myntra-nav-categories">
+            <span class="nav-cat-item">MEN</span>
+            <span class="nav-cat-item">WOMEN</span>
+            <span class="nav-cat-item">KIDS</span>
+            <span class="nav-cat-item">HOME</span>
+            <span class="nav-cat-item">BEAUTY</span>
+            <span class="nav-cat-item">STUDIO <span class="nav-cat-badge">NEW</span></span>
+        </div>
     </div>
-    <div class="myntra-header-icons">
-        <span>🔍</span>
-        <span>❤️ <span class="icon-badge">{wishlist_count}</span></span>
-        <span>🛍️ <span class="icon-badge">{cart_count}</span></span>
+    
+    <div class="myntra-search-container">
+        <span style="color:#696E79;">🔍</span>
+        <input type="text" class="myntra-search-input" placeholder="Search for products, brands and more" readonly />
+    </div>
+
+    <div class="myntra-header-actions">
+        <div class="action-icon-box">
+            <span>👤</span>
+            <span>Profile</span>
+        </div>
+        <div class="action-icon-box">
+            <span>❤️</span>
+            <span>Wishlist</span>
+            <span class="badge-counter">{wishlist_count}</span>
+        </div>
+        <div class="action-icon-box">
+            <span>🛍️</span>
+            <span>Bag</span>
+            <span class="badge-counter">{cart_count}</span>
+        </div>
     </div>
 </div>
 """).strip(), unsafe_allow_html=True)
 
-# ---------------------------------------------------------
-# SCREEN NAVIGATION CONTROLLER (5 Native Screens)
-# ---------------------------------------------------------
-# Navigation Bar Tabs
+# Navigation Bar Controllers
 nav_col1, nav_col2, nav_col3, nav_col4, nav_col5 = st.columns(5)
 with nav_col1:
     if st.button("🏠 Home", use_container_width=True, type="primary" if st.session_state.current_screen == 1 else "secondary"):
@@ -544,21 +631,21 @@ with nav_col5:
 st.markdown("<br>", unsafe_allow_html=True)
 
 # =========================================================
-# SCREEN 1: MYNTRA APP HOME PAGE
+# SCREEN 1: REAL MYNTRA APP HOME PAGE
 # =========================================================
 if st.session_state.current_screen == 1:
     st.markdown(textwrap.dedent("""
-    <div style="background:#FFFFFF; border-radius:10px; padding:20px; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,0.05);">
-        <h2 style="color:#282C3F; margin-bottom:4px;">Festive & Occasion Store</h2>
-        <p style="color:#FF3F6C; font-weight:700; margin-bottom:16px;">UP TO 60% OFF ON FESTIVE KURTAS & ANARKALIS</p>
-        <p style="color:#535766; font-size:14px;">You have <b>5 items saved in your Wishlist</b> for your upcoming event.</p>
+    <div style="background:#FFFFFF; border-radius:6px; padding:24px; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,0.05); border:1px solid #EAEAEC;">
+        <h2 style="color:#282C3F; margin-bottom:4px; font-weight:800;">Festive & Occasion Store</h2>
+        <p style="color:#FF3F6C; font-weight:800; font-size:16px; margin-bottom:16px; letter-spacing:0.5px;">UP TO 60% OFF ON ETHNIC WEAR & KURTAS</p>
+        <p style="color:#535766; font-size:14px;">You have <b>5 saved wishlist items</b> ready for side-by-side decision comparison.</p>
     </div>
     """).strip(), unsafe_allow_html=True)
     
     st.markdown("<br>", unsafe_allow_html=True)
     c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
-        if st.button("❤️ GO TO MY WISHLIST (5 Items Saved) →", type="primary", use_container_width=True):
+        if st.button("❤️ OPEN MY WISHLIST (5 Saved Items) →", type="primary", use_container_width=True):
             st.session_state.current_screen = 2
             st.rerun()
 
@@ -568,8 +655,8 @@ if st.session_state.current_screen == 1:
 elif st.session_state.current_screen == 2:
     st.markdown(textwrap.dedent(f"""
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <h3 style="margin:0; color:#282C3F;">MY WISHLIST <span style="font-size:14px; color:#94969F;">({len(PRODUCTS)} Items)</span></h3>
-        <span style="font-size:12px; color:#FF3F6C; font-weight:700;">Select 2-4 items to Compare</span>
+        <h3 style="margin:0; color:#282C3F; font-weight:800;">MY WISHLIST <span style="font-size:14px; color:#7E818C; font-weight:500;">({len(PRODUCTS)} Items)</span></h3>
+        <span style="font-size:12px; color:#FF3F6C; font-weight:700;">Select 2 to 4 items to Compare</span>
     </div>
     """).strip(), unsafe_allow_html=True)
 
@@ -577,24 +664,40 @@ elif st.session_state.current_screen == 2:
     for idx, prod in enumerate(PRODUCTS):
         with cols[idx]:
             is_selected = prod["id"] in st.session_state.selected_ids
-            card_class = "wishlist-card-native selected" if is_selected else "wishlist-card-native"
+            card_class = "myntra-card-surface selected" if is_selected else "myntra-card-surface"
             
             img_b64 = get_image_base64(prod["image_path"])
-            img_html = f'<img src="{img_b64}" style="width:100%; border-radius:6px; margin-bottom:8px; object-fit:cover; height:200px;" />' if img_b64 else ''
+            
+            # Rating Overlay on image (Real Myntra PDP/Listing spec)
+            rating_overlay_html = f"""
+            <div class="img-rating-overlay">
+                <span>{prod['rating']}</span>
+                <span class="star-green">★</span>
+                <span>|</span>
+                <span>{prod['rating_count']}</span>
+            </div>
+            """
+            
+            img_container_html = f"""
+            <div style="position:relative; width:100%; height:200px; margin-bottom:8px;">
+                <img src="{img_b64}" style="width:100%; height:200px; border-radius:4px; object-fit:cover;" />
+                {rating_overlay_html}
+            </div>
+            """ if img_b64 else ''
+            
             discount_pct = int(((prod["original_price"] - prod["price"]) / prod["original_price"]) * 100)
             
-            # Native Wishlist Card HTML
+            # Card Body Content
             st.markdown(textwrap.dedent(f"""
             <div class="{card_class}">
-                {img_html}
-                <div class="card-brand-native">{prod['brand']}</div>
-                <div class="card-title-native">{prod['name']}</div>
-                <div class="price-row-native">
-                    <span class="price-discounted">₹{prod['price']:,}</span>
-                    <span class="price-original">₹{prod['original_price']:,}</span>
-                    <span class="price-off-badge">({discount_pct}% OFF)</span>
+                {img_container_html}
+                <div class="card-brand-title">{prod['brand']}</div>
+                <div class="card-product-desc">{prod['name']}</div>
+                <div class="price-flex-row">
+                    <span class="price-bold">₹{prod['price']:,}</span>
+                    <span class="price-mrp-struck">₹{prod['original_price']:,}</span>
+                    <span class="price-discount-orange">({discount_pct}% OFF)</span>
                 </div>
-                <div class="rating-pill-native">★ {prod['rating']} | {prod['rating_count']}</div>
             </div>
             """).strip(), unsafe_allow_html=True)
             
@@ -614,7 +717,7 @@ elif st.session_state.current_screen == 2:
 
     st.markdown("<br><hr style='border-color:#EAEAEC;'><br>", unsafe_allow_html=True)
 
-    # Sticky Myntra Pink Compare CTA
+    # Sticky Bottom Compare Action Bar
     sel_count = len(st.session_state.selected_ids)
     c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
@@ -630,8 +733,8 @@ elif st.session_state.current_screen == 2:
 # =========================================================
 elif st.session_state.current_screen == 3:
     st.markdown(textwrap.dedent("""
-    <div style="background:#FFFFFF; border-radius:10px; padding:24px; max-width:600px; margin:0 auto; box-shadow:0 4px 14px rgba(0,0,0,0.06);">
-        <h3 style="color:#282C3F; margin-bottom:4px; text-align:center;">Layer 6: One-Time Body Profile Setup</h3>
+    <div style="background:#FFFFFF; border-radius:6px; padding:24px; max-width:600px; margin:0 auto; box-shadow:0 4px 14px rgba(0,0,0,0.05); border:1px solid #EAEAEC;">
+        <h3 style="color:#282C3F; margin-bottom:4px; text-align:center; font-weight:800;">Layer 6: One-Time Body Profile Setup</h3>
         <p style="color:#535766; font-size:13px; text-align:center; margin-bottom:20px;">Save your profile once to unlock body-type filtered fit intelligence & keywords across your entire wishlist.</p>
     </div>
     """).strip(), unsafe_allow_html=True)
@@ -704,9 +807,9 @@ elif st.session_state.current_screen == 4:
 
     h_col1, h_col2 = st.columns([3, 1])
     with h_col1:
-        st.markdown(f"<h3 style='margin:0; color:#282C3F;'>WISHLIST DECISION PANEL</h3>", unsafe_allow_html=True)
+        st.markdown(f"<h3 style='margin:0; color:#282C3F; font-weight:800;'>WISHLIST DECISION PANEL</h3>", unsafe_allow_html=True)
         st.markdown(f"""
-        <div class="profile-pill-native" style="margin-top:6px;">
+        <div style="background:#FFF5F7; border:1px solid #FF3F6C; border-radius:20px; padding:4px 12px; font-size:12px; font-weight:700; color:#FF3F6C; display:inline-flex; align-items:center; gap:6px; margin-top:6px;">
             <span>👤 Body Filter: <b>{user_size} · {user_height}</b></span>
             <span>|</span>
             <span>Occasion: <b>{user_occ}</b></span>
@@ -728,47 +831,47 @@ elif st.session_state.current_screen == 4:
         is_winner = (prod["id"] == winner_item["id"])
         
         with comp_cols[idx]:
-            col_class = "comp-column-native winner" if is_winner else "comp-column-native"
-            winner_html = '<div class="winner-badge-native">★ HIGHEST CONFIDENCE MATCH</div>' if is_winner else ''
+            col_class = "decision-col-surface winner" if is_winner else "decision-col-surface"
+            winner_html = '<div class="winner-top-badge">★ HIGHEST CONFIDENCE MATCH</div>' if is_winner else ''
 
             img_b64 = get_image_base64(prod["image_path"])
-            img_html = f'<img src="{img_b64}" style="width:100%; border-radius:6px; margin-bottom:10px; object-fit:cover; height:180px;" />' if img_b64 else ''
+            img_html = f'<img src="{img_b64}" style="width:100%; border-radius:4px; margin-bottom:8px; object-fit:cover; height:180px;" />' if img_b64 else ''
             discount_pct = int(((prod["original_price"] - prod["price"]) / prod["original_price"]) * 100)
             
             size_str = f"<span style='color:#03A685; font-weight:700;'>🟢 Available in {user_size}</span>" if item_data['has_size'] else f"<span style='color:#FF3F6C; font-weight:700;'>🔴 Out of Stock in {user_size}</span>"
             del_str = f"Delivers in {prod['delivery_days']} days ({'🟢 Arrives before event' if item_data['arrives_on_time'] else '🔴 Arrives after event'})"
             
             fit_summary = f"\"People your size ({user_size} · {user_height}) say: {prod['fit_summary_template']} · {prod['fit_review_count']} matching reviews.\""
-            chips_html = "".join([f'<span class="chip-native">{kw}</span>' for kw in prod['keywords']])
+            chips_html = "".join([f'<span class="chip-pill">{kw}</span>' for kw in prod['keywords']])
 
             column_card_html = textwrap.dedent(f"""
             <div class="{col_class}">
             {winner_html}
             <div style="margin-top: 8px;"></div>
             {img_html}
-            <div class="card-brand-native">{prod['brand']}</div>
-            <div class="card-title-native">{prod['name']}</div>
+            <div class="card-brand-title">{prod['brand']}</div>
+            <div class="card-product-desc">{prod['name']}</div>
             
-            <div class="row-header-native">Price</div>
-            <div class="price-row-native">
-            <span class="price-discounted">₹{prod['price']:,}</span>
-            <span class="price-original">₹{prod['original_price']:,}</span>
-            <span class="price-off-badge">({discount_pct}% OFF)</span>
+            <div class="attr-header-label">Price</div>
+            <div class="price-flex-row">
+            <span class="price-bold">₹{prod['price']:,}</span>
+            <span class="price-mrp-struck">₹{prod['original_price']:,}</span>
+            <span class="price-discount-orange">({discount_pct}% OFF)</span>
             </div>
             
-            <div class="row-header-native">Average Rating</div>
-            <div class="row-val-native">★ {prod['rating']} ({prod['rating_count']:,} reviews)</div>
+            <div class="attr-header-label">Average Rating</div>
+            <div class="attr-val-text">★ {prod['rating']} ({prod['rating_count']:,} reviews)</div>
             
-            <div class="row-header-native">Size Availability ({user_size})</div>
-            <div class="row-val-native">{size_str}</div>
+            <div class="attr-header-label">Size Availability ({user_size})</div>
+            <div class="attr-val-text">{size_str}</div>
             
-            <div class="row-header-native">Estimated Delivery</div>
-            <div class="row-val-native">{del_str}</div>
+            <div class="attr-header-label">Estimated Delivery</div>
+            <div class="attr-val-text">{del_str}</div>
             
-            <div class="row-header-native">Layer 2: Fit Summary ({user_size} · {user_height})</div>
-            <div class="row-val-native" style="font-style: italic; color:#2B6CB0; font-size:11px;">{fit_summary}</div>
+            <div class="attr-header-label">Layer 2: Fit Summary ({user_size} · {user_height})</div>
+            <div class="attr-val-text" style="font-style: italic; color:#2B6CB0; font-size:11px;">{fit_summary}</div>
             
-            <div class="row-header-native">Layer 3: Review Keywords</div>
+            <div class="attr-header-label">Layer 3: Review Keywords</div>
             <div style="margin-bottom: 8px;">{chips_html}</div>
             </div>
             """).strip()
@@ -790,11 +893,11 @@ elif st.session_state.current_screen == 4:
 
     # Layer 4: One-Line AI Recommendation Banner
     rec_bar_html = textwrap.dedent(f"""
-    <div class="rec-banner-native">
-        <div class="rec-title-native">
-            Based on ratings and fit reviews from people your size (<span class="rec-pink-highlight">{user_size} · {user_height}</span>), <span class="rec-pink-highlight">{winner_item['brand']} {winner_item['name']}</span> has the highest confidence score.
+    <div class="rec-banner-card">
+        <div class="rec-card-title">
+            Based on ratings and fit reviews from people your size (<span class="rec-pink-text">{user_size} · {user_height}</span>), <span class="rec-pink-text">{winner_item['brand']} {winner_item['name']}</span> has the highest confidence score.
         </div>
-        <div class="rec-sub-native">
+        <div class="rec-card-sub">
             4.5★ rating, 48 body-matched fit reviews, guaranteed size availability, and delivery before your event date.
         </div>
     </div>
@@ -808,10 +911,10 @@ elif st.session_state.current_screen == 4:
         st.rerun()
 
 # =========================================================
-# SCREEN 5: NATIVE MYNTRA CART / BAG PAGE
+# SCREEN 5: REAL MYNTRA BAG / CART PAGE
 # =========================================================
 elif st.session_state.current_screen == 5:
-    st.markdown("<h3 style='color:#282C3F;'>SHOPPING BAG</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color:#282C3F; font-weight:800;'>SHOPPING BAG</h3>", unsafe_allow_html=True)
 
     if not st.session_state.cart_items:
         st.info("Your bag is currently empty. Add items from the Decision Panel!")
@@ -827,15 +930,15 @@ elif st.session_state.current_screen == 5:
                 discount_pct = int(((item["original_price"] - item["price"]) / item["original_price"]) * 100)
 
                 st.markdown(textwrap.dedent(f"""
-                <div style="background:#FFFFFF; border-radius:8px; padding:12px; margin-bottom:12px; display:flex; gap:14px; border:1px solid #EAEAEC;">
+                <div style="background:#FFFFFF; border-radius:4px; padding:14px; margin-bottom:12px; display:flex; gap:14px; border:1px solid #EAEAEC;">
                     {img_html}
                     <div>
                         <div style="font-weight:800; font-size:14px; color:#282C3F;">{item['brand']}</div>
                         <div style="font-size:12px; color:#535766; margin-bottom:6px;">{item['name']}</div>
                         <div style="font-size:12px; color:#535766;">Size: <b>{st.session_state.body_profile['size']}</b> | Qty: <b>1</b></div>
                         <div style="margin-top:6px;">
-                            <span style="font-weight:800; font-size:14px; color:#282C3F;">₹{item['price']:,}</span>
-                            <span style="font-size:11px; text-decoration:line-through; color:#94969F; margin-left:6px;">₹{item['original_price']:,}</span>
+                            <span style="font-weight:700; font-size:14px; color:#282C3F;">₹{item['price']:,}</span>
+                            <span style="font-size:11px; text-decoration:line-through; color:#7E818C; margin-left:6px;">₹{item['original_price']:,}</span>
                             <span style="font-size:11px; font-weight:700; color:#FF905A; margin-left:6px;">({discount_pct}% OFF)</span>
                         </div>
                     </div>
@@ -848,8 +951,8 @@ elif st.session_state.current_screen == 5:
             discount_total = mrp_total - subtotal
 
             st.markdown(textwrap.dedent(f"""
-            <div style="background:#FFFFFF; border-radius:8px; padding:16px; border:1px solid #EAEAEC;">
-                <div style="font-weight:800; font-size:13px; color:#7E818C; text-transform:uppercase; margin-bottom:12px;">PRICE DETAILS ({len(st.session_state.cart_items)} Items)</div>
+            <div style="background:#FFFFFF; border-radius:4px; padding:16px; border:1px solid #EAEAEC;">
+                <div style="font-weight:800; font-size:12px; color:#7E818C; text-transform:uppercase; margin-bottom:12px;">PRICE DETAILS ({len(st.session_state.cart_items)} Items)</div>
                 <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px; color:#282C3F;">
                     <span>Total MRP</span>
                     <span>₹{mrp_total:,}</span>
@@ -879,11 +982,11 @@ elif st.session_state.current_screen == 5:
 # STICKY BOTTOM NAV BAR (Real Myntra Look)
 # ---------------------------------------------------------
 st.markdown(textwrap.dedent("""
-<div class="myntra-bottom-nav">
-    <div class="nav-item">🏠<br>Home</div>
-    <div class="nav-item">📂<br>Categories</div>
-    <div class="nav-item">🎬<br>Studio</div>
-    <div class="nav-item active">❤️<br>Wishlist</div>
-    <div class="nav-item">👤<br>Profile</div>
+<div class="myntra-bottom-navbar">
+    <div class="b-nav-item">🏠<br>Home</div>
+    <div class="b-nav-item">📂<br>Categories</div>
+    <div class="b-nav-item">🎬<br>Studio</div>
+    <div class="b-nav-item active">❤️<br>Wishlist</div>
+    <div class="b-nav-item">👤<br>Profile</div>
 </div>
 """).strip(), unsafe_allow_html=True)
