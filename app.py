@@ -445,7 +445,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# MOCK PRODUCT CATALOG DATASET (5 Kurtas)
+# EXPANDED 15 MYNTRA PRODUCT TEST DATASET
 # ---------------------------------------------------------
 PRODUCTS: List[Product] = [
     {
@@ -527,6 +527,166 @@ PRODUCTS: List[Product] = [
         "fit_review_count": 29,
         "keywords": ["Fits true to size", "Very flattering", "Silky fabric"],
         "image_path": "assets/global_desi.jpg"
+    },
+    {
+        "id": 6,
+        "name": "Chanderi Silk Ethnic Kurta",
+        "brand": "Sangria",
+        "price": 1599,
+        "original_price": 3499,
+        "rating": 4.6,
+        "rating_count": 940,
+        "sizes": ["S", "M", "L", "XL"],
+        "occasions": ["Wedding Guest", "Festival"],
+        "delivery_days": 3,
+        "fit_summary_template": "True to size, royal shine",
+        "fit_review_count": 26,
+        "keywords": ["Royal shine", "Fits true to size", "Perfect for sangeet"],
+        "image_path": "assets/libas.jpg"
+    },
+    {
+        "id": 7,
+        "name": "Bandhani Print Silk Blend Kurta",
+        "brand": "Indo Era",
+        "price": 1399,
+        "original_price": 2999,
+        "rating": 4.2,
+        "rating_count": 1120,
+        "sizes": ["XS", "S", "M", "L"],
+        "occasions": ["Festival", "Casual"],
+        "delivery_days": 4,
+        "fit_summary_template": "Comfortable chest fit, lightweight",
+        "fit_review_count": 21,
+        "keywords": ["Lightweight silk", "Vibrant colors", "True to size"],
+        "image_path": "assets/w.jpg"
+    },
+    {
+        "id": 8,
+        "name": "Foil Printed Straight Kurta",
+        "brand": "Anouk",
+        "price": 799,
+        "original_price": 1599,
+        "rating": 4.0,
+        "rating_count": 780,
+        "sizes": ["S", "M", "L"],
+        "occasions": ["Office Party", "Casual"],
+        "delivery_days": 2,
+        "fit_summary_template": "Slim waist fit, size up if broad",
+        "fit_review_count": 15,
+        "keywords": ["Slim waist", "Budget friendly", "Good workwear"],
+        "image_path": "assets/aurelia.jpg"
+    },
+    {
+        "id": 9,
+        "name": "Mirror Work Georgette Kurta",
+        "brand": "Kalini",
+        "price": 1899,
+        "original_price": 3999,
+        "rating": 4.7,
+        "rating_count": 2450,
+        "sizes": ["S", "M", "L", "XL"],
+        "occasions": ["Wedding Guest", "Festival"],
+        "delivery_days": 3,
+        "fit_summary_template": "Flattering flow, true to size",
+        "fit_review_count": 52,
+        "keywords": ["Stunning mirror work", "Heavy festive look", "Comfortable lining"],
+        "image_path": "assets/biba.jpg"
+    },
+    {
+        "id": 10,
+        "name": "Festive Metallic Print Kurta",
+        "brand": "Ahalyaa",
+        "price": 1649,
+        "original_price": 3299,
+        "rating": 4.3,
+        "rating_count": 1310,
+        "sizes": ["S", "M", "L"],
+        "occasions": ["Festival", "Date Night"],
+        "delivery_days": 4,
+        "fit_summary_template": "Roomy fit, soft inner lining",
+        "fit_review_count": 31,
+        "keywords": ["Metallic shine", "Soft fabric", "Runs slightly large"],
+        "image_path": "assets/global_desi.jpg"
+    },
+    {
+        "id": 11,
+        "name": "Embroidered A-Line Silk Kurta",
+        "brand": "Varanga",
+        "price": 2199,
+        "original_price": 4599,
+        "rating": 4.5,
+        "rating_count": 1890,
+        "sizes": ["S", "M", "L", "XL"],
+        "occasions": ["Wedding Guest", "Festival"],
+        "delivery_days": 4,
+        "fit_summary_template": "True to size, regal flare",
+        "fit_review_count": 41,
+        "keywords": ["Regal flare", "High quality threadwork", "Fits perfectly"],
+        "image_path": "assets/libas.jpg"
+    },
+    {
+        "id": 12,
+        "name": "Silk Blend Straight Kurta",
+        "brand": "Mitera",
+        "price": 1099,
+        "original_price": 2199,
+        "rating": 4.2,
+        "rating_count": 890,
+        "sizes": ["XS", "S", "M"],
+        "occasions": ["Office Party", "Casual"],
+        "delivery_days": 3,
+        "fit_summary_template": "Straight tailored cut, true to size",
+        "fit_review_count": 18,
+        "keywords": ["Clean tailored look", "Great fabric", "Comfortable collar"],
+        "image_path": "assets/w.jpg"
+    },
+    {
+        "id": 13,
+        "name": "Poly Silk Flared Kurta",
+        "brand": "Janasya",
+        "price": 1149,
+        "original_price": 2399,
+        "rating": 4.1,
+        "rating_count": 960,
+        "sizes": ["S", "M", "L"],
+        "occasions": ["Casual", "Festival"],
+        "delivery_days": 3,
+        "fit_summary_template": "Flowy flare, snug bust fit",
+        "fit_review_count": 22,
+        "keywords": ["Flowy silhouette", "Vibrant prints", "Wrinkle free"],
+        "image_path": "assets/global_desi.jpg"
+    },
+    {
+        "id": 14,
+        "name": "Luxury Zari Embroidered Kurta Set",
+        "brand": "Wishful by W",
+        "price": 2999,
+        "original_price": 5999,
+        "rating": 4.8,
+        "rating_count": 3100,
+        "sizes": ["S", "M", "L", "XL"],
+        "occasions": ["Wedding Guest", "Festival"],
+        "delivery_days": 5,
+        "fit_summary_template": "Couture fit, premium silk texture",
+        "fit_review_count": 64,
+        "keywords": ["Couture quality", "Rich zari work", "Top wedding choice"],
+        "image_path": "assets/biba.jpg"
+    },
+    {
+        "id": 15,
+        "name": "Jashn Collection Silk Kurta Set",
+        "brand": "House of Pataudi",
+        "price": 2499,
+        "original_price": 4999,
+        "rating": 4.6,
+        "rating_count": 2280,
+        "sizes": ["S", "M", "L"],
+        "occasions": ["Wedding Guest", "Festival", "Date Night"],
+        "delivery_days": 4,
+        "fit_summary_template": "Royal tailoring, true to size",
+        "fit_review_count": 55,
+        "keywords": ["Royal aesthetic", "Premium dupatta", "True to size"],
+        "image_path": "assets/libas.jpg"
     }
 ]
 
@@ -534,15 +694,13 @@ PRODUCTS: List[Product] = [
 # SESSION STATE INITIALIZATION
 # ---------------------------------------------------------
 if "current_screen" not in st.session_state:
-    st.session_state.current_screen = 1  # Screen 1: Product Catalog
+    st.session_state.current_screen = 1
 
-# Wishlist Items saved by user on Screen 1
 if "wishlist_ids" not in st.session_state:
-    st.session_state.wishlist_ids = [1, 3, 5]
+    st.session_state.wishlist_ids = [1, 3, 6, 9, 14]
 
-# Items selected for Decision Panel comparison (Screen 2)
 if "selected_ids" not in st.session_state:
-    st.session_state.selected_ids = [1, 3]
+    st.session_state.selected_ids = [3, 14]
 
 if "body_profile" not in st.session_state:
     st.session_state.body_profile = {
@@ -563,7 +721,7 @@ def get_image_base64(image_path: str) -> str:
     return ""
 
 # ---------------------------------------------------------
-# REAL LIVE MYNTRA TOP NAVBAR (Cleaned of all code-block spaces)
+# REAL LIVE MYNTRA TOP NAVBAR
 # ---------------------------------------------------------
 cart_count = len(st.session_state.cart_items)
 wishlist_count = len(st.session_state.wishlist_ids)
@@ -635,70 +793,75 @@ with nav_col5:
 st.markdown("<br>", unsafe_allow_html=True)
 
 # =========================================================
-# SCREEN 1: PRODUCT CATALOG — CHOOSE & SAVE TO WISHLIST
+# SCREEN 1: PRODUCT CATALOG — 15 ITEMS IN 5-COLUMN GRID
 # =========================================================
 if st.session_state.current_screen == 1:
-    banner_html = """
+    banner_html = f"""
     <div style="background:#FFFFFF; border-radius:4px; padding:18px 24px; margin-bottom:16px; border:1px solid #EAEAEC; box-shadow:0 2px 8px rgba(0,0,0,0.03);">
-    <h2 style="color:#282C3F; margin-bottom:2px; font-weight:800;">Women's Ethnic Kurta Store</h2>
+    <h2 style="color:#282C3F; margin-bottom:2px; font-weight:800;">Women's Ethnic Kurta Store <span style="font-size:14px; color:#7E818C; font-weight:500;">({len(PRODUCTS)} Products)</span></h2>
     <p style="color:#FF3F6C; font-weight:800; font-size:15px; margin-bottom:4px;">UP TO 60% OFF ON FESTIVE & WEDDING COLLECTION</p>
     <p style="color:#535766; font-size:13px; margin:0;">Browse items below and click <b>♡ Save to Wishlist</b> on items you like.</p>
     </div>
     """
     st.markdown(clean_html(banner_html), unsafe_allow_html=True)
 
-    cols = st.columns(5)
-    for idx, prod in enumerate(PRODUCTS):
-        with cols[idx]:
-            is_in_wishlist = prod["id"] in st.session_state.wishlist_ids
-            card_class = "product-card-white selected" if is_in_wishlist else "product-card-white"
-            
-            img_b64 = get_image_base64(prod["image_path"])
-            
-            rating_overlay_html = f"""
-            <div class="img-rating-badge">
-            <span>{prod['rating']}</span>
-            <span class="star-icon-green">★</span>
-            <span>|</span>
-            <span>{prod['rating_count']}</span>
-            </div>
-            """
-            
-            img_container_html = f"""
-            <div style="position:relative; width:100%; height:200px; margin-bottom:8px;">
-            <img src="{img_b64}" style="width:100%; height:200px; border-radius:4px; object-fit:cover;" />
-            {rating_overlay_html}
-            </div>
-            """ if img_b64 else ''
-            
-            discount_pct = int(((prod["original_price"] - prod["price"]) / prod["original_price"]) * 100)
-            
-            card_html = f"""
-            <div class="{card_class}">
-            {img_container_html}
-            <div class="card-brand-name">{prod['brand']}</div>
-            <div class="card-title-text">{prod['name']}</div>
-            <div class="price-wrap">
-            <span class="price-current">₹{prod['price']:,}</span>
-            <span class="price-mrp">₹{prod['original_price']:,}</span>
-            <span class="price-off">({discount_pct}% OFF)</span>
-            </div>
-            </div>
-            """
-            st.markdown(clean_html(card_html), unsafe_allow_html=True)
-            
-            st.markdown("<div style='height:6px;'></div>", unsafe_allow_html=True)
-            
-            if is_in_wishlist:
-                if st.button("❤️ WISHLISTED", key=f"cat_btn_{prod['id']}", type="primary", use_container_width=True):
-                    st.session_state.wishlist_ids.remove(prod["id"])
-                    if prod["id"] in st.session_state.selected_ids:
-                        st.session_state.selected_ids.remove(prod["id"])
-                    st.rerun()
-            else:
-                if st.button("♡ SAVE TO WISHLIST", key=f"cat_btn_{prod['id']}", use_container_width=True):
-                    st.session_state.wishlist_ids.append(prod["id"])
-                    st.rerun()
+    # Render products in rows of 5
+    for row_start in range(0, len(PRODUCTS), 5):
+        row_prods = PRODUCTS[row_start:row_start + 5]
+        cols = st.columns(len(row_prods))
+        for idx, prod in enumerate(row_prods):
+            with cols[idx]:
+                is_in_wishlist = prod["id"] in st.session_state.wishlist_ids
+                card_class = "product-card-white selected" if is_in_wishlist else "product-card-white"
+                
+                img_b64 = get_image_base64(prod["image_path"])
+                
+                rating_overlay_html = f"""
+                <div class="img-rating-badge">
+                <span>{prod['rating']}</span>
+                <span class="star-icon-green">★</span>
+                <span>|</span>
+                <span>{prod['rating_count']}</span>
+                </div>
+                """
+                
+                img_container_html = f"""
+                <div style="position:relative; width:100%; height:200px; margin-bottom:8px;">
+                <img src="{img_b64}" style="width:100%; height:200px; border-radius:4px; object-fit:cover;" />
+                {rating_overlay_html}
+                </div>
+                """ if img_b64 else ''
+                
+                discount_pct = int(((prod["original_price"] - prod["price"]) / prod["original_price"]) * 100)
+                
+                card_html = f"""
+                <div class="{card_class}">
+                {img_container_html}
+                <div class="card-brand-name">{prod['brand']}</div>
+                <div class="card-title-text">{prod['name']}</div>
+                <div class="price-wrap">
+                <span class="price-current">₹{prod['price']:,}</span>
+                <span class="price-mrp">₹{prod['original_price']:,}</span>
+                <span class="price-off">({discount_pct}% OFF)</span>
+                </div>
+                </div>
+                """
+                st.markdown(clean_html(card_html), unsafe_allow_html=True)
+                
+                st.markdown("<div style='height:6px;'></div>", unsafe_allow_html=True)
+                
+                if is_in_wishlist:
+                    if st.button("❤️ WISHLISTED", key=f"cat_btn_{prod['id']}", type="primary", use_container_width=True):
+                        st.session_state.wishlist_ids.remove(prod["id"])
+                        if prod["id"] in st.session_state.selected_ids:
+                            st.session_state.selected_ids.remove(prod["id"])
+                        st.rerun()
+                else:
+                    if st.button("♡ SAVE TO WISHLIST", key=f"cat_btn_{prod['id']}", use_container_width=True):
+                        st.session_state.wishlist_ids.append(prod["id"])
+                        st.rerun()
+
+        st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
 
     st.markdown("<br><hr style='border-color:#EAEAEC;'><br>", unsafe_allow_html=True)
 
@@ -731,59 +894,64 @@ elif st.session_state.current_screen == 2:
             st.session_state.current_screen = 1
             st.rerun()
     else:
-        cols = st.columns(len(wishlist_products) if len(wishlist_products) <= 5 else 5)
-        for idx, prod in enumerate(wishlist_products):
-            with cols[idx]:
-                is_selected = prod["id"] in st.session_state.selected_ids
-                card_class = "product-card-white selected" if is_selected else "product-card-white"
-                
-                img_b64 = get_image_base64(prod["image_path"])
-                
-                rating_overlay_html = f"""
-                <div class="img-rating-badge">
-                <span>{prod['rating']}</span>
-                <span class="star-icon-green">★</span>
-                <span>|</span>
-                <span>{prod['rating_count']}</span>
-                </div>
-                """
-                
-                img_container_html = f"""
-                <div style="position:relative; width:100%; height:200px; margin-bottom:8px;">
-                <img src="{img_b64}" style="width:100%; height:200px; border-radius:4px; object-fit:cover;" />
-                {rating_overlay_html}
-                </div>
-                """ if img_b64 else ''
-                
-                discount_pct = int(((prod["original_price"] - prod["price"]) / prod["original_price"]) * 100)
-                
-                w_card_html = f"""
-                <div class="{card_class}">
-                {img_container_html}
-                <div class="card-brand-name">{prod['brand']}</div>
-                <div class="card-title-text">{prod['name']}</div>
-                <div class="price-wrap">
-                <span class="price-current">₹{prod['price']:,}</span>
-                <span class="price-mrp">₹{prod['original_price']:,}</span>
-                <span class="price-off">({discount_pct}% OFF)</span>
-                </div>
-                </div>
-                """
-                st.markdown(clean_html(w_card_html), unsafe_allow_html=True)
-                
-                st.markdown("<div style='height:6px;'></div>", unsafe_allow_html=True)
-                
-                if is_selected:
-                    if st.button("✓ SELECTED", key=f"w_btn_{prod['id']}", type="primary", use_container_width=True):
-                        st.session_state.selected_ids.remove(prod["id"])
-                        st.rerun()
-                else:
-                    if st.button("+ COMPARE", key=f"w_btn_{prod['id']}", use_container_width=True):
-                        if len(st.session_state.selected_ids) >= 4:
-                            st.warning("⚠️ Maximum 4 items can be selected for comparison.")
-                        else:
-                            st.session_state.selected_ids.append(prod["id"])
+        # Render wishlist products in rows of 5
+        for row_start in range(0, len(wishlist_products), 5):
+            row_prods = wishlist_products[row_start:row_start + 5]
+            cols = st.columns(len(row_prods))
+            for idx, prod in enumerate(row_prods):
+                with cols[idx]:
+                    is_selected = prod["id"] in st.session_state.selected_ids
+                    card_class = "product-card-white selected" if is_selected else "product-card-white"
+                    
+                    img_b64 = get_image_base64(prod["image_path"])
+                    
+                    rating_overlay_html = f"""
+                    <div class="img-rating-badge">
+                    <span>{prod['rating']}</span>
+                    <span class="star-icon-green">★</span>
+                    <span>|</span>
+                    <span>{prod['rating_count']}</span>
+                    </div>
+                    """
+                    
+                    img_container_html = f"""
+                    <div style="position:relative; width:100%; height:200px; margin-bottom:8px;">
+                    <img src="{img_b64}" style="width:100%; height:200px; border-radius:4px; object-fit:cover;" />
+                    {rating_overlay_html}
+                    </div>
+                    """ if img_b64 else ''
+                    
+                    discount_pct = int(((prod["original_price"] - prod["price"]) / prod["original_price"]) * 100)
+                    
+                    w_card_html = f"""
+                    <div class="{card_class}">
+                    {img_container_html}
+                    <div class="card-brand-name">{prod['brand']}</div>
+                    <div class="card-title-text">{prod['name']}</div>
+                    <div class="price-wrap">
+                    <span class="price-current">₹{prod['price']:,}</span>
+                    <span class="price-mrp">₹{prod['original_price']:,}</span>
+                    <span class="price-off">({discount_pct}% OFF)</span>
+                    </div>
+                    </div>
+                    """
+                    st.markdown(clean_html(w_card_html), unsafe_allow_html=True)
+                    
+                    st.markdown("<div style='height:6px;'></div>", unsafe_allow_html=True)
+                    
+                    if is_selected:
+                        if st.button("✓ SELECTED", key=f"w_btn_{prod['id']}", type="primary", use_container_width=True):
+                            st.session_state.selected_ids.remove(prod["id"])
                             st.rerun()
+                    else:
+                        if st.button("+ COMPARE", key=f"w_btn_{prod['id']}", use_container_width=True):
+                            if len(st.session_state.selected_ids) >= 4:
+                                st.warning("⚠️ Maximum 4 items can be selected for comparison.")
+                            else:
+                                st.session_state.selected_ids.append(prod["id"])
+                                st.rerun()
+
+            st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
 
         st.markdown("<br><hr style='border-color:#EAEAEC;'><br>", unsafe_allow_html=True)
 
