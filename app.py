@@ -483,7 +483,7 @@ if st.session_state.current_screen == 1:
             # Render Image
             img = load_image(prod["image_path"])
             if img:
-                st.image(img, use_container_width=True)
+                st.image(img, use_column_width=True)
             
             discount_pct = int(((prod["original_price"] - prod["price"]) / prod["original_price"]) * 100)
             
@@ -629,7 +629,7 @@ elif st.session_state.current_screen == 3:
             """, unsafe_allow_html=True)
             
             if img:
-                st.image(img, use_container_width=True)
+                st.image(img, use_column_width=True)
                 
             discount_pct = int(((prod["original_price"] - prod["price"]) / prod["original_price"]) * 100)
             
