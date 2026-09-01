@@ -346,6 +346,58 @@ st.markdown(textwrap.dedent("""
         font-weight: 700;
         transition: all 0.2s ease;
     }
+
+    /* Mobile Responsiveness Rules (Phones & Tablets) */
+    @media (max-width: 768px) {
+        .myntra-header {
+            padding: 10px 14px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+        .myntra-logo {
+            font-size: 18px;
+        }
+        .myntra-tagline {
+            font-size: 12px;
+        }
+        .step-tracker {
+            gap: 8px;
+            font-size: 11px;
+            flex-wrap: wrap;
+        }
+        .step-number {
+            width: 22px;
+            height: 22px;
+            font-size: 11px;
+        }
+        .recommendation-bar {
+            padding: 14px 16px;
+            margin-top: 20px;
+            margin-bottom: 16px;
+        }
+        .rec-title {
+            font-size: 15px;
+        }
+        .rec-subtitle {
+            font-size: 12px;
+        }
+        .profile-badge {
+            font-size: 11px;
+            padding: 6px 12px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+        .comp-column {
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+        /* Mobile Horizontal Scroll for Comparison Columns */
+        div[data-testid="column"] {
+            min-width: 260px !important;
+        }
+    }
 </style>
 """).strip(), unsafe_allow_html=True)
 
