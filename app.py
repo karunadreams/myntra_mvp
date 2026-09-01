@@ -3,6 +3,7 @@ from datetime import date, timedelta
 from PIL import Image
 import os
 import base64
+import textwrap
 from typing import TypedDict, List
 
 class Product(TypedDict):
@@ -86,7 +87,7 @@ st.set_page_config(
 )
 
 # Inject Custom CSS for Myntra Dark Navy Theme & High-End Aesthetics
-st.markdown("""
+st.markdown(textwrap.dedent("""
 <style>
     /* Global Container Styling */
     .stApp {
@@ -331,7 +332,7 @@ st.markdown("""
         transition: all 0.2s ease;
     }
 </style>
-""", unsafe_allow_html=True)
+""").strip(), unsafe_allow_html=True)
 
 # ---------------------------------------------------------
 # MOCK PRODUCT DATASET (Exact 5 items from requirement spec)
@@ -443,19 +444,19 @@ def get_image_base64(image_path: str) -> str:
 # ---------------------------------------------------------
 # TOP APP HEADER
 # ---------------------------------------------------------
-st.markdown("""
+st.markdown(textwrap.dedent("""
 <div class="myntra-header">
     <div class="myntra-logo">MYNTRA <span style="font-size:14px; font-weight:600; color:#FF905A;">WISHLIST DECISION PANEL</span></div>
     <div class="myntra-tagline">Compare & Decide for Your Occasion</div>
 </div>
-""", unsafe_allow_html=True)
+""").strip(), unsafe_allow_html=True)
 
 # Step Progress Bar
 s1_active = "active" if st.session_state.current_screen == 1 else ""
 s2_active = "active" if st.session_state.current_screen == 2 else ""
 s3_active = "active" if st.session_state.current_screen == 3 else ""
 
-st.markdown(f"""
+st.markdown(textwrap.dedent(f"""
 <div class="step-tracker">
     <div class="step-item {s1_active}">
         <div class="step-number">1</div> Select Items
@@ -467,7 +468,7 @@ st.markdown(f"""
         <div class="step-number">3</div> Decision Panel
     </div>
 </div>
-""", unsafe_allow_html=True)
+""").strip(), unsafe_allow_html=True)
 
 # ---------------------------------------------------------
 # SCREEN 1: WISHLIST SELECTION (LAYER 1)
@@ -488,7 +489,7 @@ if st.session_state.current_screen == 1:
             discount_pct = int(((prod["original_price"] - prod["price"]) / prod["original_price"]) * 100)
             
             # Unified Card HTML Surface
-            st.markdown(f"""
+            st.markdown(textwrap.dedent(f"""
             <div class="{card_class}">
                 {img_html}
                 <div class="card-brand">{prod['brand']}</div>
@@ -500,7 +501,7 @@ if st.session_state.current_screen == 1:
                 </div>
                 <div class="rating-badge">★ {prod['rating']} ({prod['rating_count']})</div>
             </div>
-            """, unsafe_allow_html=True)
+            """).strip(), unsafe_allow_html=True)
             
             st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
             
@@ -625,45 +626,41 @@ elif st.session_state.current_screen == 3:
             
             discount_pct = int(((prod["original_price"] - prod["price"]) / prod["original_price"]) * 100)
             
-            # Unified Column HTML Card
-            st.markdown(f"""
+            size_str = f"✅ Available in {user_size}" if item_data['has_size'] else f"❌ Not available in {user_size}"
+            occ_str = f"✅ Great for {user_occ}" if item_data['occ_match'] else f"⚠️ Not ideal for {user_occ}"
+            del_str = f"{prod['delivery_days']} days ({'🟢 Arrives before event' if item_data['arrives_on_time'] else '🔴 Arrives after event'})"
+            chips_html = "".join([f'<span class="chip">{kw}</span>' for kw in prod['keywords']])
+
+            # Unified Column HTML Card (dedented to column 0 to prevent markdown code block parsing)
+            column_card_html = textwrap.dedent(f"""
             <div class="{col_class}">
-                {winner_html}
-                <div style="margin-top: 10px;"></div>
-                {img_html}
-                <div class="card-brand">{prod['brand']}</div>
-                <div class="card-title">{prod['name']}</div>
-                
-                <div class="row-header">Price</div>
-                <div class="price-row">
-                    <span class="discount-price">₹{prod['price']:,}</span>
-                    <span class="original-price">₹{prod['original_price']:,}</span>
-                    <span class="discount-badge">{discount_pct}% OFF</span>
-                </div>
-
-                <div class="row-header">Rating</div>
-                <div class="row-value">★ {prod['rating']} ({prod['rating_count']:,} reviews)</div>
-
-                <div class="row-header">Size Availability ({user_size})</div>
-                <div class="row-value">{'✅ Available in ' + user_size if item_data['has_size'] else '❌ Not available in ' + user_size}</div>
-
-                <div class="row-header">Occasion Match</div>
-                <div class="row-value">{'✅ Great for ' + user_occ if item_data['occ_match'] else '⚠️ Not ideal for ' + user_occ}</div>
-
-                <div class="row-header">Delivery Deadline</div>
-                <div class="row-value">{prod['delivery_days']} days ({'🟢 Arrives before event' if item_data['arrives_on_time'] else '🔴 Arrives after event'})</div>
-
-                <!-- LAYER 3: FIT SUMMARY -->
-                <div class="row-header">Fit Note</div>
-                <div class="row-value" style="font-style: italic; color: #2B6CB0;">"{prod['fit_note']}"</div>
-
-                <!-- LAYER 4: REVIEW KEYWORD CHIPS -->
-                <div class="row-header">Review Keywords</div>
-                <div style="margin-bottom: 12px;">
-                    {''.join([f'<span class="chip">{kw}</span>' for kw in prod['keywords']])}
-                </div>
+            {winner_html}
+            <div style="margin-top: 10px;"></div>
+            {img_html}
+            <div class="card-brand">{prod['brand']}</div>
+            <div class="card-title">{prod['name']}</div>
+            <div class="row-header">Price</div>
+            <div class="price-row">
+            <span class="discount-price">₹{prod['price']:,}</span>
+            <span class="original-price">₹{prod['original_price']:,}</span>
+            <span class="discount-badge">{discount_pct}% OFF</span>
             </div>
-            """, unsafe_allow_html=True)
+            <div class="row-header">Rating</div>
+            <div class="row-value">★ {prod['rating']} ({prod['rating_count']:,} reviews)</div>
+            <div class="row-header">Size Availability ({user_size})</div>
+            <div class="row-value">{size_str}</div>
+            <div class="row-header">Occasion Match</div>
+            <div class="row-value">{occ_str}</div>
+            <div class="row-header">Delivery Deadline</div>
+            <div class="row-value">{del_str}</div>
+            <div class="row-header">Fit Note</div>
+            <div class="row-value" style="font-style: italic; color: #2B6CB0;">"{prod['fit_note']}"</div>
+            <div class="row-header">Review Keywords</div>
+            <div style="margin-bottom: 12px;">{chips_html}</div>
+            </div>
+            """).strip()
+
+            st.markdown(column_card_html, unsafe_allow_html=True)
 
             st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
 
@@ -682,7 +679,7 @@ elif st.session_state.current_screen == 3:
     # ---------------------------------------------------------
     # LAYER 5: ONE-LINE PASSIVE RECOMMENDATION BAR
     # ---------------------------------------------------------
-    st.markdown(f"""
+    rec_bar_html = textwrap.dedent(f"""
     <div class="recommendation-bar">
         <div class="rec-title">
             Based on your occasion and size, <span class="rec-item-name">{winner_item['brand']} {winner_item['name']}</span> is your best match.
@@ -691,4 +688,6 @@ elif st.session_state.current_screen == 3:
             It is available in size {user_size}, arrives before your event date, and is top-rated for {user_occ}.
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """).strip()
+    
+    st.markdown(rec_bar_html, unsafe_allow_html=True)
