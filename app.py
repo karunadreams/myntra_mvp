@@ -1,0 +1,698 @@
+import streamlit as st
+from datetime import date, timedelta
+from PIL import Image
+import os
+from typing import TypedDict, List
+
+class Product(TypedDict):
+    id: int
+    name: str
+    brand: str
+    price: int
+    original_price: int
+    rating: float
+    rating_count: int
+    sizes: List[str]
+    occasions: List[str]
+    delivery_days: int
+    fit_note: str
+    keywords: List[str]
+    image_path: str
+
+class ScoredProduct(TypedDict):
+    product: Product
+    score: int
+    has_size: bool
+    occ_match: bool
+    arrives_on_time: bool
+
+def calculate_winner_scoring(
+    selected_products: List[Product],
+    user_occ: str,
+    user_size: str,
+    days_to_event: int
+) -> List[ScoredProduct]:
+    """
+    Phase 2 Silent Winner Scoring Engine Algorithm:
+    Score(I) = S_size (+3) + S_occasion (+2) + S_delivery (+2) + S_rating (+1 if >= 4.2)
+    Returns list of ScoredProduct sorted by (score DESC, rating DESC, price ASC).
+    """
+    scored_products: List[ScoredProduct] = []
+    for prod in selected_products:
+        score = 0
+        
+        # +3 pts if available in user's size
+        has_size = user_size in prod["sizes"]
+        if has_size:
+            score += 3
+
+        # +2 pts if occasion matches
+        occ_match = user_occ in prod["occasions"]
+        if occ_match:
+            score += 2
+
+        # +2 pts if delivery before event
+        arrives_on_time = prod["delivery_days"] <= days_to_event
+        if arrives_on_time:
+            score += 2
+
+        # +1 pt if rating >= 4.2
+        if prod["rating"] >= 4.2:
+            score += 1
+
+        sp: ScoredProduct = {
+            "product": prod,
+            "score": score,
+            "has_size": has_size,
+            "occ_match": occ_match,
+            "arrives_on_time": arrives_on_time
+        }
+        scored_products.append(sp)
+
+    # Sort to determine winner (Highest score DESC, rating DESC, price ASC -> -price DESC)
+    scored_products.sort(
+        key=lambda x: (x["score"], x["product"]["rating"], -x["product"]["price"]),
+        reverse=True
+    )
+    return scored_products
+
+# Set page configuration
+st.set_page_config(
+    page_title="Myntra Wishlist Decision Panel",
+    page_icon="🛍️",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+# Inject Custom CSS for Myntra Dark Navy Theme & High-End Aesthetics
+st.markdown("""
+<style>
+    /* Global Container Styling */
+    .stApp {
+        background-color: #1A1F36;
+        color: #FFFFFF;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    /* Header Bar */
+    .myntra-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 24px;
+        background: #111528;
+        border-bottom: 2px solid #FF3F6C;
+        margin-bottom: 24px;
+        border-radius: 0 0 12px 12px;
+    }
+    
+    .myntra-logo {
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        color: #FF3F6C;
+    }
+    
+    .myntra-tagline {
+        font-size: 14px;
+        color: #94A3B8;
+        font-weight: 500;
+    }
+
+    /* Step Indicator Progress Bar */
+    .step-tracker {
+        display: flex;
+        justify-content: center;
+        gap: 32px;
+        margin-bottom: 28px;
+    }
+    
+    .step-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #64748B;
+    }
+    
+    .step-item.active {
+        color: #FF3F6C;
+    }
+
+    .step-number {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #252B48;
+        color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .step-item.active .step-number {
+        background: #FF3F6C;
+    }
+
+    /* Product Card Surface (Screen 1) */
+    .wishlist-card {
+        background: #FFFFFF;
+        border-radius: 12px;
+        padding: 14px;
+        color: #1A1F36;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s ease, border 0.2s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .wishlist-card.selected {
+        border: 3px solid #FF3F6C;
+        background: #FFF5F7;
+    }
+
+    .card-brand {
+        font-size: 16px;
+        font-weight: 800;
+        color: #1A1F36;
+        margin-bottom: 2px;
+    }
+
+    .card-title {
+        font-size: 13px;
+        color: #4A5568;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 8px;
+    }
+
+    .price-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+    }
+
+    .discount-price {
+        font-size: 16px;
+        font-weight: 800;
+        color: #1A1F36;
+    }
+
+    .original-price {
+        font-size: 12px;
+        text-decoration: line-through;
+        color: #A0AEC0;
+    }
+
+    .discount-badge {
+        font-size: 11px;
+        font-weight: 700;
+        color: #FF905A;
+        background: #FFF5F0;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+
+    .rating-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: #EDF2F7;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #2D3748;
+        margin-bottom: 10px;
+    }
+
+    /* Comparison Table Styling (Screen 3) */
+    .comp-column {
+        background: #FFFFFF;
+        color: #1A1F36;
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        border: 2px solid #E2E8F0;
+        position: relative;
+    }
+
+    .comp-column.winner {
+        border: 3.5px solid #FF3F6C;
+        box-shadow: 0 0 25px rgba(255, 63, 108, 0.35);
+        background: #FFFFFF;
+    }
+
+    .winner-badge {
+        position: absolute;
+        top: -14px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #FF3F6C, #FF905A);
+        color: #FFFFFF;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.8px;
+        padding: 4px 14px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        box-shadow: 0 4px 10px rgba(255, 63, 108, 0.4);
+    }
+
+    .row-header {
+        font-size: 12px;
+        font-weight: 700;
+        color: #94A3B8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 14px;
+        margin-bottom: 4px;
+    }
+
+    .row-value {
+        font-size: 13px;
+        font-weight: 600;
+        color: #1A1F36;
+    }
+
+    .chip {
+        display: inline-block;
+        background: #F1F5F9;
+        color: #334155;
+        border-radius: 14px;
+        padding: 4px 10px;
+        font-size: 11px;
+        font-weight: 600;
+        margin: 2px;
+    }
+
+    /* Layer 5 Recommendation Bar */
+    .recommendation-bar {
+        background: #111528;
+        border: 2px solid #FF3F6C;
+        border-radius: 12px;
+        padding: 20px 24px;
+        margin-top: 32px;
+        margin-bottom: 24px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(255, 63, 108, 0.2);
+    }
+
+    .rec-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: #FFFFFF;
+        margin-bottom: 6px;
+    }
+
+    .rec-item-name {
+        color: #FF3F6C;
+    }
+
+    .rec-subtitle {
+        font-size: 14px;
+        color: #CBD5E1;
+        font-weight: 400;
+    }
+
+    /* Custom Buttons */
+    .stButton > button {
+        border-radius: 8px;
+        font-weight: 700;
+        transition: all 0.2s ease;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# ---------------------------------------------------------
+# MOCK PRODUCT DATASET (Exact 5 items from requirement spec)
+# ---------------------------------------------------------
+PRODUCTS: List[Product] = [
+    {
+        "id": 1,
+        "name": "Embroidered Anarkali Kurta",
+        "brand": "Libas",
+        "price": 1299,
+        "original_price": 2499,
+        "rating": 4.3,
+        "rating_count": 1240,
+        "sizes": ["S", "M", "L", "XL"],
+        "occasions": ["Wedding Guest", "Festival"],
+        "delivery_days": 4,
+        "fit_note": "True to size, roomy shoulders",
+        "keywords": ["True to size", "Flowy fabric", "Great for functions", "Color true to photo"],
+        "image_path": "assets/libas.jpg"
+    },
+    {
+        "id": 2,
+        "name": "Floral Printed Straight Kurta",
+        "brand": "W",
+        "price": 999,
+        "original_price": 1799,
+        "rating": 4.1,
+        "rating_count": 850,
+        "sizes": ["XS", "S", "M"],
+        "occasions": ["Office Party", "Casual"],
+        "delivery_days": 3,
+        "fit_note": "Slightly slim, size up",
+        "keywords": ["Slim fit", "Good for petite", "Color slightly different", "Good daily wear"],
+        "image_path": "assets/w.jpg"
+    },
+    {
+        "id": 3,
+        "name": "Woven Design Kurta Set",
+        "brand": "Biba",
+        "price": 1799,
+        "original_price": 3199,
+        "rating": 4.5,
+        "rating_count": 2100,
+        "sizes": ["S", "M", "L"],
+        "occasions": ["Wedding Guest", "Festival", "Date Night"],
+        "delivery_days": 5,
+        "fit_note": "True to size, roomy",
+        "keywords": ["Roomy", "Premium feel", "Best for festive", "Dupatta quality good"],
+        "image_path": "assets/biba.jpg"
+    },
+    {
+        "id": 4,
+        "name": "Solid Straight Kurta",
+        "brand": "Aurelia",
+        "price": 849,
+        "original_price": 1499,
+        "rating": 3.9,
+        "rating_count": 620,
+        "sizes": ["M", "L", "XL"],
+        "occasions": ["Office Party", "Casual"],
+        "delivery_days": 2,
+        "fit_note": "Slightly boxy",
+        "keywords": ["Good daily wear", "Fades after wash", "Comfortable fabric", "Runs large"],
+        "image_path": "assets/aurelia.jpg"
+    },
+    {
+        "id": 5,
+        "name": "Printed Wrap Kurta",
+        "brand": "Global Desi",
+        "price": 1499,
+        "original_price": 2799,
+        "rating": 4.4,
+        "rating_count": 1580,
+        "sizes": ["XS", "S", "M", "L"],
+        "occasions": ["Date Night", "Casual", "Festival"],
+        "delivery_days": 3,
+        "fit_note": "True to size, flattering",
+        "keywords": ["Very flattering", "Great for dates", "Fabric is silky", "Ships fast"],
+        "image_path": "assets/global_desi.jpg"
+    }
+]
+
+# ---------------------------------------------------------
+# SESSION STATE INITIALIZATION
+# ---------------------------------------------------------
+if "current_screen" not in st.session_state:
+    st.session_state.current_screen = 1
+
+if "selected_ids" not in st.session_state:
+    st.session_state.selected_ids = []
+
+if "user_context" not in st.session_state:
+    st.session_state.user_context = {
+        "occasion": "Wedding Guest",
+        "event_date": date.today() + timedelta(days=6),
+        "size": "M"
+    }
+
+if "cart_added_id" not in st.session_state:
+    st.session_state.cart_added_id = None
+
+# Helper to load images safely
+def load_image(image_path):
+    if os.path.exists(image_path):
+        return Image.open(image_path)
+    return None
+
+# ---------------------------------------------------------
+# TOP APP HEADER
+# ---------------------------------------------------------
+st.markdown("""
+<div class="myntra-header">
+    <div class="myntra-logo">MYNTRA <span style="font-size:14px; font-weight:600; color:#FF905A;">WISHLIST DECISION PANEL</span></div>
+    <div class="myntra-tagline">Compare & Decide for Your Occasion</div>
+</div>
+""", unsafe_allow_html=True)
+
+# Step Progress Bar
+s1_active = "active" if st.session_state.current_screen == 1 else ""
+s2_active = "active" if st.session_state.current_screen == 2 else ""
+s3_active = "active" if st.session_state.current_screen == 3 else ""
+
+st.markdown(f"""
+<div class="step-tracker">
+    <div class="step-item {s1_active}">
+        <div class="step-number">1</div> Select Items
+    </div>
+    <div class="step-item {s2_active}">
+        <div class="step-number">2</div> Event & Size Context
+    </div>
+    <div class="step-item {s3_active}">
+        <div class="step-number">3</div> Decision Panel
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# ---------------------------------------------------------
+# SCREEN 1: WISHLIST SELECTION (LAYER 1)
+# ---------------------------------------------------------
+if st.session_state.current_screen == 1:
+    st.markdown("<h2 style='text-align:center; margin-bottom: 4px;'>Saved Wishlist Items</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; color:#94A3B8; margin-bottom: 24px;'>Select <b>2 to 4 items</b> to compare side by side before buying.</p>", unsafe_allow_html=True)
+
+    cols = st.columns(5)
+    for idx, prod in enumerate(PRODUCTS):
+        with cols[idx]:
+            is_selected = prod["id"] in st.session_state.selected_ids
+            card_class = "wishlist-card selected" if is_selected else "wishlist-card"
+            
+            # Render Image
+            img = load_image(prod["image_path"])
+            if img:
+                st.image(img, use_container_width=True)
+            
+            discount_pct = int(((prod["original_price"] - prod["price"]) / prod["original_price"]) * 100)
+            
+            # Card HTML Surface
+            st.markdown(f"""
+            <div class="{card_class}">
+                <div class="card-brand">{prod['brand']}</div>
+                <div class="card-title">{prod['name']}</div>
+                <div class="price-row">
+                    <span class="discount-price">₹{prod['price']:,}</span>
+                    <span class="original-price">₹{prod['original_price']:,}</span>
+                    <span class="discount-badge">{discount_pct}% OFF</span>
+                </div>
+                <div class="rating-badge">★ {prod['rating']} ({prod['rating_count']})</div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
+            
+            # Layer 1 Selection Button Logic
+            if is_selected:
+                if st.button(f"✓ Selected", key=f"btn_{prod['id']}", type="primary"):
+                    st.session_state.selected_ids.remove(prod["id"])
+                    st.rerun()
+            else:
+                if st.button(f"+ Select", key=f"btn_{prod['id']}"):
+                    if len(st.session_state.selected_ids) >= 4:
+                        st.warning("⚠️ Maximum 4 items can be selected for comparison.")
+                    else:
+                        st.session_state.selected_ids.append(prod["id"])
+                        st.rerun()
+
+    st.markdown("<br><hr style='border-color:#252B48;'><br>", unsafe_allow_html=True)
+
+    # Bottom Sticky Action CTA
+    sel_count = len(st.session_state.selected_ids)
+    c1, c2, c3 = st.columns([1, 2, 1])
+    with c2:
+        if 2 <= sel_count <= 4:
+            if st.button(f"Compare Selected ({sel_count} Items) →", type="primary", use_container_width=True):
+                st.session_state.current_screen = 2
+                st.rerun()
+        else:
+            st.button(f"Select at least 2 items to compare ({sel_count}/4 selected)", disabled=True, use_container_width=True)
+
+# ---------------------------------------------------------
+# SCREEN 2: CONTEXT SETUP (Personalization Inputs)
+# ---------------------------------------------------------
+elif st.session_state.current_screen == 2:
+    st.markdown("<h2 style='text-align:center;'>Set Your Event Context</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; color:#94A3B8; margin-bottom: 28px;'>Help us rank size availability, occasion fit, and delivery deadlines for your event.</p>", unsafe_allow_html=True)
+
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        with st.form("context_form"):
+            st.selectbox(
+                "1. What is your occasion?",
+                options=["Wedding Guest", "Festival", "Office Party", "Date Night", "Casual"],
+                index=0,
+                key="input_occasion"
+            )
+            
+            st.date_input(
+                "2. When is your event?",
+                value=st.session_state.user_context["event_date"],
+                min_value=date.today(),
+                key="input_date"
+            )
+
+            st.radio(
+                "3. What is your size?",
+                options=["XS", "S", "M", "L", "XL"],
+                index=2,
+                horizontal=True,
+                key="input_size"
+            )
+
+            st.markdown("<br>", unsafe_allow_html=True)
+            submit = st.form_submit_button("Show Comparison & Decision Panel →", type="primary", use_container_width=True)
+            
+            if submit:
+                st.session_state.user_context["occasion"] = st.session_state.input_occasion
+                st.session_state.user_context["event_date"] = st.session_state.input_date
+                st.session_state.user_context["size"] = st.session_state.input_size
+                st.session_state.current_screen = 3
+                st.rerun()
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("← Back to Selection", use_container_width=True):
+            st.session_state.current_screen = 1
+            st.rerun()
+
+# ---------------------------------------------------------
+# SCREEN 3: DECISION PANEL (LAYERS 2, 3, 4, 5, 6)
+# ---------------------------------------------------------
+elif st.session_state.current_screen == 3:
+    # Selected Products Subset
+    selected_products: List[Product] = [p for p in PRODUCTS if p["id"] in st.session_state.selected_ids]
+    
+    user_occ = st.session_state.user_context["occasion"]
+    user_size = st.session_state.user_context["size"]
+    event_date = st.session_state.user_context["event_date"]
+    days_to_event = (event_date - date.today()).days
+
+    # ---------------------------------------------------------
+    # SILENT SCORING ENGINE LOGIC (Phase 2)
+    # ---------------------------------------------------------
+    scored_products = calculate_winner_scoring(selected_products, user_occ, user_size, days_to_event)
+    winner_item: Product = scored_products[0]["product"]
+
+    # Header with Navigation Actions
+    h_col1, h_col2 = st.columns([3, 1])
+    with h_col1:
+        st.markdown(f"<h2>Comparison Panel for {user_occ}</h2>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color:#94A3B8;'>Filtering for Size <b>{user_size}</b> · Event in <b>{days_to_event} days</b></p>", unsafe_allow_html=True)
+    with h_col2:
+        if st.button("🔄 Edit Selection / Context"):
+            st.session_state.current_screen = 1
+            st.rerun()
+
+    # ---------------------------------------------------------
+    # LAYER 2, 3, 4 & 6: SIDE-BY-SIDE MATRIX COLUMNS
+    # ---------------------------------------------------------
+    num_items = len(selected_products)
+    comp_cols = st.columns(num_items)
+
+    for idx, item_data in enumerate(scored_products):
+        prod = item_data["product"]
+        is_winner = (prod["id"] == winner_item["id"])
+        
+        with comp_cols[idx]:
+            # Winner column styling highlight
+            col_class = "comp-column winner" if is_winner else "comp-column"
+            winner_html = '<div class="winner-badge">★ BEST MATCH</div>' if is_winner else ''
+
+            img = load_image(prod["image_path"])
+            
+            # Column Card Container
+            st.markdown(f"""
+            <div class="{col_class}">
+                {winner_html}
+                <div style="margin-top: 10px;"></div>
+            """, unsafe_allow_html=True)
+            
+            if img:
+                st.image(img, use_container_width=True)
+                
+            discount_pct = int(((prod["original_price"] - prod["price"]) / prod["original_price"]) * 100)
+            
+            # Header Details
+            st.markdown(f"""
+                <div class="card-brand">{prod['brand']}</div>
+                <div class="card-title">{prod['name']}</div>
+                
+                <div class="row-header">Price</div>
+                <div class="price-row">
+                    <span class="discount-price">₹{prod['price']:,}</span>
+                    <span class="original-price">₹{prod['original_price']:,}</span>
+                    <span class="discount-badge">{discount_pct}% OFF</span>
+                </div>
+
+                <div class="row-header">Rating</div>
+                <div class="row-value">★ {prod['rating']} ({prod['rating_count']:,} reviews)</div>
+
+                <div class="row-header">Size Availability ({user_size})</div>
+                <div class="row-value">{'✅ Available in ' + user_size if item_data['has_size'] else '❌ Not available in ' + user_size}</div>
+
+                <div class="row-header">Occasion Match</div>
+                <div class="row-value">{'✅ Great for ' + user_occ if item_data['occ_match'] else '⚠️ Not ideal for ' + user_occ}</div>
+
+                <div class="row-header">Delivery Deadline</div>
+                <div class="row-value">{prod['delivery_days']} days ({'🟢 Arrives before event' if item_data['arrives_on_time'] else '🔴 Arrives after event'})</div>
+
+                <!-- LAYER 3: FIT SUMMARY -->
+                <div class="row-header">Fit Note</div>
+                <div class="row-value" style="font-style: italic; color: #2B6CB0;">"{prod['fit_note']}"</div>
+
+                <!-- LAYER 4: REVIEW KEYWORD CHIPS -->
+                <div class="row-header">Review Keywords</div>
+                <div style="margin-bottom: 16px;">
+                    {''.join([f'<span class="chip">{kw}</span>' for kw in prod['keywords']])}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
+
+            # LAYER 6: DIRECT ADD TO CART CTA ON WINNER vs SAVE FOR LATER
+            if is_winner:
+                if st.session_state.cart_added_id == prod["id"]:
+                    st.button("✓ Added to Cart", key=f"cart_{prod['id']}", type="primary", disabled=True, use_container_width=True)
+                else:
+                    if st.button("🛒 Add to Cart", key=f"cart_{prod['id']}", type="primary", use_container_width=True):
+                        st.session_state.cart_added_id = prod["id"]
+                        st.toast("Added to cart! ✓ Complete your purchase on Myntra.", icon="🛒")
+                        st.rerun()
+            else:
+                st.button("Save for Later", key=f"save_{prod['id']}", use_container_width=True)
+
+    # ---------------------------------------------------------
+    # LAYER 5: ONE-LINE PASSIVE RECOMMENDATION BAR
+    # ---------------------------------------------------------
+    st.markdown(f"""
+    <div class="recommendation-bar">
+        <div class="rec-title">
+            Based on your occasion and size, <span class="rec-item-name">{winner_item['brand']} {winner_item['name']}</span> is your best match.
+        </div>
+        <div class="rec-subtitle">
+            It is available in size {user_size}, arrives before your event date, and is top-rated for {user_occ}.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
