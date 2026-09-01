@@ -2,6 +2,7 @@ import streamlit as st
 from datetime import date, timedelta
 from PIL import Image
 import os
+import base64
 from typing import TypedDict, List
 
 class Product(TypedDict):
@@ -268,13 +269,13 @@ st.markdown("""
     }
 
     .row-header {
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 700;
-        color: #94A3B8;
+        color: #64748B;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        margin-top: 14px;
-        margin-bottom: 4px;
+        margin-top: 12px;
+        margin-bottom: 3px;
     }
 
     .row-value {
@@ -288,7 +289,7 @@ st.markdown("""
         background: #F1F5F9;
         color: #334155;
         border-radius: 14px;
-        padding: 4px 10px;
+        padding: 3px 9px;
         font-size: 11px;
         font-weight: 600;
         margin: 2px;
@@ -432,11 +433,12 @@ if "user_context" not in st.session_state:
 if "cart_added_id" not in st.session_state:
     st.session_state.cart_added_id = None
 
-# Helper to load images safely
-def load_image(image_path):
+# Helper to convert image to Base64 for inline HTML embedding
+def get_image_base64(image_path: str) -> str:
     if os.path.exists(image_path):
-        return Image.open(image_path)
-    return None
+        with open(image_path, "rb") as f:
+            return f"data:image/jpeg;base64,{base64.b64encode(f.read()).decode('utf-8')}"
+    return ""
 
 # ---------------------------------------------------------
 # TOP APP HEADER
@@ -480,16 +482,15 @@ if st.session_state.current_screen == 1:
             is_selected = prod["id"] in st.session_state.selected_ids
             card_class = "wishlist-card selected" if is_selected else "wishlist-card"
             
-            # Render Image
-            img = load_image(prod["image_path"])
-            if img:
-                st.image(img, use_column_width=True)
+            img_b64 = get_image_base64(prod["image_path"])
+            img_html = f'<img src="{img_b64}" style="width:100%; border-radius:8px; margin-bottom:10px; object-fit:cover; height:200px;" />' if img_b64 else ''
             
             discount_pct = int(((prod["original_price"] - prod["price"]) / prod["original_price"]) * 100)
             
-            # Card HTML Surface
+            # Unified Card HTML Surface
             st.markdown(f"""
             <div class="{card_class}">
+                {img_html}
                 <div class="card-brand">{prod['brand']}</div>
                 <div class="card-title">{prod['name']}</div>
                 <div class="price-row">
@@ -505,11 +506,11 @@ if st.session_state.current_screen == 1:
             
             # Layer 1 Selection Button Logic
             if is_selected:
-                if st.button(f"✓ Selected", key=f"btn_{prod['id']}", type="primary"):
+                if st.button(f"✓ Selected", key=f"btn_{prod['id']}", type="primary", use_container_width=True):
                     st.session_state.selected_ids.remove(prod["id"])
                     st.rerun()
             else:
-                if st.button(f"+ Select", key=f"btn_{prod['id']}"):
+                if st.button(f"+ Select", key=f"btn_{prod['id']}", use_container_width=True):
                     if len(st.session_state.selected_ids) >= 4:
                         st.warning("⚠️ Maximum 4 items can be selected for comparison.")
                     else:
@@ -600,7 +601,7 @@ elif st.session_state.current_screen == 3:
         st.markdown(f"<h2>Comparison Panel for {user_occ}</h2>", unsafe_allow_html=True)
         st.markdown(f"<p style='color:#94A3B8;'>Filtering for Size <b>{user_size}</b> · Event in <b>{days_to_event} days</b></p>", unsafe_allow_html=True)
     with h_col2:
-        if st.button("🔄 Edit Selection / Context"):
+        if st.button("🔄 Edit Selection / Context", use_container_width=True):
             st.session_state.current_screen = 1
             st.rerun()
 
@@ -619,22 +620,17 @@ elif st.session_state.current_screen == 3:
             col_class = "comp-column winner" if is_winner else "comp-column"
             winner_html = '<div class="winner-badge">★ BEST MATCH</div>' if is_winner else ''
 
-            img = load_image(prod["image_path"])
+            img_b64 = get_image_base64(prod["image_path"])
+            img_html = f'<img src="{img_b64}" style="width:100%; border-radius:8px; margin-bottom:12px; object-fit:cover; height:180px;" />' if img_b64 else ''
             
-            # Column Card Container
+            discount_pct = int(((prod["original_price"] - prod["price"]) / prod["original_price"]) * 100)
+            
+            # Unified Column HTML Card
             st.markdown(f"""
             <div class="{col_class}">
                 {winner_html}
                 <div style="margin-top: 10px;"></div>
-            """, unsafe_allow_html=True)
-            
-            if img:
-                st.image(img, use_column_width=True)
-                
-            discount_pct = int(((prod["original_price"] - prod["price"]) / prod["original_price"]) * 100)
-            
-            # Header Details
-            st.markdown(f"""
+                {img_html}
                 <div class="card-brand">{prod['brand']}</div>
                 <div class="card-title">{prod['name']}</div>
                 
@@ -663,7 +659,7 @@ elif st.session_state.current_screen == 3:
 
                 <!-- LAYER 4: REVIEW KEYWORD CHIPS -->
                 <div class="row-header">Review Keywords</div>
-                <div style="margin-bottom: 16px;">
+                <div style="margin-bottom: 12px;">
                     {''.join([f'<span class="chip">{kw}</span>' for kw in prod['keywords']])}
                 </div>
             </div>
