@@ -6,6 +6,7 @@ import base64
 import textwrap
 from typing import TypedDict, List
 
+# Define Product and ScoredProduct Data Models
 class Product(TypedDict):
     id: int
     name: str
@@ -72,7 +73,6 @@ def calculate_winner_scoring(
         }
         scored_products.append(sp)
 
-    # Sort to determine winner (Highest score DESC, rating DESC, price ASC -> -price DESC)
     scored_products.sort(
         key=lambda x: (x["score"], x["product"]["rating"], -x["product"]["price"]),
         reverse=True
@@ -81,328 +81,309 @@ def calculate_winner_scoring(
 
 # Set page configuration
 st.set_page_config(
-    page_title="Myntra Wishlist Decision Panel",
+    page_title="Myntra Wishlist & Decision Panel",
     page_icon="🛍️",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Inject Custom CSS for Myntra Dark Navy Theme & High-End Aesthetics
+# Inject Custom CSS for Native Myntra App UI & Theme (Light #F5F5F6 + #FFFFFF Surface, Pink #FF3F6C Accent)
 st.markdown(textwrap.dedent("""
 <style>
-    /* Global Container Styling */
+    /* Global Container & Light Canvas Styling */
     .stApp {
-        background-color: #1A1F36;
-        color: #FFFFFF;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: #F5F5F6;
+        color: #282C3F;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
 
-    /* Header Bar */
-    .myntra-header {
+    /* Main Viewport Mobile Constraints container */
+    .myntra-viewport {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding-bottom: 70px;
+    }
+
+    /* Top App Header (Native Myntra Look) */
+    .myntra-nav-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 12px 24px;
-        background: #111528;
-        border-bottom: 2px solid #FF3F6C;
-        margin-bottom: 24px;
-        border-radius: 0 0 12px 12px;
-    }
-    
-    .myntra-logo {
-        font-size: 24px;
-        font-weight: 800;
-        letter-spacing: 1px;
-        color: #FF3F6C;
-    }
-    
-    .myntra-tagline {
-        font-size: 14px;
-        color: #94A3B8;
-        font-weight: 500;
+        padding: 12px 20px;
+        background: #FFFFFF;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+        position: sticky;
+        top: 0;
+        z-index: 999;
     }
 
-    /* Step Indicator Progress Bar */
-    .step-tracker {
-        display: flex;
-        justify-content: center;
-        gap: 32px;
-        margin-bottom: 28px;
-    }
-    
-    .step-item {
+    .myntra-brand-logo {
+        font-size: 20px;
+        font-weight: 900;
+        letter-spacing: 0.5px;
+        color: #282C3F;
         display: flex;
         align-items: center;
-        gap: 8px;
-        font-size: 14px;
-        font-weight: 600;
-        color: #64748B;
+        gap: 6px;
     }
     
-    .step-item.active {
+    .myntra-pink-tag {
         color: #FF3F6C;
+        font-style: italic;
     }
 
-    .step-number {
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        background: #252B48;
-        color: #FFFFFF;
+    .myntra-header-icons {
         display: flex;
         align-items: center;
-        justify-content: center;
-        font-size: 13px;
+        gap: 16px;
+        color: #282C3F;
+        font-size: 14px;
         font-weight: 700;
     }
 
-    .step-item.active .step-number {
+    .icon-badge {
         background: #FF3F6C;
+        color: #FFFFFF;
+        border-radius: 50%;
+        padding: 2px 6px;
+        font-size: 10px;
+        font-weight: 800;
     }
 
-    /* Product Card Surface (Screen 1) */
-    .wishlist-card {
+    /* Sticky Bottom Nav Bar */
+    .myntra-bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
         background: #FFFFFF;
-        border-radius: 12px;
-        padding: 14px;
-        color: #1A1F36;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-        transition: transform 0.2s ease, border 0.2s ease;
+        border-top: 1px solid #EAEAEC;
+        display: flex;
+        justify-content: space-around;
+        padding: 8px 0;
+        z-index: 1000;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: #535766;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .nav-item.active {
+        color: #FF3F6C;
+    }
+
+    /* Native Wishlist Card Surface (Light Mode) */
+    .wishlist-card-native {
+        background: #FFFFFF;
+        border-radius: 8px;
+        padding: 10px;
+        border: 1px solid #EAEAEC;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        transition: border 0.2s ease, box-shadow 0.2s ease;
+        position: relative;
         height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
     }
 
-    .wishlist-card.selected {
-        border: 3px solid #FF3F6C;
+    .wishlist-card-native.selected {
+        border: 2.5px solid #FF3F6C;
         background: #FFF5F7;
     }
 
-    .card-brand {
-        font-size: 16px;
+    .card-brand-native {
+        font-size: 14px;
         font-weight: 800;
-        color: #1A1F36;
-        margin-bottom: 2px;
+        color: #282C3F;
+        text-transform: uppercase;
+        margin-top: 6px;
+        margin-bottom: 1px;
     }
 
-    .card-title {
-        font-size: 13px;
-        color: #4A5568;
-        font-weight: 500;
+    .card-title-native {
+        font-size: 12px;
+        color: #535766;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        margin-bottom: 8px;
-    }
-
-    .price-row {
-        display: flex;
-        align-items: center;
-        gap: 8px;
         margin-bottom: 6px;
     }
 
-    .discount-price {
-        font-size: 16px;
+    .price-row-native {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 6px;
+    }
+
+    .price-discounted {
+        font-size: 14px;
         font-weight: 800;
-        color: #1A1F36;
+        color: #282C3F;
     }
 
-    .original-price {
-        font-size: 12px;
+    .price-original {
+        font-size: 11px;
         text-decoration: line-through;
-        color: #A0AEC0;
+        color: #94969F;
     }
 
-    .discount-badge {
+    .price-off-badge {
         font-size: 11px;
         font-weight: 700;
         color: #FF905A;
-        background: #FFF5F0;
-        padding: 2px 6px;
-        border-radius: 4px;
     }
 
-    .rating-badge {
+    .rating-pill-native {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
-        background: #EDF2F7;
-        padding: 2px 8px;
-        border-radius: 12px;
-        font-size: 12px;
+        gap: 3px;
+        background: #F5F5F6;
+        border-radius: 4px;
+        padding: 2px 6px;
+        font-size: 11px;
         font-weight: 700;
-        color: #2D3748;
-        margin-bottom: 10px;
+        color: #282C3F;
+        margin-bottom: 8px;
     }
 
-    /* Comparison Table Styling (Screen 3) */
-    .comp-column {
+    /* Side-by-Side Decision Panel Styling */
+    .comp-column-native {
         background: #FFFFFF;
-        color: #1A1F36;
-        border-radius: 14px;
-        padding: 16px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        border: 2px solid #E2E8F0;
+        color: #282C3F;
+        border-radius: 12px;
+        padding: 14px;
+        border: 1px solid #EAEAEC;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
         position: relative;
     }
 
-    .comp-column.winner {
-        border: 3.5px solid #FF3F6C;
-        box-shadow: 0 0 25px rgba(255, 63, 108, 0.35);
-        background: #FFFFFF;
+    .comp-column-native.winner {
+        border: 2.5px solid #FF3F6C;
+        box-shadow: 0 4px 20px rgba(255, 63, 108, 0.2);
     }
 
-    .winner-badge {
+    .winner-badge-native {
         position: absolute;
-        top: -14px;
+        top: -12px;
         left: 50%;
         transform: translateX(-50%);
-        background: linear-gradient(135deg, #FF3F6C, #FF905A);
+        background: #FF3F6C;
         color: #FFFFFF;
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 800;
-        letter-spacing: 0.8px;
-        padding: 4px 14px;
-        border-radius: 20px;
+        letter-spacing: 0.5px;
+        padding: 3px 12px;
+        border-radius: 14px;
         text-transform: uppercase;
-        box-shadow: 0 4px 10px rgba(255, 63, 108, 0.4);
+        box-shadow: 0 2px 6px rgba(255, 63, 108, 0.3);
     }
 
-    .row-header {
+    .row-header-native {
         font-size: 11px;
         font-weight: 700;
-        color: #64748B;
+        color: #7E818C;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        margin-top: 12px;
-        margin-bottom: 3px;
+        margin-top: 10px;
+        margin-bottom: 2px;
     }
 
-    .row-value {
-        font-size: 13px;
+    .row-val-native {
+        font-size: 12px;
         font-weight: 600;
-        color: #1A1F36;
+        color: #282C3F;
     }
 
-    .chip {
+    .chip-native {
         display: inline-block;
-        background: #F1F5F9;
-        color: #334155;
-        border-radius: 14px;
-        padding: 3px 9px;
-        font-size: 11px;
+        background: #F5F5F6;
+        color: #3E4152;
+        border-radius: 12px;
+        padding: 3px 8px;
+        font-size: 10px;
         font-weight: 600;
         margin: 2px;
+        border: 1px solid #EAEAEC;
     }
 
-    /* Layer 4 Passive Recommendation Bar */
-    .recommendation-bar {
-        background: #111528;
-        border: 2px solid #FF3F6C;
-        border-radius: 12px;
-        padding: 20px 24px;
-        margin-top: 32px;
-        margin-bottom: 24px;
+    /* Layer 4 Passive AI Recommendation Banner (Myntra Light Theme) */
+    .rec-banner-native {
+        background: #FFFFFF;
+        border: 1.5px solid #FF3F6C;
+        border-radius: 10px;
+        padding: 16px 20px;
+        margin-top: 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 14px rgba(255, 63, 108, 0.1);
         text-align: center;
-        box-shadow: 0 10px 30px rgba(255, 63, 108, 0.2);
     }
 
-    .rec-title {
-        font-size: 18px;
+    .rec-title-native {
+        font-size: 15px;
         font-weight: 800;
-        color: #FFFFFF;
-        margin-bottom: 6px;
+        color: #282C3F;
+        margin-bottom: 4px;
     }
 
-    .rec-item-name {
+    .rec-pink-highlight {
         color: #FF3F6C;
     }
 
-    .rec-subtitle {
-        font-size: 14px;
-        color: #CBD5E1;
-        font-weight: 400;
+    .rec-sub-native {
+        font-size: 12px;
+        color: #535766;
     }
 
-    /* Profile Badge Banner */
-    .profile-badge {
-        background: #252B48;
+    /* Profile Badge pill */
+    .profile-pill-native {
+        background: #FFF5F7;
         border: 1px solid #FF3F6C;
-        border-radius: 8px;
-        padding: 8px 16px;
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #FF3F6C;
         display: inline-flex;
         align-items: center;
-        gap: 10px;
-        font-size: 13px;
-        font-weight: 600;
-        color: #FFFFFF;
+        gap: 6px;
     }
 
-    /* Custom Buttons */
+    /* Native Buttons */
     .stButton > button {
-        border-radius: 8px;
-        font-weight: 700;
+        border-radius: 6px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
         transition: all 0.2s ease;
     }
 
-    /* Mobile Responsiveness Rules (Phones & Tablets) */
+    /* Mobile Responsiveness Rules */
     @media (max-width: 768px) {
-        .myntra-header {
+        .myntra-nav-header {
             padding: 10px 14px;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 4px;
         }
-        .myntra-logo {
-            font-size: 18px;
+        .comp-column-native {
+            padding: 10px;
         }
-        .myntra-tagline {
-            font-size: 12px;
-        }
-        .step-tracker {
-            gap: 8px;
-            font-size: 11px;
-            flex-wrap: wrap;
-        }
-        .step-number {
-            width: 22px;
-            height: 22px;
-            font-size: 11px;
-        }
-        .recommendation-bar {
-            padding: 14px 16px;
-            margin-top: 20px;
-            margin-bottom: 16px;
-        }
-        .rec-title {
-            font-size: 15px;
-        }
-        .rec-subtitle {
-            font-size: 12px;
-        }
-        .profile-badge {
-            font-size: 11px;
-            padding: 6px 12px;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 4px;
-        }
-        .comp-column {
-            padding: 12px;
-            margin-bottom: 16px;
-        }
-        /* Mobile Horizontal Scroll for Comparison Columns */
         div[data-testid="column"] {
-            min-width: 260px !important;
+            min-width: 250px !important;
         }
     }
 </style>
 """).strip(), unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# MOCK PRODUCT DATASET (Exact 5 items with Body Profile Fit Data)
+# MOCK PRODUCT DATASET (Exact 5 items matching Myntra catalog)
 # ---------------------------------------------------------
 PRODUCTS: List[Product] = [
     {
@@ -491,24 +472,23 @@ PRODUCTS: List[Product] = [
 # SESSION STATE INITIALIZATION
 # ---------------------------------------------------------
 if "current_screen" not in st.session_state:
-    st.session_state.current_screen = 1
+    st.session_state.current_screen = 1  # Default to Home (Screen 1)
 
 if "selected_ids" not in st.session_state:
-    st.session_state.selected_ids = []
+    st.session_state.selected_ids = [1, 3]  # Pre-select 2 items for seamless test
 
-# LAYER 6: Permanent One-Time Body Profile Setup
 if "body_profile" not in st.session_state:
     st.session_state.body_profile = {
         "height": "5'3\" - 5'5\"",
         "size": "S",
         "occasion": "Wedding Guest",
-        "event_date": date.today() + timedelta(days=6)
+        "event_date": date.today() + timedelta(days=5)
     }
 
-if "cart_added_id" not in st.session_state:
-    st.session_state.cart_added_id = None
+if "cart_items" not in st.session_state:
+    st.session_state.cart_items = []
 
-# Helper to convert image to Base64 for inline HTML embedding
+# Helper to convert image to Base64
 def get_image_base64(image_path: str) -> str:
     if os.path.exists(image_path):
         with open(image_path, "rb") as f:
@@ -516,113 +496,155 @@ def get_image_base64(image_path: str) -> str:
     return ""
 
 # ---------------------------------------------------------
-# TOP APP HEADER
+# TOP NATIVE MYNTRA APP HEADER
 # ---------------------------------------------------------
-st.markdown(textwrap.dedent("""
-<div class="myntra-header">
-    <div class="myntra-logo">MYNTRA <span style="font-size:14px; font-weight:600; color:#FF905A;">WISHLIST DECISION PANEL</span></div>
-    <div class="myntra-tagline">Solution 2 — 6-Layer Decision Engine</div>
-</div>
-""").strip(), unsafe_allow_html=True)
-
-# Step Progress Bar
-s1_active = "active" if st.session_state.current_screen == 1 else ""
-s2_active = "active" if st.session_state.current_screen == 2 else ""
-s3_active = "active" if st.session_state.current_screen == 3 else ""
+cart_count = len(st.session_state.cart_items)
+wishlist_count = len(PRODUCTS)
 
 st.markdown(textwrap.dedent(f"""
-<div class="step-tracker">
-    <div class="step-item {s1_active}">
-        <div class="step-number">1</div> Select Items (Layer 1)
+<div class="myntra-nav-header">
+    <div class="myntra-brand-logo">
+        <span style="color:#FF3F6C; font-weight:900;">myntra</span>
+        <span style="font-size:12px; font-weight:600; color:#535766;">| WISHLIST DECISION PANEL</span>
     </div>
-    <div class="step-item {s2_active}">
-        <div class="step-number">2</div> Body Profile Setup (Layer 6)
-    </div>
-    <div class="step-item {s3_active}">
-        <div class="step-number">3</div> Decision Panel (Layers 1-5)
+    <div class="myntra-header-icons">
+        <span>🔍</span>
+        <span>❤️ <span class="icon-badge">{wishlist_count}</span></span>
+        <span>🛍️ <span class="icon-badge">{cart_count}</span></span>
     </div>
 </div>
 """).strip(), unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# SCREEN 1: WISHLIST SELECTION (LAYER 1)
+# SCREEN NAVIGATION CONTROLLER (5 Native Screens)
 # ---------------------------------------------------------
+# Navigation Bar Tabs
+nav_col1, nav_col2, nav_col3, nav_col4, nav_col5 = st.columns(5)
+with nav_col1:
+    if st.button("🏠 Home", use_container_width=True, type="primary" if st.session_state.current_screen == 1 else "secondary"):
+        st.session_state.current_screen = 1
+        st.rerun()
+with nav_col2:
+    if st.button("❤️ Wishlist", use_container_width=True, type="primary" if st.session_state.current_screen == 2 else "secondary"):
+        st.session_state.current_screen = 2
+        st.rerun()
+with nav_col3:
+    if st.button("👤 Profile", use_container_width=True, type="primary" if st.session_state.current_screen == 3 else "secondary"):
+        st.session_state.current_screen = 3
+        st.rerun()
+with nav_col4:
+    if st.button("⚖️ Decision Panel", use_container_width=True, type="primary" if st.session_state.current_screen == 4 else "secondary"):
+        st.session_state.current_screen = 4
+        st.rerun()
+with nav_col5:
+    if st.button(f"🛍️ Bag ({cart_count})", use_container_width=True, type="primary" if st.session_state.current_screen == 5 else "secondary"):
+        st.session_state.current_screen = 5
+        st.rerun()
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+# =========================================================
+# SCREEN 1: MYNTRA APP HOME PAGE
+# =========================================================
 if st.session_state.current_screen == 1:
-    st.markdown("<h2 style='text-align:center; margin-bottom: 4px;'>Wishlist Comparison (Layer 1)</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center; color:#94A3B8; margin-bottom: 24px;'>Select <b>2 to 4 wishlisted items</b> to compare side-by-side on one screen without screenshot workarounds.</p>", unsafe_allow_html=True)
+    st.markdown(textwrap.dedent("""
+    <div style="background:#FFFFFF; border-radius:10px; padding:20px; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,0.05);">
+        <h2 style="color:#282C3F; margin-bottom:4px;">Festive & Occasion Store</h2>
+        <p style="color:#FF3F6C; font-weight:700; margin-bottom:16px;">UP TO 60% OFF ON FESTIVE KURTAS & ANARKALIS</p>
+        <p style="color:#535766; font-size:14px;">You have <b>5 items saved in your Wishlist</b> for your upcoming event.</p>
+    </div>
+    """).strip(), unsafe_allow_html=True)
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    c1, c2, c3 = st.columns([1, 2, 1])
+    with c2:
+        if st.button("❤️ GO TO MY WISHLIST (5 Items Saved) →", type="primary", use_container_width=True):
+            st.session_state.current_screen = 2
+            st.rerun()
+
+# =========================================================
+# SCREEN 2: NATIVE MYNTRA WISHLIST PAGE
+# =========================================================
+elif st.session_state.current_screen == 2:
+    st.markdown(textwrap.dedent(f"""
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 style="margin:0; color:#282C3F;">MY WISHLIST <span style="font-size:14px; color:#94969F;">({len(PRODUCTS)} Items)</span></h3>
+        <span style="font-size:12px; color:#FF3F6C; font-weight:700;">Select 2-4 items to Compare</span>
+    </div>
+    """).strip(), unsafe_allow_html=True)
 
     cols = st.columns(5)
     for idx, prod in enumerate(PRODUCTS):
         with cols[idx]:
             is_selected = prod["id"] in st.session_state.selected_ids
-            card_class = "wishlist-card selected" if is_selected else "wishlist-card"
+            card_class = "wishlist-card-native selected" if is_selected else "wishlist-card-native"
             
             img_b64 = get_image_base64(prod["image_path"])
-            img_html = f'<img src="{img_b64}" style="width:100%; border-radius:8px; margin-bottom:10px; object-fit:cover; height:200px;" />' if img_b64 else ''
-            
+            img_html = f'<img src="{img_b64}" style="width:100%; border-radius:6px; margin-bottom:8px; object-fit:cover; height:200px;" />' if img_b64 else ''
             discount_pct = int(((prod["original_price"] - prod["price"]) / prod["original_price"]) * 100)
             
-            # Unified Card HTML Surface
+            # Native Wishlist Card HTML
             st.markdown(textwrap.dedent(f"""
             <div class="{card_class}">
                 {img_html}
-                <div class="card-brand">{prod['brand']}</div>
-                <div class="card-title">{prod['name']}</div>
-                <div class="price-row">
-                    <span class="discount-price">₹{prod['price']:,}</span>
-                    <span class="original-price">₹{prod['original_price']:,}</span>
-                    <span class="discount-badge">{discount_pct}% OFF</span>
+                <div class="card-brand-native">{prod['brand']}</div>
+                <div class="card-title-native">{prod['name']}</div>
+                <div class="price-row-native">
+                    <span class="price-discounted">₹{prod['price']:,}</span>
+                    <span class="price-original">₹{prod['original_price']:,}</span>
+                    <span class="price-off-badge">({discount_pct}% OFF)</span>
                 </div>
-                <div class="rating-badge">★ {prod['rating']} ({prod['rating_count']})</div>
+                <div class="rating-pill-native">★ {prod['rating']} | {prod['rating_count']}</div>
             </div>
             """).strip(), unsafe_allow_html=True)
             
-            st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
+            st.markdown("<div style='height:6px;'></div>", unsafe_allow_html=True)
             
-            # Layer 1 Selection Checkbox / Toggle Logic
             if is_selected:
-                if st.button(f"✓ Selected", key=f"btn_{prod['id']}", type="primary", use_container_width=True):
+                if st.button("✓ SELECTED", key=f"w_btn_{prod['id']}", type="primary", use_container_width=True):
                     st.session_state.selected_ids.remove(prod["id"])
                     st.rerun()
             else:
-                if st.button(f"+ Select to Compare", key=f"btn_{prod['id']}", use_container_width=True):
+                if st.button("+ COMPARE", key=f"w_btn_{prod['id']}", use_container_width=True):
                     if len(st.session_state.selected_ids) >= 4:
                         st.warning("⚠️ Maximum 4 items can be selected for comparison.")
                     else:
                         st.session_state.selected_ids.append(prod["id"])
                         st.rerun()
 
-    st.markdown("<br><hr style='border-color:#252B48;'><br>", unsafe_allow_html=True)
+    st.markdown("<br><hr style='border-color:#EAEAEC;'><br>", unsafe_allow_html=True)
 
-    # Bottom Action Button
+    # Sticky Myntra Pink Compare CTA
     sel_count = len(st.session_state.selected_ids)
     c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
         if 2 <= sel_count <= 4:
-            if st.button(f"Compare Selected ({sel_count} Items) →", type="primary", use_container_width=True):
-                st.session_state.current_screen = 2
+            if st.button(f"COMPARE SELECTED ({sel_count} ITEMS) →", type="primary", use_container_width=True):
+                st.session_state.current_screen = 3
                 st.rerun()
         else:
-            st.button(f"Select at least 2 items to compare ({sel_count}/4 selected)", disabled=True, use_container_width=True)
+            st.button(f"SELECT AT LEAST 2 ITEMS TO COMPARE ({sel_count}/4)", disabled=True, use_container_width=True)
 
-# ---------------------------------------------------------
-# SCREEN 2: LAYER 6 — ONE-TIME BODY PROFILE SETUP
-# ---------------------------------------------------------
-elif st.session_state.current_screen == 2:
-    st.markdown("<h2 style='text-align:center;'>Layer 6: One-Time Body Profile Setup</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center; color:#94A3B8; margin-bottom: 24px;'>A 30-second setup saved permanently to unlock body-type filtered fit intelligence & keywords across your entire wishlist.</p>", unsafe_allow_html=True)
+# =========================================================
+# SCREEN 3: LAYER 6 — BODY PROFILE SETUP
+# =========================================================
+elif st.session_state.current_screen == 3:
+    st.markdown(textwrap.dedent("""
+    <div style="background:#FFFFFF; border-radius:10px; padding:24px; max-width:600px; margin:0 auto; box-shadow:0 4px 14px rgba(0,0,0,0.06);">
+        <h3 style="color:#282C3F; margin-bottom:4px; text-align:center;">Layer 6: One-Time Body Profile Setup</h3>
+        <p style="color:#535766; font-size:13px; text-align:center; margin-bottom:20px;">Save your profile once to unlock body-type filtered fit intelligence & keywords across your entire wishlist.</p>
+    </div>
+    """).strip(), unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        st.markdown("### 👤 Body Profile Information")
-        
+        st.markdown("### 👤 Body Fit Profile")
         user_height = st.selectbox(
             "1. Select Your Height Range:",
             options=["5'0\" - 5'2\"", "5'3\" - 5'5\"", "5'6\" - 5'8\"", "5'9\"+"],
             index=1,
             key="input_height"
         )
-
         user_size = st.radio(
             "2. Select Your Usual Size:",
             options=["XS", "S", "M", "L", "XL"],
@@ -631,68 +653,45 @@ elif st.session_state.current_screen == 2:
             key="input_size"
         )
 
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("### 📅 Event Details")
-        
+        st.markdown("<br>### 📅 Occasion Details", unsafe_allow_html=True)
         user_occ = st.selectbox(
             "3. What is your occasion?",
             options=["Wedding Guest", "Festival", "Office Party", "Date Night", "Casual"],
             index=0,
             key="input_occasion"
         )
-        
-        date_option = st.selectbox(
+        date_preset = st.selectbox(
             "4. When is your event?",
-            options=[
-                "In 5 days (Recommended)",
-                "In 3 days",
-                "In 1 week",
-                "In 2 weeks",
-                "Select Specific Date on Calendar"
-            ],
+            options=["In 5 days (Recommended)", "In 3 days", "In 1 week", "In 2 weeks"],
             index=0,
-            key="input_date_option"
+            key="input_date_preset"
         )
 
-        if date_option == "In 3 days":
+        if date_preset == "In 3 days":
             selected_event_date = date.today() + timedelta(days=3)
-        elif date_option == "In 5 days (Recommended)":
+        elif date_preset == "In 5 days (Recommended)":
             selected_event_date = date.today() + timedelta(days=5)
-        elif date_option == "In 1 week":
+        elif date_preset == "In 1 week":
             selected_event_date = date.today() + timedelta(days=7)
-        elif date_option == "In 2 weeks":
-            selected_event_date = date.today() + timedelta(days=14)
         else:
-            selected_event_date = st.date_input(
-                "Pick Calendar Date:",
-                value=st.session_state.body_profile["event_date"],
-                min_value=date.today(),
-                key="input_custom_date"
-            )
+            selected_event_date = date.today() + timedelta(days=14)
 
         st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("Save Profile & Unlock Decision Panel →", type="primary", use_container_width=True):
+        if st.button("SAVE PROFILE & OPEN DECISION PANEL →", type="primary", use_container_width=True):
             st.session_state.body_profile = {
                 "height": user_height,
                 "size": user_size,
                 "occasion": user_occ,
                 "event_date": selected_event_date
             }
-            st.session_state.current_screen = 3
+            st.session_state.current_screen = 4
             st.rerun()
 
-        st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("← Back to Selection", use_container_width=True):
-            st.session_state.current_screen = 1
-            st.rerun()
-
-# ---------------------------------------------------------
-# SCREEN 3: DECISION PANEL (LAYERS 1, 2, 3, 4, 5)
-# ---------------------------------------------------------
-elif st.session_state.current_screen == 3:
-    # Selected Products Subset
+# =========================================================
+# SCREEN 4: NATIVE MYNTRA DECISION PANEL (LAYERS 1-5)
+# =========================================================
+elif st.session_state.current_screen == 4:
     selected_products: List[Product] = [p for p in PRODUCTS if p["id"] in st.session_state.selected_ids]
-    
     profile = st.session_state.body_profile
     user_height = profile["height"]
     user_size = profile["size"]
@@ -700,33 +699,27 @@ elif st.session_state.current_screen == 3:
     event_date = profile["event_date"]
     days_to_event = (event_date - date.today()).days
 
-    # ---------------------------------------------------------
-    # SILENT CONFIDENCE ENGINE SCORING
-    # ---------------------------------------------------------
     scored_products = calculate_winner_scoring(selected_products, user_occ, user_size, days_to_event)
     winner_item: Product = scored_products[0]["product"]
 
-    # Header with Body Profile Badge & Navigation Actions
     h_col1, h_col2 = st.columns([3, 1])
     with h_col1:
-        st.markdown(f"<h2>Wishlist Decision Panel</h2>", unsafe_allow_html=True)
+        st.markdown(f"<h3 style='margin:0; color:#282C3F;'>WISHLIST DECISION PANEL</h3>", unsafe_allow_html=True)
         st.markdown(f"""
-        <div class="profile-badge">
-            <span>👤 Body Profile Filter: <b>{user_size} · {user_height}</b></span>
-            <span style="color:#FF905A;">|</span>
+        <div class="profile-pill-native" style="margin-top:6px;">
+            <span>👤 Body Filter: <b>{user_size} · {user_height}</b></span>
+            <span>|</span>
             <span>Occasion: <b>{user_occ}</b></span>
         </div>
         """, unsafe_allow_html=True)
     with h_col2:
-        if st.button("⚙️ Edit Profile / Items", use_container_width=True):
-            st.session_state.current_screen = 1
+        if st.button("⚙️ EDIT PROFILE", use_container_width=True):
+            st.session_state.current_screen = 3
             st.rerun()
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # ---------------------------------------------------------
-    # LAYER 1, 2, 3 & 5: SIDE-BY-SIDE COMPARISON MATRIX COLUMNS
-    # ---------------------------------------------------------
+    # Side-by-Side Columns Matrix
     num_items = len(selected_products)
     comp_cols = st.columns(num_items)
 
@@ -735,88 +728,162 @@ elif st.session_state.current_screen == 3:
         is_winner = (prod["id"] == winner_item["id"])
         
         with comp_cols[idx]:
-            # Winner column styling highlight
-            col_class = "comp-column winner" if is_winner else "comp-column"
-            winner_html = '<div class="winner-badge">★ HIGHEST CONFIDENCE SCORE</div>' if is_winner else ''
+            col_class = "comp-column-native winner" if is_winner else "comp-column-native"
+            winner_html = '<div class="winner-badge-native">★ HIGHEST CONFIDENCE MATCH</div>' if is_winner else ''
 
             img_b64 = get_image_base64(prod["image_path"])
-            img_html = f'<img src="{img_b64}" style="width:100%; border-radius:8px; margin-bottom:12px; object-fit:cover; height:180px;" />' if img_b64 else ''
-            
+            img_html = f'<img src="{img_b64}" style="width:100%; border-radius:6px; margin-bottom:10px; object-fit:cover; height:180px;" />' if img_b64 else ''
             discount_pct = int(((prod["original_price"] - prod["price"]) / prod["original_price"]) * 100)
             
-            size_str = f"🟢 Available in {user_size}" if item_data['has_size'] else f"🔴 Not available in {user_size}"
+            size_str = f"<span style='color:#03A685; font-weight:700;'>🟢 Available in {user_size}</span>" if item_data['has_size'] else f"<span style='color:#FF3F6C; font-weight:700;'>🔴 Out of Stock in {user_size}</span>"
             del_str = f"Delivers in {prod['delivery_days']} days ({'🟢 Arrives before event' if item_data['arrives_on_time'] else '🔴 Arrives after event'})"
             
-            # Layer 2: Fit Intelligence from Body-Type Filtered Reviews
             fit_summary = f"\"People your size ({user_size} · {user_height}) say: {prod['fit_summary_template']} · {prod['fit_review_count']} matching reviews.\""
-            
-            # Layer 3: Review Intelligence Keywords (3 extracted keywords)
-            chips_html = "".join([f'<span class="chip">{kw}</span>' for kw in prod['keywords']])
+            chips_html = "".join([f'<span class="chip-native">{kw}</span>' for kw in prod['keywords']])
 
-            # Unified Column HTML Card (dedented to column 0 to prevent markdown code block parsing)
             column_card_html = textwrap.dedent(f"""
             <div class="{col_class}">
             {winner_html}
-            <div style="margin-top: 10px;"></div>
+            <div style="margin-top: 8px;"></div>
             {img_html}
-            <div class="card-brand">{prod['brand']}</div>
-            <div class="card-title">{prod['name']}</div>
+            <div class="card-brand-native">{prod['brand']}</div>
+            <div class="card-title-native">{prod['name']}</div>
             
-            <!-- LAYER 1: COMPARISON ATTRIBUTES -->
-            <div class="row-header">Price</div>
-            <div class="price-row">
-            <span class="discount-price">₹{prod['price']:,}</span>
-            <span class="original-price">₹{prod['original_price']:,}</span>
-            <span class="discount-badge">{discount_pct}% OFF</span>
+            <div class="row-header-native">Price</div>
+            <div class="price-row-native">
+            <span class="price-discounted">₹{prod['price']:,}</span>
+            <span class="price-original">₹{prod['original_price']:,}</span>
+            <span class="price-off-badge">({discount_pct}% OFF)</span>
             </div>
             
-            <div class="row-header">Average Rating</div>
-            <div class="row-value">★ {prod['rating']} ({prod['rating_count']:,} reviews)</div>
+            <div class="row-header-native">Average Rating</div>
+            <div class="row-val-native">★ {prod['rating']} ({prod['rating_count']:,} reviews)</div>
             
-            <div class="row-header">Size Availability</div>
-            <div class="row-value">{size_str}</div>
+            <div class="row-header-native">Size Availability ({user_size})</div>
+            <div class="row-val-native">{size_str}</div>
             
-            <div class="row-header">Estimated Delivery</div>
-            <div class="row-value">{del_str}</div>
+            <div class="row-header-native">Estimated Delivery</div>
+            <div class="row-val-native">{del_str}</div>
             
-            <!-- LAYER 2: FIT INTELLIGENCE (FILTERED REVIEWS) -->
-            <div class="row-header">Layer 2: Fit Intelligence (Body Filtered)</div>
-            <div class="row-value" style="font-style: italic; color: #2B6CB0; font-size:12px;">{fit_summary}</div>
+            <div class="row-header-native">Layer 2: Fit Summary ({user_size} · {user_height})</div>
+            <div class="row-val-native" style="font-style: italic; color:#2B6CB0; font-size:11px;">{fit_summary}</div>
             
-            <!-- LAYER 3: REVIEW INTELLIGENCE KEYWORDS -->
-            <div class="row-header">Layer 3: Review Keywords ({user_size} · {user_height})</div>
-            <div style="margin-bottom: 12px;">{chips_html}</div>
+            <div class="row-header-native">Layer 3: Review Keywords</div>
+            <div style="margin-bottom: 8px;">{chips_html}</div>
             </div>
             """).strip()
 
             st.markdown(column_card_html, unsafe_allow_html=True)
+            st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
-            st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
-
-            # LAYER 5: DIRECT ADD TO CART FROM COMPARISON SCREEN
+            # Layer 5: Direct Add to Cart CTA
             if is_winner:
-                if st.session_state.cart_added_id == prod["id"]:
-                    st.button("✓ Added to Cart", key=f"cart_{prod['id']}", type="primary", disabled=True, use_container_width=True)
+                if prod["id"] in [p["id"] for p in st.session_state.cart_items]:
+                    st.button("✓ IN YOUR BAG", key=f"c_btn_{prod['id']}", type="primary", disabled=True, use_container_width=True)
                 else:
-                    if st.button("🛒 Add to Cart", key=f"cart_{prod['id']}", type="primary", use_container_width=True):
-                        st.session_state.cart_added_id = prod["id"]
-                        st.toast("Added to cart! ✓ Complete your purchase on Myntra.", icon="🛒")
+                    if st.button("ADD TO BAG", key=f"c_btn_{prod['id']}", type="primary", use_container_width=True):
+                        st.session_state.cart_items.append(prod)
+                        st.toast("Added to Bag! ✓ Complete your purchase on Myntra.", icon="🛍️")
                         st.rerun()
             else:
-                st.button("Save for Later", key=f"save_{prod['id']}", use_container_width=True)
+                st.button("SAVE TO WISHLIST", key=f"s_btn_{prod['id']}", use_container_width=True)
 
-    # ---------------------------------------------------------
-    # LAYER 4: ONE-LINE AI RECOMMENDATION (PASSIVE)
-    # ---------------------------------------------------------
+    # Layer 4: One-Line AI Recommendation Banner
     rec_bar_html = textwrap.dedent(f"""
-    <div class="recommendation-bar">
-        <div class="rec-title">
-            Based on ratings and fit reviews from people your size (<span style="color:#FF905A;">{user_size} · {user_height}</span>), <span class="rec-item-name">{winner_item['brand']} {winner_item['name']}</span> has the highest confidence score.
+    <div class="rec-banner-native">
+        <div class="rec-title-native">
+            Based on ratings and fit reviews from people your size (<span class="rec-pink-highlight">{user_size} · {user_height}</span>), <span class="rec-pink-highlight">{winner_item['brand']} {winner_item['name']}</span> has the highest confidence score.
         </div>
-        <div class="rec-subtitle">
-            No typing or chatbot needed — 4.5★ average rating, 48 body-matched fit reviews, and guaranteed size availability.
+        <div class="rec-sub-native">
+            4.5★ rating, 48 body-matched fit reviews, guaranteed size availability, and delivery before your event date.
         </div>
     </div>
     """).strip()
     
     st.markdown(rec_bar_html, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    if st.button("VIEW BAG & CHECKOUT →", type="primary", use_container_width=True):
+        st.session_state.current_screen = 5
+        st.rerun()
+
+# =========================================================
+# SCREEN 5: NATIVE MYNTRA CART / BAG PAGE
+# =========================================================
+elif st.session_state.current_screen == 5:
+    st.markdown("<h3 style='color:#282C3F;'>SHOPPING BAG</h3>", unsafe_allow_html=True)
+
+    if not st.session_state.cart_items:
+        st.info("Your bag is currently empty. Add items from the Decision Panel!")
+        if st.button("← RETURN TO DECISION PANEL", use_container_width=True):
+            st.session_state.current_screen = 4
+            st.rerun()
+    else:
+        col1, col2 = st.columns([2, 1])
+        with col1:
+            for item in st.session_state.cart_items:
+                img_b64 = get_image_base64(item["image_path"])
+                img_html = f'<img src="{img_b64}" style="width:70px; height:90px; border-radius:4px; object-fit:cover;" />' if img_b64 else ''
+                discount_pct = int(((item["original_price"] - item["price"]) / item["original_price"]) * 100)
+
+                st.markdown(textwrap.dedent(f"""
+                <div style="background:#FFFFFF; border-radius:8px; padding:12px; margin-bottom:12px; display:flex; gap:14px; border:1px solid #EAEAEC;">
+                    {img_html}
+                    <div>
+                        <div style="font-weight:800; font-size:14px; color:#282C3F;">{item['brand']}</div>
+                        <div style="font-size:12px; color:#535766; margin-bottom:6px;">{item['name']}</div>
+                        <div style="font-size:12px; color:#535766;">Size: <b>{st.session_state.body_profile['size']}</b> | Qty: <b>1</b></div>
+                        <div style="margin-top:6px;">
+                            <span style="font-weight:800; font-size:14px; color:#282C3F;">₹{item['price']:,}</span>
+                            <span style="font-size:11px; text-decoration:line-through; color:#94969F; margin-left:6px;">₹{item['original_price']:,}</span>
+                            <span style="font-size:11px; font-weight:700; color:#FF905A; margin-left:6px;">({discount_pct}% OFF)</span>
+                        </div>
+                    </div>
+                </div>
+                """).strip(), unsafe_allow_html=True)
+
+        with col2:
+            subtotal = sum(i["price"] for i in st.session_state.cart_items)
+            mrp_total = sum(i["original_price"] for i in st.session_state.cart_items)
+            discount_total = mrp_total - subtotal
+
+            st.markdown(textwrap.dedent(f"""
+            <div style="background:#FFFFFF; border-radius:8px; padding:16px; border:1px solid #EAEAEC;">
+                <div style="font-weight:800; font-size:13px; color:#7E818C; text-transform:uppercase; margin-bottom:12px;">PRICE DETAILS ({len(st.session_state.cart_items)} Items)</div>
+                <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px; color:#282C3F;">
+                    <span>Total MRP</span>
+                    <span>₹{mrp_total:,}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px; color:#03A685;">
+                    <span>Discount on MRP</span>
+                    <span>-₹{discount_total:,}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px; color:#282C3F;">
+                    <span>Convenience Fee</span>
+                    <span style="color:#03A685; font-weight:700;">FREE</span>
+                </div>
+                <hr style="border-color:#EAEAEC; margin:12px 0;">
+                <div style="display:flex; justify-content:space-between; font-size:15px; font-weight:800; color:#282C3F; margin-bottom:16px;">
+                    <span>Total Amount</span>
+                    <span>₹{subtotal:,}</span>
+                </div>
+            </div>
+            """).strip(), unsafe_allow_html=True)
+
+            st.markdown("<div style='height:10px;'></div>", unsafe_allow_html=True)
+            if st.button("PLACE ORDER", type="primary", use_container_width=True):
+                st.balloons()
+                st.success("Order Placed Successfully! 🎉 Thank you for shopping on Myntra.")
+
+# ---------------------------------------------------------
+# STICKY BOTTOM NAV BAR (Real Myntra Look)
+# ---------------------------------------------------------
+st.markdown(textwrap.dedent("""
+<div class="myntra-bottom-nav">
+    <div class="nav-item">🏠<br>Home</div>
+    <div class="nav-item">📂<br>Categories</div>
+    <div class="nav-item">🎬<br>Studio</div>
+    <div class="nav-item active">❤️<br>Wishlist</div>
+    <div class="nav-item">👤<br>Profile</div>
+</div>
+""").strip(), unsafe_allow_html=True)
