@@ -91,7 +91,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Inject Custom CSS for Pure White Live Myntra Theme (#FFFFFF Page, #FF3F6C Pink Primary, #282C3F Text)
+# Inject Custom CSS for Exact Pixel-Accurate Live Myntra Desktop & Mobile UI/UX Design System
 st.markdown("""
 <style>
     /* Pure White Page Canvas */
@@ -101,45 +101,36 @@ st.markdown("""
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
-    /* Top Sticky Navigation Header (Real Myntra Navbar) */
-    .myntra-pure-header {
+    /* Desktop Sticky Header */
+    .myntra-desktop-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 12px 28px;
+        padding: 14px 40px;
         background: #FFFFFF;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.05);
         position: sticky;
         top: 0;
         z-index: 999;
         border-bottom: 1px solid #EAEAEC;
     }
 
-    .myntra-brand-group {
+    .header-brand-section {
         display: flex;
         align-items: center;
-        gap: 32px;
+        gap: 36px;
     }
 
-    .myntra-logo-title {
-        font-size: 22px;
-        font-weight: 900;
-        letter-spacing: 0.5px;
-        color: #282C3F;
+    .myntra-logo-wrap {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
     }
 
-    .logo-pink {
-        color: #FF3F6C;
-        font-weight: 900;
-    }
-
-    .myntra-cat-links {
+    .cat-nav-links {
         display: flex;
         align-items: center;
-        gap: 24px;
+        gap: 28px;
         font-size: 14px;
         font-weight: 700;
         color: #282C3F;
@@ -147,31 +138,35 @@ st.markdown("""
         text-transform: uppercase;
     }
 
-    .cat-link {
+    .cat-item {
         cursor: pointer;
         padding-bottom: 2px;
     }
 
-    .cat-badge-pink {
+    .cat-item:hover {
+        border-bottom: 2px solid #FF3F6C;
+    }
+
+    .cat-badge-new {
         font-size: 9px;
         color: #FF3F6C;
         font-weight: 800;
         vertical-align: super;
     }
 
-    /* Live Search Input Box */
-    .myntra-search-box {
+    /* Desktop Search Box */
+    .desktop-search-bar {
         display: flex;
         align-items: center;
         background: #F5F5F6;
         border-radius: 4px;
-        padding: 8px 14px;
-        width: 380px;
+        padding: 10px 16px;
+        width: 420px;
         gap: 10px;
         border: 1px solid #F5F5F6;
     }
 
-    .myntra-search-input {
+    .desktop-search-input {
         border: none;
         background: transparent;
         width: 100%;
@@ -180,13 +175,13 @@ st.markdown("""
         outline: none;
     }
 
-    .myntra-header-right {
+    .desktop-actions-right {
         display: flex;
         align-items: center;
-        gap: 24px;
+        gap: 28px;
     }
 
-    .nav-icon-box {
+    .action-nav-box {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -197,7 +192,7 @@ st.markdown("""
         position: relative;
     }
 
-    .counter-badge {
+    .badge-pink-count {
         position: absolute;
         top: -4px;
         right: -8px;
@@ -213,7 +208,113 @@ st.markdown("""
         justify-content: center;
     }
 
-    /* Product Card Surface (Pure White) */
+    /* Mobile Header & Pincode Bar */
+    .myntra-mobile-header {
+        display: none;
+        flex-direction: column;
+        background: #FFFFFF;
+        border-bottom: 1px solid #EAEAEC;
+        position: sticky;
+        top: 0;
+        z-index: 999;
+    }
+
+    .mobile-header-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+    }
+
+    .mobile-pincode-bar {
+        background: #F4F4F8;
+        padding: 6px 16px;
+        font-size: 12px;
+        color: #282C3F;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-weight: 600;
+    }
+
+    .mobile-search-row {
+        padding: 8px 16px;
+    }
+
+    /* Promo Banners */
+    .ticket-promo-banner {
+        background: linear-gradient(135deg, #FF5722, #FF905A);
+        color: #FFFFFF;
+        border-radius: 8px;
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(255, 87, 34, 0.2);
+    }
+
+    .hero-banner-brands {
+        background: linear-gradient(135deg, #1E88E5, #00ACC1);
+        color: #FFFFFF;
+        border-radius: 8px;
+        padding: 28px 32px;
+        margin-bottom: 20px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 14px rgba(30, 136, 229, 0.25);
+    }
+
+    .bank-strip-bar {
+        background: #FFF8F6;
+        border: 1px solid #FFD0C5;
+        border-radius: 6px;
+        padding: 10px 16px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #FF3F6C;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+    }
+
+    /* Category Pill Circle Stories */
+    .cat-circle-wrap {
+        display: flex;
+        gap: 16px;
+        overflow-x: auto;
+        padding-bottom: 12px;
+        margin-bottom: 24px;
+    }
+
+    .cat-circle-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 80px;
+        cursor: pointer;
+    }
+
+    .cat-circle-img {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #FF3F6C;
+        padding: 2px;
+        margin-bottom: 6px;
+    }
+
+    .cat-circle-title {
+        font-size: 11px;
+        font-weight: 800;
+        color: #282C3F;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    /* Product Cards */
     .product-card-white {
         background: #FFFFFF;
         border: 1px solid #EAEAEC;
@@ -237,7 +338,7 @@ st.markdown("""
         background: #FFF5F7;
     }
 
-    /* Image Overlay Rating Badge (Bottom Left) */
+    /* Image Overlay Rating Badge */
     .img-rating-badge {
         position: absolute;
         bottom: 8px;
@@ -429,13 +530,13 @@ st.markdown("""
         transition: all 0.2s ease;
     }
 
-    /* Mobile Responsiveness Rules */
+    /* Responsive Mobile Layout Rules */
     @media (max-width: 768px) {
-        .myntra-pure-header {
-            padding: 10px 14px;
-        }
-        .myntra-cat-links, .myntra-search-box {
+        .myntra-desktop-header {
             display: none;
+        }
+        .myntra-mobile-header {
+            display: flex;
         }
         div[data-testid="column"] {
             min-width: 250px !important;
@@ -721,7 +822,7 @@ def get_image_base64(image_path: str) -> str:
     return ""
 
 # ---------------------------------------------------------
-# REAL LIVE MYNTRA TOP NAVBAR WITH OFFICIAL MYNTRA LOGO
+# REAL LIVE MYNTRA TOP NAVBAR (DESKTOP & MOBILE ADAPTIVE)
 # ---------------------------------------------------------
 cart_count = len(st.session_state.cart_items)
 wishlist_count = len(st.session_state.wishlist_ids)
@@ -729,48 +830,78 @@ wishlist_count = len(st.session_state.wishlist_ids)
 logo_b64 = get_image_base64("assets/myntra_logo.jpg")
 logo_img_html = f'<img src="{logo_b64}" style="height:36px; object-fit:contain; border-radius:4px;" />' if logo_b64 else '<span class="logo-pink">myntra</span>'
 
-header_html = f"""
-<div class="myntra-pure-header">
-<div class="myntra-brand-group">
-<div class="myntra-logo-title" style="display:flex; align-items:center; gap:8px;">
+# Desktop Header HTML
+desktop_header_html = f"""
+<div class="myntra-desktop-header">
+<div class="header-brand-section">
+<div class="myntra-logo-wrap">
 {logo_img_html}
 <span style="font-size:12px; font-weight:700; color:#535766; margin-left:4px; border-left:1px solid #EAEAEC; padding-left:8px;">DECISION PANEL</span>
 </div>
-<div class="myntra-cat-links">
-<span class="cat-link">MEN</span>
-<span class="cat-link">WOMEN</span>
-<span class="cat-link">KIDS</span>
-<span class="cat-link">HOME</span>
-<span class="cat-link">BEAUTY</span>
-<span class="cat-link">STUDIO <span class="cat-badge-pink">NEW</span></span>
+<div class="cat-nav-links">
+<span class="cat-item">MEN</span>
+<span class="cat-item">WOMEN</span>
+<span class="cat-item">KIDS</span>
+<span class="cat-item">HOME</span>
+<span class="cat-item">BEAUTY</span>
+<span class="cat-item">GENZ</span>
+<span class="cat-item">STUDIO <span class="cat-badge-new">NEW</span></span>
 </div>
 </div>
-<div class="myntra-search-box">
+<div class="desktop-search-bar">
 <span style="color:#696E79;">🔍</span>
-<input type="text" class="myntra-search-input" placeholder="Search for products, brands and more" readonly />
+<input type="text" class="desktop-search-input" placeholder="Search for products, brands and more" readonly />
 </div>
-<div class="myntra-header-right">
-<div class="nav-icon-box">
+<div class="desktop-actions-right">
+<div class="action-nav-box">
 <span>👤</span>
 <span>Profile</span>
 </div>
-<div class="nav-icon-box">
+<div class="action-nav-box">
 <span>❤️</span>
 <span>Wishlist</span>
-<span class="counter-badge">{wishlist_count}</span>
+<span class="badge-pink-count">{wishlist_count}</span>
 </div>
-<div class="nav-icon-box">
+<div class="action-nav-box">
 <span>🛍️</span>
 <span>Bag</span>
-<span class="counter-badge">{cart_count}</span>
+<span class="badge-pink-count">{cart_count}</span>
 </div>
 </div>
 </div>
 """
 
-st.markdown(clean_html(header_html), unsafe_allow_html=True)
+# Mobile Header HTML
+mobile_header_html = f"""
+<div class="myntra-mobile-header">
+<div class="mobile-header-top">
+<div style="display:flex; align-items:center; gap:12px;">
+<span style="font-size:20px; font-weight:800; cursor:pointer;">≡</span>
+{logo_img_html}
+</div>
+<div style="display:flex; align-items:center; gap:16px;">
+<span style="font-size:16px; cursor:pointer;">➕</span>
+<span style="font-size:16px; cursor:pointer; position:relative;">❤️<span class="badge-pink-count" style="top:-6px; right:-8px;">{wishlist_count}</span></span>
+<span style="font-size:16px; cursor:pointer; position:relative;">🛍️<span class="badge-pink-count" style="top:-6px; right:-8px;">{cart_count}</span></span>
+</div>
+</div>
+<div class="mobile-pincode-bar">
+<span>📍 <b>Select Delivery Location</b> (110092)</span>
+<span>⌄</span>
+</div>
+<div class="mobile-search-row">
+<div class="desktop-search-bar" style="width:100%;">
+<span>🔍</span>
+<input type="text" class="desktop-search-input" placeholder="Search for products, brands and more" readonly />
+</div>
+</div>
+</div>
+"""
 
-# Navigation Bar Tabs
+st.markdown(clean_html(desktop_header_html), unsafe_allow_html=True)
+st.markdown(clean_html(mobile_header_html), unsafe_allow_html=True)
+
+# Navigation Bar Controllers
 nav_col1, nav_col2, nav_col3, nav_col4, nav_col5 = st.columns(5)
 with nav_col1:
     if st.button("🛍️ Catalog Feed", use_container_width=True, type="primary" if st.session_state.current_screen == 1 else "secondary"):
@@ -796,19 +927,86 @@ with nav_col5:
 st.markdown("<br>", unsafe_allow_html=True)
 
 # =========================================================
-# SCREEN 1: PRODUCT CATALOG — 15 ITEMS IN 5-COLUMN GRID
+# SCREEN 1: PRODUCT CATALOG & REAL PROMO BANNERS
 # =========================================================
 if st.session_state.current_screen == 1:
-    banner_html = f"""
-    <div style="background:#FFFFFF; border-radius:4px; padding:18px 24px; margin-bottom:16px; border:1px solid #EAEAEC; box-shadow:0 2px 8px rgba(0,0,0,0.03);">
-    <h2 style="color:#282C3F; margin-bottom:2px; font-weight:800;">Women's Ethnic Kurta Store <span style="font-size:14px; color:#7E818C; font-weight:500;">({len(PRODUCTS)} Products)</span></h2>
-    <p style="color:#FF3F6C; font-weight:800; font-size:15px; margin-bottom:4px;">UP TO 60% OFF ON FESTIVE & WEDDING COLLECTION</p>
-    <p style="color:#535766; font-size:13px; margin:0;">Browse items below and click <b>♡ Save to Wishlist</b> on items you like.</p>
+    # Promo Ticket Banner
+    ticket_html = """
+    <div class="ticket-promo-banner">
+    <div>
+    <h3 style="margin:0; font-size:22px; font-weight:900;">FLAT ₹300 OFF</h3>
+    <p style="margin:2px 0 0 0; font-size:13px;">On Your 1st Purchase Via Myntra App!</p>
+    </div>
+    <div style="background:#FFFFFF; color:#FF5722; font-weight:800; font-size:13px; padding:6px 14px; border-radius:4px;">
+    CODE: MYNTRA300
+    </div>
     </div>
     """
-    st.markdown(clean_html(banner_html), unsafe_allow_html=True)
+    st.markdown(clean_html(ticket_html), unsafe_allow_html=True)
 
-    # Render products in rows of 5
+    # Hero Big Brands Bash Banner
+    hero_banner_html = """
+    <div class="hero-banner-brands">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+    <div>
+    <span style="background:#FF3F6C; color:#FFFFFF; font-size:11px; font-weight:800; padding:3px 10px; border-radius:12px; text-transform:uppercase;">BIG BRANDS BASH • LIVE NOW</span>
+    <h1 style="margin:8px 0 4px 0; font-size:32px; font-weight:900;">50 - 80% OFF</h1>
+    <p style="margin:0; font-size:16px; font-weight:500;">Irresistible Brands, Best Prices for Festive & Wedding Season</p>
+    </div>
+    <div style="display:flex; gap:12px;">
+    <span style="background:rgba(255,255,255,0.25); backdrop-filter:blur(4px); padding:8px 18px; border-radius:20px; font-weight:700; font-size:14px; cursor:pointer;">Him ❯</span>
+    <span style="background:#FFFFFF; color:#1E88E5; padding:8px 18px; border-radius:20px; font-weight:800; font-size:14px; cursor:pointer;">Her ❯</span>
+    </div>
+    </div>
+    </div>
+    """
+    st.markdown(clean_html(hero_banner_html), unsafe_allow_html=True)
+
+    # Bank Offer Strip
+    bank_html = """
+    <div class="bank-strip-bar">
+    <span>🏦 <b>RBL BANK / HSBC BANK</b> | Get 10% Instant Discount* on credit card transactions</span>
+    <span>T&C Apply ❯</span>
+    </div>
+    """
+    st.markdown(clean_html(bank_html), unsafe_allow_html=True)
+
+    # Category Circle Stories (Horizontal Scroll)
+    libas_b64 = get_image_base64("assets/libas.jpg")
+    biba_b64 = get_image_base64("assets/biba.jpg")
+    w_b64 = get_image_base64("assets/w.jpg")
+    aurelia_b64 = get_image_base64("assets/aurelia.jpg")
+    gdesi_b64 = get_image_base64("assets/global_desi.jpg")
+
+    stories_html = f"""
+    <div class="cat-circle-wrap">
+    <div class="cat-circle-card">
+    <img src="{libas_b64}" class="cat-circle-img" />
+    <span class="cat-circle-title">Kurta Sets</span>
+    </div>
+    <div class="cat-circle-card">
+    <img src="{biba_b64}" class="cat-circle-img" />
+    <span class="cat-circle-title">Dresses</span>
+    </div>
+    <div class="cat-circle-card">
+    <img src="{w_b64}" class="cat-circle-img" />
+    <span class="cat-circle-title">Kurtas</span>
+    </div>
+    <div class="cat-circle-card">
+    <img src="{aurelia_b64}" class="cat-circle-img" />
+    <span class="cat-circle-title">Shirts</span>
+    </div>
+    <div class="cat-circle-card">
+    <img src="{gdesi_b64}" class="cat-circle-img" />
+    <span class="cat-circle-title">Casual Shoes</span>
+    </div>
+    </div>
+    """
+    st.markdown(clean_html(stories_html), unsafe_allow_html=True)
+
+    # Catalog Grid
+    st.markdown("<h3 style='color:#282C3F; font-weight:800; margin-bottom:14px;'>WOMEN'S ETHNIC COLLECTION</h3>", unsafe_allow_html=True)
+
     for row_start in range(0, len(PRODUCTS), 5):
         row_prods = PRODUCTS[row_start:row_start + 5]
         cols = st.columns(len(row_prods))
@@ -897,7 +1095,6 @@ elif st.session_state.current_screen == 2:
             st.session_state.current_screen = 1
             st.rerun()
     else:
-        # Render wishlist products in rows of 5
         for row_start in range(0, len(wishlist_products), 5):
             row_prods = wishlist_products[row_start:row_start + 5]
             cols = st.columns(len(row_prods))
