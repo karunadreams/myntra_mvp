@@ -128,7 +128,7 @@ st.markdown("""
         color: #282C3F;
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 8px;
     }
 
     .logo-pink {
@@ -721,17 +721,20 @@ def get_image_base64(image_path: str) -> str:
     return ""
 
 # ---------------------------------------------------------
-# REAL LIVE MYNTRA TOP NAVBAR
+# REAL LIVE MYNTRA TOP NAVBAR WITH OFFICIAL MYNTRA LOGO
 # ---------------------------------------------------------
 cart_count = len(st.session_state.cart_items)
 wishlist_count = len(st.session_state.wishlist_ids)
 
+logo_b64 = get_image_base64("assets/myntra_logo.jpg")
+logo_img_html = f'<img src="{logo_b64}" style="height:36px; object-fit:contain; border-radius:4px;" />' if logo_b64 else '<span class="logo-pink">myntra</span>'
+
 header_html = f"""
 <div class="myntra-pure-header">
 <div class="myntra-brand-group">
-<div class="myntra-logo-title">
-<span class="logo-pink">myntra</span>
-<span style="font-size:11px; font-weight:600; color:#535766; margin-left:4px;">| DECISION PANEL</span>
+<div class="myntra-logo-title" style="display:flex; align-items:center; gap:8px;">
+{logo_img_html}
+<span style="font-size:12px; font-weight:700; color:#535766; margin-left:4px; border-left:1px solid #EAEAEC; padding-left:8px;">DECISION PANEL</span>
 </div>
 <div class="myntra-cat-links">
 <span class="cat-link">MEN</span>
