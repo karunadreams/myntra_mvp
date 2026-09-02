@@ -965,9 +965,10 @@ elif st.session_state.current_screen == 5:
     st.markdown("<h3 style='color:#282C3F; font-weight:800;'>SHOPPING BAG</h3>", unsafe_allow_html=True)
 
     if not st.session_state.cart_items:
-        st.info("Your bag is currently empty. Add items from the Decision Panel!")
-        if st.button("← RETURN TO DECISION PANEL", use_container_width=True):
-            st.session_state.current_screen = 4
+        st.info("Your bag is currently empty.")
+        if st.button("← RETURN TO HOME", use_container_width=True):
+            st.session_state.pdp_product_id = None
+            st.session_state.current_screen = 1
             st.rerun()
     else:
         col1, col2 = st.columns([2, 1])
