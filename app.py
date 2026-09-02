@@ -3,9 +3,18 @@ from datetime import date, timedelta
 from PIL import Image
 import os
 import base64
+import json
 from typing import TypedDict, List
 
 # Define Product and ScoredProduct Data Models
+class Review(TypedDict):
+    user: str
+    size: str
+    height: str
+    rating: float
+    comment: str
+    date: str
+
 class Product(TypedDict):
     id: int
     name: str
@@ -17,10 +26,15 @@ class Product(TypedDict):
     sizes: List[str]
     occasions: List[str]
     delivery_days: int
+    fabric: str
+    wash_care: str
+    pattern: str
+    sleeve: str
     fit_summary_template: str
     fit_review_count: int
     keywords: List[str]
     image_path: str
+    reviews: List[Review]
 
 class ScoredProduct(TypedDict):
     product: Product
@@ -28,6 +42,16 @@ class ScoredProduct(TypedDict):
     has_size: bool
     occ_match: bool
     arrives_on_time: bool
+
+# Load 20 products dataset from JSON file
+def load_products_dataset() -> List[Product]:
+    json_path = "assets/kurtas_dataset.json"
+    if os.path.exists(json_path):
+        with open(json_path, "r") as f:
+            return json.load(f)
+    return []
+
+PRODUCTS: List[Product] = load_products_dataset()
 
 def calculate_winner_scoring(
     selected_products: List[Product],
@@ -44,22 +68,18 @@ def calculate_winner_scoring(
     for prod in selected_products:
         score = 0
         
-        # +3 pts if available in user's size
         has_size = user_size in prod["sizes"]
         if has_size:
             score += 3
 
-        # +2 pts if occasion matches
         occ_match = user_occ in prod["occasions"]
         if occ_match:
             score += 2
 
-        # +2 pts if delivery before event
         arrives_on_time = prod["delivery_days"] <= days_to_event
         if arrives_on_time:
             score += 2
 
-        # +1 pt if rating >= 4.2
         if prod["rating"] >= 4.2:
             score += 1
 
@@ -110,19 +130,6 @@ st.markdown("""
         margin-bottom: 20px;
     }
 
-    .myntra-brand-logo-text {
-        font-size: 20px;
-        font-weight: 900;
-        letter-spacing: 0.5px;
-        color: #282C3F;
-    }
-
-    .logo-pink {
-        color: #FF3F6C;
-        font-weight: 900;
-    }
-
-    /* Search Input Box */
     .myntra-search-box {
         display: flex;
         align-items: center;
@@ -248,6 +255,29 @@ st.markdown("""
         font-size: 12px;
         font-weight: 700;
         color: #FF905A;
+    }
+
+    /* PDP Page Styling */
+    .pdp-container {
+        background: #FFFFFF;
+        border: 1px solid #EAEAEC;
+        border-radius: 6px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    }
+
+    .pdp-spec-box {
+        background: #F5F5F6;
+        border-radius: 6px;
+        padding: 14px;
+        margin-top: 16px;
+        margin-bottom: 16px;
+    }
+
+    .pdp-review-card {
+        border-bottom: 1px solid #EAEAEC;
+        padding: 12px 0;
     }
 
     /* Decision Panel Column Surface */
@@ -386,256 +416,13 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# EXPANDED 15 MYNTRA PRODUCT TEST DATASET
-# ---------------------------------------------------------
-PRODUCTS: List[Product] = [
-    {
-        "id": 1,
-        "name": "Embroidered Anarkali Kurta",
-        "brand": "Libas",
-        "price": 1299,
-        "original_price": 2499,
-        "rating": 4.3,
-        "rating_count": 1240,
-        "sizes": ["S", "M", "L", "XL"],
-        "occasions": ["Wedding Guest", "Festival"],
-        "delivery_days": 4,
-        "fit_summary_template": "True to size, roomy shoulders",
-        "fit_review_count": 34,
-        "keywords": ["Fits true to size", "Color matches photos", "Good for functions"],
-        "image_path": "assets/libas.jpg"
-    },
-    {
-        "id": 2,
-        "name": "Floral Printed Straight Kurta",
-        "brand": "W",
-        "price": 999,
-        "original_price": 1799,
-        "rating": 4.1,
-        "rating_count": 850,
-        "sizes": ["XS", "S", "M"],
-        "occasions": ["Office Party", "Casual"],
-        "delivery_days": 3,
-        "fit_summary_template": "Runs slightly small, order one size up",
-        "fit_review_count": 19,
-        "keywords": ["Runs small", "Good for petite frame", "Color matches photos"],
-        "image_path": "assets/w.jpg"
-    },
-    {
-        "id": 3,
-        "name": "Woven Design Kurta Set",
-        "brand": "Biba",
-        "price": 1799,
-        "original_price": 3199,
-        "rating": 4.5,
-        "rating_count": 2100,
-        "sizes": ["S", "M", "L"],
-        "occasions": ["Wedding Guest", "Festival", "Date Night"],
-        "delivery_days": 5,
-        "fit_summary_template": "Fits true to size, premium flowy fit",
-        "fit_review_count": 48,
-        "keywords": ["Fits true to size", "Premium feel", "Best for festive"],
-        "image_path": "assets/biba.jpg"
-    },
-    {
-        "id": 4,
-        "name": "Solid Straight Kurta",
-        "brand": "Aurelia",
-        "price": 849,
-        "original_price": 1499,
-        "rating": 3.9,
-        "rating_count": 620,
-        "sizes": ["M", "L", "XL"],
-        "occasions": ["Office Party", "Casual"],
-        "delivery_days": 2,
-        "fit_summary_template": "Slightly boxy cut, runs large",
-        "fit_review_count": 14,
-        "keywords": ["Runs large", "Comfortable fabric", "Good daily wear"],
-        "image_path": "assets/aurelia.jpg"
-    },
-    {
-        "id": 5,
-        "name": "Printed Wrap Kurta",
-        "brand": "Global Desi",
-        "price": 1499,
-        "original_price": 2799,
-        "rating": 4.4,
-        "rating_count": 1580,
-        "sizes": ["XS", "S", "M", "L"],
-        "occasions": ["Date Night", "Casual", "Festival"],
-        "delivery_days": 3,
-        "fit_summary_template": "Fits true to size, highly flattering",
-        "fit_review_count": 29,
-        "keywords": ["Fits true to size", "Very flattering", "Silky fabric"],
-        "image_path": "assets/global_desi.jpg"
-    },
-    {
-        "id": 6,
-        "name": "Chanderi Silk Ethnic Kurta",
-        "brand": "Sangria",
-        "price": 1599,
-        "original_price": 3499,
-        "rating": 4.6,
-        "rating_count": 940,
-        "sizes": ["S", "M", "L", "XL"],
-        "occasions": ["Wedding Guest", "Festival"],
-        "delivery_days": 3,
-        "fit_summary_template": "True to size, royal shine",
-        "fit_review_count": 26,
-        "keywords": ["Royal shine", "Fits true to size", "Perfect for sangeet"],
-        "image_path": "assets/libas.jpg"
-    },
-    {
-        "id": 7,
-        "name": "Bandhani Print Silk Blend Kurta",
-        "brand": "Indo Era",
-        "price": 1399,
-        "original_price": 2999,
-        "rating": 4.2,
-        "rating_count": 1120,
-        "sizes": ["XS", "S", "M", "L"],
-        "occasions": ["Festival", "Casual"],
-        "delivery_days": 4,
-        "fit_summary_template": "Comfortable chest fit, lightweight",
-        "fit_review_count": 21,
-        "keywords": ["Lightweight silk", "Vibrant colors", "True to size"],
-        "image_path": "assets/w.jpg"
-    },
-    {
-        "id": 8,
-        "name": "Foil Printed Straight Kurta",
-        "brand": "Anouk",
-        "price": 799,
-        "original_price": 1599,
-        "rating": 4.0,
-        "rating_count": 780,
-        "sizes": ["S", "M", "L"],
-        "occasions": ["Office Party", "Casual"],
-        "delivery_days": 2,
-        "fit_summary_template": "Slim waist fit, size up if broad",
-        "fit_review_count": 15,
-        "keywords": ["Slim waist", "Budget friendly", "Good workwear"],
-        "image_path": "assets/aurelia.jpg"
-    },
-    {
-        "id": 9,
-        "name": "Mirror Work Georgette Kurta",
-        "brand": "Kalini",
-        "price": 1899,
-        "original_price": 3999,
-        "rating": 4.7,
-        "rating_count": 2450,
-        "sizes": ["S", "M", "L", "XL"],
-        "occasions": ["Wedding Guest", "Festival"],
-        "delivery_days": 3,
-        "fit_summary_template": "Flattering flow, true to size",
-        "fit_review_count": 52,
-        "keywords": ["Stunning mirror work", "Heavy festive look", "Comfortable lining"],
-        "image_path": "assets/biba.jpg"
-    },
-    {
-        "id": 10,
-        "name": "Festive Metallic Print Kurta",
-        "brand": "Ahalyaa",
-        "price": 1649,
-        "original_price": 3299,
-        "rating": 4.3,
-        "rating_count": 1310,
-        "sizes": ["S", "M", "L"],
-        "occasions": ["Festival", "Date Night"],
-        "delivery_days": 4,
-        "fit_summary_template": "Roomy fit, soft inner lining",
-        "fit_review_count": 31,
-        "keywords": ["Metallic shine", "Soft fabric", "Runs slightly large"],
-        "image_path": "assets/global_desi.jpg"
-    },
-    {
-        "id": 11,
-        "name": "Embroidered A-Line Silk Kurta",
-        "brand": "Varanga",
-        "price": 2199,
-        "original_price": 4599,
-        "rating": 4.5,
-        "rating_count": 1890,
-        "sizes": ["S", "M", "L", "XL"],
-        "occasions": ["Wedding Guest", "Festival"],
-        "delivery_days": 4,
-        "fit_summary_template": "True to size, regal flare",
-        "fit_review_count": 41,
-        "keywords": ["Regal flare", "High quality threadwork", "Fits perfectly"],
-        "image_path": "assets/libas.jpg"
-    },
-    {
-        "id": 12,
-        "name": "Silk Blend Straight Kurta",
-        "brand": "Mitera",
-        "price": 1099,
-        "original_price": 2199,
-        "rating": 4.2,
-        "rating_count": 890,
-        "sizes": ["XS", "S", "M"],
-        "occasions": ["Office Party", "Casual"],
-        "delivery_days": 3,
-        "fit_summary_template": "Straight tailored cut, true to size",
-        "fit_review_count": 18,
-        "keywords": ["Clean tailored look", "Great fabric", "Comfortable collar"],
-        "image_path": "assets/w.jpg"
-    },
-    {
-        "id": 13,
-        "name": "Poly Silk Flared Kurta",
-        "brand": "Janasya",
-        "price": 1149,
-        "original_price": 2399,
-        "rating": 4.1,
-        "rating_count": 960,
-        "sizes": ["S", "M", "L"],
-        "occasions": ["Casual", "Festival"],
-        "delivery_days": 3,
-        "fit_summary_template": "Flowy flare, snug bust fit",
-        "fit_review_count": 22,
-        "keywords": ["Flowy silhouette", "Vibrant prints", "Wrinkle free"],
-        "image_path": "assets/global_desi.jpg"
-    },
-    {
-        "id": 14,
-        "name": "Luxury Zari Embroidered Kurta Set",
-        "brand": "Wishful by W",
-        "price": 2999,
-        "original_price": 5999,
-        "rating": 4.8,
-        "rating_count": 3100,
-        "sizes": ["S", "M", "L", "XL"],
-        "occasions": ["Wedding Guest", "Festival"],
-        "delivery_days": 5,
-        "fit_summary_template": "Couture fit, premium silk texture",
-        "fit_review_count": 64,
-        "keywords": ["Couture quality", "Rich zari work", "Top wedding choice"],
-        "image_path": "assets/biba.jpg"
-    },
-    {
-        "id": 15,
-        "name": "Jashn Collection Silk Kurta Set",
-        "brand": "House of Pataudi",
-        "price": 2499,
-        "original_price": 4999,
-        "rating": 4.6,
-        "rating_count": 2280,
-        "sizes": ["S", "M", "L"],
-        "occasions": ["Wedding Guest", "Festival", "Date Night"],
-        "delivery_days": 4,
-        "fit_summary_template": "Royal tailoring, true to size",
-        "fit_review_count": 55,
-        "keywords": ["Royal aesthetic", "Premium dupatta", "True to size"],
-        "image_path": "assets/libas.jpg"
-    }
-]
-
-# ---------------------------------------------------------
 # SESSION STATE INITIALIZATION
 # ---------------------------------------------------------
 if "current_screen" not in st.session_state:
     st.session_state.current_screen = 1  # Screen 1: Home / Catalog Store
+
+if "pdp_product_id" not in st.session_state:
+    st.session_state.pdp_product_id = None
 
 if "wishlist_ids" not in st.session_state:
     st.session_state.wishlist_ids = [1, 3, 6, 9, 14]
@@ -667,14 +454,13 @@ def get_image_base64(image_path: str) -> str:
 cart_count = len(st.session_state.cart_items)
 wishlist_count = len(st.session_state.wishlist_ids)
 
-logo_b64 = get_image_base64("assets/myntra_logo.jpg")
-
 # Header container
 with st.container():
     h_col1, h_col2, h_col3 = st.columns([3, 4, 3])
     
     with h_col1:
         if st.button("🏠 myntra", key="hdr_home", use_container_width=False):
+            st.session_state.pdp_product_id = None
             st.session_state.current_screen = 1
             st.rerun()
 
@@ -690,33 +476,134 @@ with st.container():
         c_prof, c_wish, c_bag = st.columns(3)
         with c_prof:
             if st.button("👤 Profile", key="hdr_prof"):
+                st.session_state.pdp_product_id = None
                 st.session_state.current_screen = 3
                 st.rerun()
         with c_wish:
             if st.button(f"❤️ Wishlist ({wishlist_count})", key="hdr_wish", type="primary" if st.session_state.current_screen == 2 else "secondary"):
+                st.session_state.pdp_product_id = None
                 st.session_state.current_screen = 2
                 st.rerun()
         with c_bag:
             if st.button(f"🛍️ Bag ({cart_count})", key="hdr_bag", type="primary" if st.session_state.current_screen == 5 else "secondary"):
+                st.session_state.pdp_product_id = None
                 st.session_state.current_screen = 5
                 st.rerun()
 
 st.markdown("<hr style='border-color:#EAEAEC; margin-top:4px; margin-bottom:16px;'>", unsafe_allow_html=True)
 
 # =========================================================
-# SCREEN 1: MYNTRA HOME / CATALOG STORE
+# PRODUCT DETAILS PAGE (PDP VIEW) IF AN ITEM WAS CLICKED
 # =========================================================
-if st.session_state.current_screen == 1:
+if st.session_state.pdp_product_id is not None:
+    pdp_prod = next((p for p in PRODUCTS if p["id"] == st.session_state.pdp_product_id), PRODUCTS[0])
+    is_in_wishlist = pdp_prod["id"] in st.session_state.wishlist_ids
+    
+    if st.button("← BACK TO CATALOG", type="secondary"):
+        st.session_state.pdp_product_id = None
+        st.rerun()
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    pdp_col1, pdp_col2 = st.columns([1, 1])
+    
+    with pdp_col1:
+        img_b64 = get_image_base64(pdp_prod["image_path"])
+        if img_b64:
+            st.markdown(f'<img src="{img_b64}" style="width:100%; max-height:480px; border-radius:6px; object-fit:cover; border:1px solid #EAEAEC;" />', unsafe_allow_html=True)
+    
+    with pdp_col2:
+        discount_pct = int(((pdp_prod["original_price"] - pdp_prod["price"]) / pdp_prod["original_price"]) * 100)
+        
+        st.markdown(clean_html(f"""
+        <div style="padding-left:12px;">
+            <h2 style="font-size:22px; font-weight:900; color:#282C3F; margin-bottom:4px; text-transform:uppercase;">{pdp_prod['brand']}</h2>
+            <p style="font-size:16px; color:#535766; margin-bottom:12px;">{pdp_prod['name']}</p>
+            
+            <div style="display:inline-flex; align-items:center; gap:6px; background:#F5F5F6; padding:4px 10px; border-radius:4px; margin-bottom:16px; border:1px solid #EAEAEC;">
+                <span style="font-weight:800; font-size:13px;">{pdp_prod['rating']} ★</span>
+                <span style="color:#7E818C;">|</span>
+                <span style="font-size:13px; color:#535766;">{pdp_prod['rating_count']} Verified Ratings</span>
+            </div>
+            
+            <hr style="border-color:#EAEAEC; margin:12px 0;">
+            
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+                <span style="font-size:24px; font-weight:800; color:#282C3F;">₹{pdp_prod['price']:,}</span>
+                <span style="font-size:16px; text-decoration:line-through; color:#7E818C;">MRP ₹{pdp_prod['original_price']:,}</span>
+                <span style="font-size:16px; font-weight:800; color:#FF905A;">({discount_pct}% OFF)</span>
+            </div>
+            <p style="color:#03A685; font-size:12px; font-weight:700; margin-bottom:20px;">inclusive of all taxes</p>
+        </div>
+        """), unsafe_allow_html=True)
+
+        st.markdown("### SELECT SIZE")
+        selected_size = st.radio("Available Sizes:", options=pdp_prod["sizes"], horizontal=True, key="pdp_size_select")
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        btn_c1, btn_c2 = st.columns(2)
+        with btn_c1:
+            if pdp_prod["id"] in [p["id"] for p in st.session_state.cart_items]:
+                st.button("✓ IN YOUR BAG", disabled=True, use_container_width=True, type="primary")
+            else:
+                if st.button("🛍️ ADD TO BAG", type="primary", use_container_width=True):
+                    st.session_state.cart_items.append(pdp_prod)
+                    st.toast("Added to Bag! ✓", icon="🛍️")
+                    st.rerun()
+
+        with btn_c2:
+            if is_in_wishlist:
+                if st.button("❤️ WISHLISTED", use_container_width=True):
+                    st.session_state.wishlist_ids.remove(pdp_prod["id"])
+                    st.rerun()
+            else:
+                if st.button("♡ SAVE TO WISHLIST", use_container_width=True):
+                    st.session_state.wishlist_ids.append(pdp_prod["id"])
+                    st.rerun()
+
+        st.markdown(clean_html(f"""
+        <div class="pdp-spec-box">
+            <h4 style="margin:0 0 10px 0; color:#282C3F;">PRODUCT SPECIFICATIONS</h4>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:13px;">
+                <div><b>Fabric:</b> {pdp_prod['fabric']}</div>
+                <div><b>Wash Care:</b> {pdp_prod['wash_care']}</div>
+                <div><b>Pattern:</b> {pdp_prod['pattern']}</div>
+                <div><b>Sleeve:</b> {pdp_prod['sleeve']}</div>
+            </div>
+        </div>
+        """), unsafe_allow_html=True)
+
+    st.markdown("<br><hr style='border-color:#EAEAEC;'><br>", unsafe_allow_html=True)
+    st.markdown(f"### RATINGS & CUSTOMER REVIEWS ({len(pdp_prod['reviews'])} Reviews)")
+    
+    for rev in pdp_prod["reviews"]:
+        st.markdown(clean_html(f"""
+        <div class="pdp-review-card">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                <span style="background:#03A685; color:#FFF; font-weight:800; font-size:11px; padding:2px 6px; border-radius:3px;">{rev['rating']} ★</span>
+                <span style="font-weight:700; color:#282C3F; font-size:14px;">{rev['user']}</span>
+                <span style="color:#7E818C; font-size:12px;">(Height: {rev['height']} · Size: {rev['size']})</span>
+            </div>
+            <p style="font-size:13px; color:#535766; margin:4px 0;">"{rev['comment']}"</p>
+            <div style="font-size:11px; color:#7E818C;">Verified Buyer · {rev['date']}</div>
+        </div>
+        """), unsafe_allow_html=True)
+
+# =========================================================
+# SCREEN 1: PRODUCT CATALOG — 20 ITEMS IN 5-COLUMN GRID
+# =========================================================
+elif st.session_state.current_screen == 1:
     banner_html = f"""
     <div style="background:#FFFFFF; border-radius:4px; padding:18px 24px; margin-bottom:16px; border:1px solid #EAEAEC; box-shadow:0 2px 8px rgba(0,0,0,0.03);">
     <h2 style="color:#282C3F; margin-bottom:2px; font-weight:800;">Women's Ethnic Kurta Store <span style="font-size:14px; color:#7E818C; font-weight:500;">({len(PRODUCTS)} Products)</span></h2>
     <p style="color:#FF3F6C; font-weight:800; font-size:15px; margin-bottom:4px;">UP TO 60% OFF ON FESTIVE & WEDDING COLLECTION</p>
-    <p style="color:#535766; font-size:13px; margin:0;">Explore catalog below. Click the <b>❤️ Heart button</b> on top right of any item photo to save to your Wishlist.</p>
+    <p style="color:#535766; font-size:13px; margin:0;">Browse items below. Click any photo/brand name to open <b>Product Details & Reviews</b>, or click <b>❤️ Heart</b> on top right to save to Wishlist.</p>
     </div>
     """
     st.markdown(clean_html(banner_html), unsafe_allow_html=True)
 
-    # Render products in rows of 5
+    # Render 20 products in rows of 5
     for row_start in range(0, len(PRODUCTS), 5):
         row_prods = PRODUCTS[row_start:row_start + 5]
         cols = st.columns(len(row_prods))
@@ -727,14 +614,12 @@ if st.session_state.current_screen == 1:
                 
                 img_b64 = get_image_base64(prod["image_path"])
                 
-                # Top-Right Heart Overlay
                 heart_overlay_html = f"""
                 <div class="img-heart-overlay">
                     {'❤️' if is_in_wishlist else '♡'}
                 </div>
                 """
                 
-                # Bottom-Left Rating Badge
                 rating_overlay_html = f"""
                 <div class="img-rating-badge">
                 <span>{prod['rating']}</span>
@@ -770,16 +655,23 @@ if st.session_state.current_screen == 1:
                 
                 st.markdown("<div style='height:6px;'></div>", unsafe_allow_html=True)
                 
-                if is_in_wishlist:
-                    if st.button("❤️ WISHLISTED", key=f"cat_btn_{prod['id']}", type="primary", use_container_width=True):
-                        st.session_state.wishlist_ids.remove(prod["id"])
-                        if prod["id"] in st.session_state.selected_ids:
-                            st.session_state.selected_ids.remove(prod["id"])
+                btn_pdp, btn_wish = st.columns([1, 1])
+                with btn_pdp:
+                    if st.button("VIEW DETAILS", key=f"pdp_btn_{prod['id']}", use_container_width=True):
+                        st.session_state.pdp_product_id = prod["id"]
                         st.rerun()
-                else:
-                    if st.button("♡ SAVE TO WISHLIST", key=f"cat_btn_{prod['id']}", use_container_width=True):
-                        st.session_state.wishlist_ids.append(prod["id"])
-                        st.rerun()
+
+                with btn_wish:
+                    if is_in_wishlist:
+                        if st.button("❤️ WISHLISTED", key=f"cat_btn_{prod['id']}", type="primary", use_container_width=True):
+                            st.session_state.wishlist_ids.remove(prod["id"])
+                            if prod["id"] in st.session_state.selected_ids:
+                                st.session_state.selected_ids.remove(prod["id"])
+                            st.rerun()
+                    else:
+                        if st.button("♡ WISHLIST", key=f"cat_btn_{prod['id']}", use_container_width=True):
+                            st.session_state.wishlist_ids.append(prod["id"])
+                            st.rerun()
 
         st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
 
@@ -814,7 +706,6 @@ elif st.session_state.current_screen == 2:
             st.session_state.current_screen = 1
             st.rerun()
     else:
-        # Render wishlist products in rows of 5
         for row_start in range(0, len(wishlist_products), 5):
             row_prods = wishlist_products[row_start:row_start + 5]
             cols = st.columns(len(row_prods))
@@ -860,17 +751,24 @@ elif st.session_state.current_screen == 2:
                     
                     st.markdown("<div style='height:6px;'></div>", unsafe_allow_html=True)
                     
-                    if is_selected:
-                        if st.button("✓ SELECTED", key=f"w_btn_{prod['id']}", type="primary", use_container_width=True):
-                            st.session_state.selected_ids.remove(prod["id"])
+                    btn_pdp_w, btn_sel_w = st.columns([1, 1])
+                    with btn_pdp_w:
+                        if st.button("DETAILS", key=f"w_pdp_{prod['id']}", use_container_width=True):
+                            st.session_state.pdp_product_id = prod["id"]
                             st.rerun()
-                    else:
-                        if st.button("+ COMPARE", key=f"w_btn_{prod['id']}", use_container_width=True):
-                            if len(st.session_state.selected_ids) >= 4:
-                                st.warning("⚠️ Maximum 4 items can be selected for comparison.")
-                            else:
-                                st.session_state.selected_ids.append(prod["id"])
+
+                    with btn_sel_w:
+                        if is_selected:
+                            if st.button("✓ SELECTED", key=f"w_btn_{prod['id']}", type="primary", use_container_width=True):
+                                st.session_state.selected_ids.remove(prod["id"])
                                 st.rerun()
+                        else:
+                            if st.button("+ COMPARE", key=f"w_btn_{prod['id']}", use_container_width=True):
+                                if len(st.session_state.selected_ids) >= 4:
+                                    st.warning("⚠️ Maximum 4 items can be selected for comparison.")
+                                else:
+                                    st.session_state.selected_ids.append(prod["id"])
+                                    st.rerun()
 
             st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
 

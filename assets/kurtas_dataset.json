@@ -1,0 +1,848 @@
+[
+  {
+    "id": 1,
+    "brand": "LIBAS",
+    "name": "Women Blue & Gold-Toned Embroidered Anarkali Kurta Set",
+    "price": 1299,
+    "original_price": 2499,
+    "rating": 4.3,
+    "rating_count": 1240,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "occasions": [
+      "Wedding Guest",
+      "Festival"
+    ],
+    "delivery_days": 4,
+    "fabric": "Chanderi Silk Blend",
+    "wash_care": "Dry Clean Only",
+    "pattern": "Embroidered",
+    "sleeve": "Three-Quarter Sleeves",
+    "fit_note": "True to size, roomy shoulders",
+    "keywords": [
+      "Fits true to size",
+      "Color matches photos",
+      "Good for functions"
+    ],
+    "image_path": "assets/libas.jpg",
+    "reviews": [
+      {
+        "user": "Priya S.",
+        "size": "M",
+        "height": "5'4\"",
+        "rating": 5,
+        "comment": "Gorgeous color and fits so comfortably! The fabric has a premium gold sheen perfect for weddings.",
+        "date": "12 Aug 2025"
+      },
+      {
+        "user": "Ananya R.",
+        "size": "S",
+        "height": "5'2\"",
+        "rating": 4,
+        "comment": "True to size. Sleeve length is perfect and the dupatta embroidery is heavy.",
+        "date": "05 Jul 2025"
+      },
+      {
+        "user": "Meera K.",
+        "size": "L",
+        "height": "5'5\"",
+        "rating": 4.5,
+        "comment": "Roomy chest fit. Wore it to a sangeet function and received many compliments!",
+        "date": "20 May 2025"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "brand": "W",
+    "name": "Women Mustard Yellow Floral Printed Straight Kurta",
+    "price": 999,
+    "original_price": 1799,
+    "rating": 4.1,
+    "rating_count": 850,
+    "sizes": [
+      "XS",
+      "S",
+      "M"
+    ],
+    "occasions": [
+      "Office Party",
+      "Casual"
+    ],
+    "delivery_days": 3,
+    "fabric": "100% Pure Cotton",
+    "wash_care": "Machine Wash",
+    "pattern": "Floral Print",
+    "sleeve": "Three-Quarter Sleeves",
+    "fit_note": "Runs slightly small, order one size up",
+    "keywords": [
+      "Runs small",
+      "Good for petite frame",
+      "Color matches photos"
+    ],
+    "image_path": "assets/w.jpg",
+    "reviews": [
+      {
+        "user": "Sneha M.",
+        "size": "S",
+        "height": "5'1\"",
+        "rating": 4,
+        "comment": "Slightly snug around waist, I recommend ordering one size larger if you prefer a relaxed fit.",
+        "date": "18 Aug 2025"
+      },
+      {
+        "user": "Kavita P.",
+        "size": "XS",
+        "height": "5'0\"",
+        "rating": 5,
+        "comment": "Perfect petite length! Beautiful mustard shade for office ethnic days.",
+        "date": "02 Jun 2025"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "brand": "BIBA",
+    "name": "Women Maroon Woven Design Kurta with Trousers & Dupatta",
+    "price": 1799,
+    "original_price": 3199,
+    "rating": 4.5,
+    "rating_count": 2100,
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "occasions": [
+      "Wedding Guest",
+      "Festival",
+      "Date Night"
+    ],
+    "delivery_days": 5,
+    "fabric": "Viscose Rayon",
+    "wash_care": "Hand Wash Cold",
+    "pattern": "Woven Design",
+    "sleeve": "Long Sleeves",
+    "fit_note": "Fits true to size, premium flowy fit",
+    "keywords": [
+      "Fits true to size",
+      "Premium feel",
+      "Best for festive"
+    ],
+    "image_path": "assets/biba.jpg",
+    "reviews": [
+      {
+        "user": "Ritu Sharma",
+        "size": "M",
+        "height": "5'5\"",
+        "rating": 5,
+        "comment": "Top quality silk weave! The dupatta drape is so graceful. Totally worth every rupee.",
+        "date": "24 Aug 2025"
+      },
+      {
+        "user": "Divya N.",
+        "size": "S",
+        "height": "5'3\"",
+        "rating": 4.5,
+        "comment": "Fits like a charm. Comfortable waistband on trousers.",
+        "date": "10 Aug 2025"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "brand": "AURELIA",
+    "name": "Women Pink Solid Straight Kurta with Pocket",
+    "price": 849,
+    "original_price": 1499,
+    "rating": 3.9,
+    "rating_count": 620,
+    "sizes": [
+      "M",
+      "L",
+      "XL"
+    ],
+    "occasions": [
+      "Office Party",
+      "Casual"
+    ],
+    "delivery_days": 2,
+    "fabric": "Cotton Flex",
+    "wash_care": "Machine Wash Gentle",
+    "pattern": "Solid",
+    "sleeve": "Three-Quarter Sleeves",
+    "fit_note": "Slightly boxy cut, runs large",
+    "keywords": [
+      "Runs large",
+      "Comfortable fabric",
+      "Good daily wear"
+    ],
+    "image_path": "assets/aurelia.jpg",
+    "reviews": [
+      {
+        "user": "Pooja V.",
+        "size": "L",
+        "height": "5'6\"",
+        "rating": 4,
+        "comment": "Great everyday office wear. The pocket is super convenient for carrying keys and mobile.",
+        "date": "15 Jul 2025"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "brand": "GLOBAL DESI",
+    "name": "Women Teal Blue Printed Wrap Style Festive Kurta",
+    "price": 1499,
+    "original_price": 2799,
+    "rating": 4.4,
+    "rating_count": 1580,
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "occasions": [
+      "Date Night",
+      "Casual",
+      "Festival"
+    ],
+    "delivery_days": 3,
+    "fabric": "Silky Poly Georgette",
+    "wash_care": "Dry Clean Recommended",
+    "pattern": "Ethnic Printed Wrap",
+    "sleeve": "Flared Sleeves",
+    "fit_note": "Fits true to size, highly flattering",
+    "keywords": [
+      "Fits true to size",
+      "Very flattering",
+      "Silky fabric"
+    ],
+    "image_path": "assets/global_desi.jpg",
+    "reviews": [
+      {
+        "user": "Tanya H.",
+        "size": "S",
+        "height": "5'4\"",
+        "rating": 5,
+        "comment": "The wrap tie accentuates waist line beautifully. Color is even richer in real life!",
+        "date": "01 Aug 2025"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "brand": "SANGRIA",
+    "name": "Women Magenta Chanderi Silk Ethnic Kurta Set",
+    "price": 1599,
+    "original_price": 3499,
+    "rating": 4.6,
+    "rating_count": 940,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "occasions": [
+      "Wedding Guest",
+      "Festival"
+    ],
+    "delivery_days": 3,
+    "fabric": "Chanderi Silk",
+    "wash_care": "Dry Clean Only",
+    "pattern": "Zari Work",
+    "sleeve": "Three-Quarter Sleeves",
+    "fit_note": "True to size, royal shine",
+    "keywords": [
+      "Royal shine",
+      "Fits true to size",
+      "Perfect for sangeet"
+    ],
+    "image_path": "assets/libas.jpg",
+    "reviews": [
+      {
+        "user": "Deepika C.",
+        "size": "M",
+        "height": "5'5\"",
+        "rating": 5,
+        "comment": "Very royal look for evening wedding receptions. High quality lining fabric inside.",
+        "date": "19 Aug 2025"
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "brand": "INDO ERA",
+    "name": "Women Red Bandhani Print Silk Blend Straight Kurta",
+    "price": 1399,
+    "original_price": 2999,
+    "rating": 4.2,
+    "rating_count": 1120,
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "occasions": [
+      "Festival",
+      "Casual"
+    ],
+    "delivery_days": 4,
+    "fabric": "Art Silk Blend",
+    "wash_care": "Hand Wash",
+    "pattern": "Bandhani Print",
+    "sleeve": "Three-Quarter Sleeves",
+    "fit_note": "Comfortable chest fit, lightweight",
+    "keywords": [
+      "Lightweight silk",
+      "Vibrant colors",
+      "True to size"
+    ],
+    "image_path": "assets/w.jpg",
+    "reviews": [
+      {
+        "user": "Neelam B.",
+        "size": "S",
+        "height": "5'3\"",
+        "rating": 4,
+        "comment": "Traditional bandhani pattern with modern slim border. Comfortable for all-day puja events.",
+        "date": "11 Aug 2025"
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "brand": "ANOUK",
+    "name": "Women Peach Foil Printed Straight Kurta",
+    "price": 799,
+    "original_price": 1599,
+    "rating": 4.0,
+    "rating_count": 780,
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "occasions": [
+      "Office Party",
+      "Casual"
+    ],
+    "delivery_days": 2,
+    "fabric": "Cotton Viscose",
+    "wash_care": "Machine Wash",
+    "pattern": "Foil Print",
+    "sleeve": "Short Sleeves",
+    "fit_note": "Slim waist fit, size up if broad",
+    "keywords": [
+      "Slim waist",
+      "Budget friendly",
+      "Good workwear"
+    ],
+    "image_path": "assets/aurelia.jpg",
+    "reviews": [
+      {
+        "user": "Shruti K.",
+        "size": "M",
+        "height": "5'4\"",
+        "rating": 4,
+        "comment": "Super affordable and looks elegant. Foil print stayed intact after washing.",
+        "date": "29 Jul 2025"
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "brand": "KALINI",
+    "name": "Women Green Mirror Work Georgette Kurta with Sharara",
+    "price": 1899,
+    "original_price": 3999,
+    "rating": 4.7,
+    "rating_count": 2450,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "occasions": [
+      "Wedding Guest",
+      "Festival"
+    ],
+    "delivery_days": 3,
+    "fabric": "Georgette with Shantoon Lining",
+    "wash_care": "Dry Clean Only",
+    "pattern": "Mirror Embroidery",
+    "sleeve": "Three-Quarter Sleeves",
+    "fit_note": "Flattering flow, true to size",
+    "keywords": [
+      "Stunning mirror work",
+      "Heavy festive look",
+      "Comfortable lining"
+    ],
+    "image_path": "assets/biba.jpg",
+    "reviews": [
+      {
+        "user": "Vandana G.",
+        "size": "L",
+        "height": "5'6\"",
+        "rating": 5,
+        "comment": "Absolute showstopper set! The mirror work shines brilliantly under festive lights.",
+        "date": "27 Aug 2025"
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "brand": "AHALYAAN",
+    "name": "Women Black Festive Metallic Print Anarkali Kurta",
+    "price": 1649,
+    "original_price": 3299,
+    "rating": 4.3,
+    "rating_count": 1310,
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "occasions": [
+      "Festival",
+      "Date Night"
+    ],
+    "delivery_days": 4,
+    "fabric": "Poly Silk",
+    "wash_care": "Hand Wash",
+    "pattern": "Metallic Print",
+    "sleeve": "Long Sleeves",
+    "fit_note": "Roomy fit, soft inner lining",
+    "keywords": [
+      "Metallic shine",
+      "Soft fabric",
+      "Runs slightly large"
+    ],
+    "image_path": "assets/global_desi.jpg",
+    "reviews": [
+      {
+        "user": "Swati D.",
+        "size": "M",
+        "height": "5'5\"",
+        "rating": 4.5,
+        "comment": "Black with gold metallic print looks ultra glam. Inner lining is smooth and breathable.",
+        "date": "14 Aug 2025"
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "brand": "VARANGA",
+    "name": "Women Purple Embroidered A-Line Silk Kurta",
+    "price": 2199,
+    "original_price": 4599,
+    "rating": 4.5,
+    "rating_count": 1890,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "occasions": [
+      "Wedding Guest",
+      "Festival"
+    ],
+    "delivery_days": 4,
+    "fabric": "Pure Silk Blend",
+    "wash_care": "Dry Clean Only",
+    "pattern": "Gotapatti & Threadwork",
+    "sleeve": "Three-Quarter Sleeves",
+    "fit_note": "True to size, regal flare",
+    "keywords": [
+      "Regal flare",
+      "High quality threadwork",
+      "Fits perfectly"
+    ],
+    "image_path": "assets/libas.jpg",
+    "reviews": [
+      {
+        "user": "Rashmi T.",
+        "size": "L",
+        "height": "5'6\"",
+        "rating": 5,
+        "comment": "Exquisite embroidery detail. Wore to my sister's mehendi event, fit was spot on.",
+        "date": "08 Aug 2025"
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "brand": "MITERA",
+    "name": "Women Off-White Silk Blend Straight Collar Kurta",
+    "price": 1099,
+    "original_price": 2199,
+    "rating": 4.2,
+    "rating_count": 890,
+    "sizes": [
+      "XS",
+      "S",
+      "M"
+    ],
+    "occasions": [
+      "Office Party",
+      "Casual"
+    ],
+    "delivery_days": 3,
+    "fabric": "Silk Cotton Blend",
+    "wash_care": "Machine Wash Cold",
+    "pattern": "Woven Stripe",
+    "sleeve": "Three-Quarter Sleeves",
+    "fit_note": "Straight tailored cut, true to size",
+    "keywords": [
+      "Clean tailored look",
+      "Great fabric",
+      "Comfortable collar"
+    ],
+    "image_path": "assets/w.jpg",
+    "reviews": [
+      {
+        "user": "Bhavna J.",
+        "size": "S",
+        "height": "5'3\"",
+        "rating": 4,
+        "comment": "Minimalist and sophisticated off-white shade. Great for formal office presentations.",
+        "date": "22 Jul 2025"
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "brand": "JANASYA",
+    "name": "Women Pink Poly Silk Printed Flared Kurta",
+    "price": 1149,
+    "original_price": 2399,
+    "rating": 4.1,
+    "rating_count": 960,
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "occasions": [
+      "Casual",
+      "Festival"
+    ],
+    "delivery_days": 3,
+    "fabric": "Poly Silk",
+    "wash_care": "Hand Wash",
+    "pattern": "Ethnic Printed",
+    "sleeve": "Three-Quarter Sleeves",
+    "fit_note": "Flowy flare, snug bust fit",
+    "keywords": [
+      "Flowy silhouette",
+      "Vibrant prints",
+      "Wrinkle free"
+    ],
+    "image_path": "assets/global_desi.jpg",
+    "reviews": [
+      {
+        "user": "Isha P.",
+        "size": "M",
+        "height": "5'4\"",
+        "rating": 4,
+        "comment": "Fabric doesn't wrinkle easily during travel. Cute flare at hem line.",
+        "date": "17 Aug 2025"
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "brand": "WISHFUL BY W",
+    "name": "Women Luxury Gold Zari Embroidered Silk Kurta Set",
+    "price": 2999,
+    "original_price": 5999,
+    "rating": 4.8,
+    "rating_count": 3100,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "occasions": [
+      "Wedding Guest",
+      "Festival"
+    ],
+    "delivery_days": 5,
+    "fabric": "Raw Silk & Chiffon Dupatta",
+    "wash_care": "Dry Clean Only",
+    "pattern": "Zari & Sequin Work",
+    "sleeve": "Long Sleeves",
+    "fit_note": "Couture fit, premium silk texture",
+    "keywords": [
+      "Couture quality",
+      "Rich zari work",
+      "Top wedding choice"
+    ],
+    "image_path": "assets/biba.jpg",
+    "reviews": [
+      {
+        "user": "Nandini R.",
+        "size": "S",
+        "height": "5'5\"",
+        "rating": 5,
+        "comment": "Designer luxury feel! The zari work detail on neckline and sleeves is pure perfection.",
+        "date": "30 Aug 2025"
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "brand": "HOUSE OF PATAUDI",
+    "name": "Women Jashn Collection Velvet Yoke Silk Kurta Set",
+    "price": 2499,
+    "original_price": 4999,
+    "rating": 4.6,
+    "rating_count": 2280,
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "occasions": [
+      "Wedding Guest",
+      "Festival",
+      "Date Night"
+    ],
+    "delivery_days": 4,
+    "fabric": "Silk Blend & Velvet Yoke",
+    "wash_care": "Dry Clean Only",
+    "pattern": "Royal Yoke Embroidery",
+    "sleeve": "Three-Quarter Sleeves",
+    "fit_note": "Royal tailoring, true to size",
+    "keywords": [
+      "Royal aesthetic",
+      "Premium dupatta",
+      "True to size"
+    ],
+    "image_path": "assets/libas.jpg",
+    "reviews": [
+      {
+        "user": "Kriti S.",
+        "size": "M",
+        "height": "5'4\"",
+        "rating": 5,
+        "comment": "Super elegant velvet patch on chest! Feels very high-end and royal.",
+        "date": "25 Aug 2025"
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "brand": "FABINDIA",
+    "name": "Women Handblock Printed Tussar Silk Kurta",
+    "price": 3299,
+    "original_price": 6499,
+    "rating": 4.7,
+    "rating_count": 1420,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "occasions": [
+      "Festival",
+      "Casual",
+      "Office Party"
+    ],
+    "delivery_days": 3,
+    "fabric": "100% Pure Tussar Silk",
+    "wash_care": "Dry Clean Only",
+    "pattern": "Handblock Print",
+    "sleeve": "Three-Quarter Sleeves",
+    "fit_note": "Authentic handicraft fit, breathable",
+    "keywords": [
+      "Pure tussar silk",
+      "Authentic handblock",
+      "Timeless elegance"
+    ],
+    "image_path": "assets/w.jpg",
+    "reviews": [
+      {
+        "user": "Sarita N.",
+        "size": "L",
+        "height": "5'6\"",
+        "rating": 5,
+        "comment": "Classic FabIndia craftsmanship. Pure tussar texture feels soft against skin.",
+        "date": "14 Aug 2025"
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "brand": "SOCH",
+    "name": "Women Emerald Green Embroidered Silk Blend Kurta",
+    "price": 2199,
+    "original_price": 4399,
+    "rating": 4.4,
+    "rating_count": 1150,
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "occasions": [
+      "Wedding Guest",
+      "Festival"
+    ],
+    "delivery_days": 4,
+    "fabric": "Silk Blend",
+    "wash_care": "Dry Clean Only",
+    "pattern": "Zardozi Work",
+    "sleeve": "Three-Quarter Sleeves",
+    "fit_note": "Flattering neck structure, true to size",
+    "keywords": [
+      "Rich emerald green",
+      "Zardozi embroidery",
+      "Great fit"
+    ],
+    "image_path": "assets/biba.jpg",
+    "reviews": [
+      {
+        "user": "Aditi M.",
+        "size": "S",
+        "height": "5'3\"",
+        "rating": 4.5,
+        "comment": "Deep jewel green color. Embroidery around neck is intricate and high quality.",
+        "date": "21 Aug 2025"
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "brand": "NAYO",
+    "name": "Women Floral Print Angrakha Style Kurta",
+    "price": 949,
+    "original_price": 1899,
+    "rating": 4.0,
+    "rating_count": 690,
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "occasions": [
+      "Casual",
+      "Date Night"
+    ],
+    "delivery_days": 2,
+    "fabric": "Cotton Rayon",
+    "wash_care": "Hand Wash",
+    "pattern": "Angrakha Tie-up",
+    "sleeve": "Short Sleeves",
+    "fit_note": "Adjustable tie waist, easy fit",
+    "keywords": [
+      "Adjustable waist",
+      "Casual chic",
+      "Lightweight"
+    ],
+    "image_path": "assets/global_desi.jpg",
+    "reviews": [
+      {
+        "user": "Latika B.",
+        "size": "M",
+        "height": "5'4\"",
+        "rating": 4,
+        "comment": "Angrakha string ties let you adjust waist tightness. Soft cotton fabric.",
+        "date": "06 Aug 2025"
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "brand": "DIVENA",
+    "name": "Women Gotta Patti Worked Cotton Anarkali Kurta",
+    "price": 1799,
+    "original_price": 3599,
+    "rating": 4.5,
+    "rating_count": 1670,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "occasions": [
+      "Festival",
+      "Wedding Guest"
+    ],
+    "delivery_days": 3,
+    "fabric": "100% Pure Cotton",
+    "wash_care": "Hand Wash Cold",
+    "pattern": "Gotta Patti",
+    "sleeve": "Three-Quarter Sleeves",
+    "fit_note": "Huge flare volume, comfortable cotton",
+    "keywords": [
+      "Huge flare volume",
+      "Pure cotton comfort",
+      "Heavy gotta work"
+    ],
+    "image_path": "assets/libas.jpg",
+    "reviews": [
+      {
+        "user": "Charu K.",
+        "size": "S",
+        "height": "5'2\"",
+        "rating": 5,
+        "comment": "The flare volume is massive! Perfect for twirling at festival celebrations.",
+        "date": "16 Aug 2025"
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "brand": "BIBA GIRLS",
+    "name": "Women Royal Blue Silk Embroidered Kurta with Trousers",
+    "price": 2299,
+    "original_price": 4799,
+    "rating": 4.6,
+    "rating_count": 1980,
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "occasions": [
+      "Wedding Guest",
+      "Festival"
+    ],
+    "delivery_days": 4,
+    "fabric": "Art Silk",
+    "wash_care": "Dry Clean Only",
+    "pattern": "Heavy Zari Threadwork",
+    "sleeve": "Three-Quarter Sleeves",
+    "fit_note": "Tailored royal fit, true to size",
+    "keywords": [
+      "Vibrant royal blue",
+      "Heavy threadwork",
+      "True to size"
+    ],
+    "image_path": "assets/biba.jpg",
+    "reviews": [
+      {
+        "user": "Sonia G.",
+        "size": "M",
+        "height": "5'5\"",
+        "rating": 5,
+        "comment": "Royal blue shade stands out in wedding photos! Trouser lining is very soft.",
+        "date": "28 Aug 2025"
+      }
+    ]
+  }
+]
