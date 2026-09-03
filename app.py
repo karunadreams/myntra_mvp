@@ -816,46 +816,14 @@ st.markdown("""
         position: relative !important;
     }
 
-    /* FIX 4: Quick Fit Setup Modal Card & Dark Backdrop Overlay */
-    .bottom-sheet-backdrop {
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        background: rgba(0, 0, 0, 0.6) !important;
-        z-index: 1000 !important;
-    }
-
-    div[data-testid="stVerticalBlock"]:has(#bottom-sheet-target),
-    div.stVerticalBlock:has(#bottom-sheet-target) {
-        position: fixed !important;
-        bottom: 30px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        width: 90% !important;
-        max-width: 400px !important;
-        background: #FFFFFF !important;
-        border-radius: 16px !important;
-        padding: 20px 20px 24px 20px !important;
-        z-index: 1001 !important;
-        box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4) !important;
-        border: 2px solid #FF3F6C !important;
-    }
-
-    /* Force Streamlit BaseWeb Dropdown Popover Menus to render ON TOP of Modal Card & Backdrop */
-    div[data-baseweb="popover"],
-    div[role="listbox"],
-    ul[role="listbox"] {
-        z-index: 1002 !important;
-    }
-
-    @media (max-width: 480px) {
-        div[data-testid="stVerticalBlock"]:has(#bottom-sheet-target) {
-            width: 92% !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-        }
+    /* Quick Fit Setup Inline Card */
+    .quick-fit-card {
+        background: #FFF5F7;
+        border: 2px solid #FF3F6C;
+        border-radius: 12px;
+        padding: 16px;
+        margin-top: 16px;
+        margin-bottom: 20px;
     }
 
     /* Category Card Interactive Buttons */
@@ -1149,44 +1117,43 @@ elif st.session_state.current_screen == "wishlist":
         st.markdown("<div style='height:120px;'></div>", unsafe_allow_html=True)
 
 # =========================================================
-# PAGE 3: BODY PROFILE SETUP MODAL (FIX 4: Bottom Sheet Modal)
+# =========================================================
+# PAGE 3: BODY PROFILE SETUP (Inline Quick Fit Card)
 # =========================================================
 if st.session_state.show_profile_modal:
-    st.markdown('<div class="bottom-sheet-backdrop"></div>', unsafe_allow_html=True)
-    
-    with st.container():
-        st.markdown('<div id="bottom-sheet-target"></div>', unsafe_allow_html=True)
-        st.markdown(clean_html("""
-        <div style="margin-bottom: 14px;">
-            <h3 style="margin: 0 0 4px 0; color: #282C3F; font-weight: 800; font-size: 18px;">⚡ Quick Fit Setup</h3>
-            <p style="margin: 0; font-size: 13px; color: #696B79;">Takes 30 seconds. Never asked again.</p>
-        </div>
-        """), unsafe_allow_html=True)
+    st.markdown(clean_html("""
+    <div style="background: #FFF5F7; border: 2px solid #FF3F6C; border-radius: 12px; padding: 16px; margin-top: 16px; margin-bottom: 20px;">
+        <h3 style="margin: 0 0 4px 0; color: #282C3F; font-weight: 800; font-size: 18px;">⚡ Quick Fit Setup</h3>
+        <p style="margin: 0; font-size: 12px; color: #696B79;">Takes 30 seconds. Never asked again.</p>
+    </div>
+    """), unsafe_allow_html=True)
 
-        prof_h = st.selectbox(
-            "Select Height Range:",
-            options=["5'0\"–5'2\"", "5'3\"–5'5\"", "5'6\"+"],
-            index=1,
-            key="mod_height_sel"
-        )
+    prof_h = st.selectbox(
+        "1. Select Height Range:",
+        options=["5'0\"–5'2\"", "5'3\"–5'5\"", "5'6\"+"],
+        index=1,
+        key="mod_height_sel"
+    )
 
-        prof_s = st.selectbox(
-            "Select Usual Size:",
-            options=["XS", "S", "M", "L", "XL"],
-            index=1,
-            key="mod_size_sel"
-        )
+    prof_s = st.selectbox(
+        "2. Select Usual Size:",
+        options=["XS", "S", "M", "L", "XL"],
+        index=1,
+        key="mod_size_sel"
+    )
 
-        st.markdown("<div style='height:14px;'></div>", unsafe_allow_html=True)
-        if st.button("SAVE & COMPARE →", type="primary", use_container_width=True, key="save_compare_btn"):
-            st.session_state.body_profile = {
-                "height": prof_h,
-                "size": prof_s,
-                "is_saved": True
-            }
-            st.session_state.show_profile_modal = False
-            st.session_state.current_screen = "comparison"
-            st.rerun()
+    st.markdown("<div style='height:14px;'></div>", unsafe_allow_html=True)
+    if st.button("SAVE & COMPARE →", type="primary", use_container_width=True, key="save_compare_btn"):
+        st.session_state.body_profile = {
+            "height": prof_h,
+            "size": prof_s,
+            "is_saved": True
+        }
+        st.session_state.show_profile_modal = False
+        st.session_state.current_screen = "comparison"
+        st.rerun()
+
+    st.markdown("<div style='height:80px;'></div>", unsafe_allow_html=True)
 
 # =========================================================
 # PAGE 4: COMPARISON SCREEN (2-Product Side-by-Side Carousel)
