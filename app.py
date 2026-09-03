@@ -632,7 +632,31 @@ st.markdown("""
         overflow: visible !important;
         text-overflow: clip !important;
         letter-spacing: -0.2px !important;
+    /* Category Card Interactive Buttons */
+    button[key*="category_item_"] {
+        background-color: #FFFFFF !important;
+        color: #282C3F !important;
+        border: 1px solid #EAEAEC !important;
+        border-radius: 12px !important;
+        padding: 12px 14px !important;
+        height: auto !important;
+        min-height: 52px !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
         text-transform: none !important;
+        text-align: left !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        white-space: pre-line !important;
+    }
+
+    button[key*="category_item_"]:hover {
+        border-color: #FF3F6C !important;
+        background-color: #FFF5F7 !important;
+        color: #FF3F6C !important;
+        box-shadow: 0 4px 12px rgba(255, 63, 108, 0.15) !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -714,7 +738,10 @@ with st.container():
     with h_col2:
         btn_c1, btn_c2, btn_c3 = st.columns(3)
         with btn_c1:
-            st.markdown("<div style='text-align:center; font-size:16px;'>🔍</div>", unsafe_allow_html=True)
+            if st.button("🔍", key="top_search_btn"):
+                st.session_state.show_profile_modal = False
+                st.session_state.current_screen = "home"
+                st.rerun()
         with btn_c2:
             if st.button(f"❤️ {wishlist_cnt}", key="top_wish_btn", type="primary" if st.session_state.current_screen == "wishlist" else "secondary"):
                 st.session_state.show_profile_modal = False
@@ -989,20 +1016,13 @@ elif st.session_state.current_screen == "categories":
         {"name": "Loungewear & Casuals", "desc": "Soft Cotton Everyday Wear", "icon": "👚"}
     ]
 
-    for cat in cat_list:
-        st.markdown(clean_html(f"""
-        <div style="background:#FFFFFF; border:1px solid #EAEAEC; border-radius:10px; padding:12px; margin-bottom:10px; display:flex; align-items:center; gap:12px; box-shadow:0 2px 6px rgba(0,0,0,0.04);">
-            <div style="font-size:24px;">{cat['icon']}</div>
-            <div>
-                <div style="font-weight:800; font-size:14px; color:#282C3F;">{cat['name']}</div>
-                <div style="font-size:11px; color:#696B79;">{cat['desc']}</div>
-            </div>
-        </div>
-        """), unsafe_allow_html=True)
-        if st.button(f"BROWSE {cat['name'].upper()}", key=f"cat_btn_{cat['name']}", type="primary", use_container_width=True):
+    for idx, cat in enumerate(cat_list):
+        btn_label = f"{cat['icon']}  {cat['name']}\n{cat['desc']}"
+        if st.button(btn_label, key=f"category_item_{idx}", use_container_width=True):
+            st.session_state.show_profile_modal = False
             st.session_state.current_screen = "home"
             st.rerun()
-        st.markdown("<div style='height:6px;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
 
 # =========================================================
 # PROFILE SCREEN (Interactive Body Fit Profile Settings)
