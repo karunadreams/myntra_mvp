@@ -667,6 +667,40 @@ st.markdown("""
         margin: 0 !important;
     }
 
+    /* CRITICAL MOBILE RESPONSIVE UN-STACKING FIX:
+       Force Streamlit columns to remain HORIZONTAL flex rows on all screen widths (including mobile browsers) */
+    div[data-testid="stHorizontalBlock"],
+    div.stHorizontalBlock {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        width: 100% !important;
+    }
+
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"],
+    div[data-testid="stHorizontalBlock"] > div.stColumn,
+    div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"],
+    div.stHorizontalBlock > div[data-testid="column"] {
+        min-width: 0 !important;
+    }
+
+    /* Bottom Navigation Bar 5-Column Inline Row */
+    div[data-testid="stHorizontalBlock"]:has(#sticky-bnav-target) {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+    }
+
+    div[data-testid="stHorizontalBlock"]:has(#sticky-bnav-target) > div[data-testid="column"] {
+        flex: 1 1 0% !important;
+        min-width: 0 !important;
+        padding: 0 1px !important;
+    }
+
     /* Mobile Viewport Optimization (< 480px) */
     @media (max-width: 480px) {
         .block-container {
