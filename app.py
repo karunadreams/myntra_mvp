@@ -730,6 +730,8 @@ st.markdown("""
 # ---------------------------------------------------------
 # SESSION STATE INITIALIZATION
 # ---------------------------------------------------------
+if "comp_pair_idx" not in st.session_state:
+    st.session_state.comp_pair_idx = 0
 if "screen" in st.query_params:
     qp_scr = st.query_params["screen"]
     if qp_scr in ["home", "wishlist", "comparison", "categories", "profile", "cart"]:
@@ -1005,7 +1007,7 @@ if st.session_state.show_profile_modal:
     st.markdown("<div style='height:80px;'></div>", unsafe_allow_html=True)
 
 # =========================================================
-# PAGE 4: COMPARISON SCREEN
+# PAGE 4: COMPARISON SCREEN (2-Product Side-by-Side Carousel)
 # =========================================================
 elif st.session_state.current_screen == "comparison" and not st.session_state.show_profile_modal:
     
@@ -1020,27 +1022,96 @@ elif st.session_state.current_screen == "comparison" and not st.session_state.sh
             st.session_state.show_profile_modal = True
             st.rerun()
 
-    st.markdown("<div class='section-title' style='margin-top:8px;'>Comparison Matrix</div>", unsafe_allow_html=True)
+    st.markdown("<div class='section-title' style='margin-top:8px;'>Decision Mode · Side-by-Side Comparison</div>", unsafe_allow_html=True)
 
     comp_prods = [p for p in PRODUCTS if p["id"] in st.session_state.selected_for_compare]
+    num_items = len(comp_prods)
 
-    if not comp_prods:
-        st.warning("No items selected for comparison. Please select 2 or more items from Wishlist!")
-        if st.button("← GO TO WISHLIST"):
+    if num_items == 0:
+        st.warning("No items selected for comparison. Please select items from your Wishlist!")
+        if st.button("← GO TO WISHLIST", type="primary", use_container_width=True):
             st.session_state.current_screen = "wishlist"
             st.rerun()
+    elif num_items == 1:
+        prod = comp_prods[0]
+        st.info("💡 Select 1 more item from Wishlist to compare side-by-side!")
+        
+        user_size = st.session_state.body_profile["size"]
+        user_height = st.session_state.body_profile["height"]
+        
+        img_b64 = get_image_base64(prod["image_path"])
+        img_html = f'<img src="{img_b64}" style="width:100%; height:200px; border-radius:8px; object-fit:cover; margin-bottom:8px;" />' if img_b64 else ''
+        
+        stock_htmls = []
+        for s, avail in prod["sizes_stock"].items():
+            cls = "stock-green" if avail else "stock-red"
+            symbol = "🟢" if avail else "🔴"
+            stock_htmls.append(f'<span class="stock-pill {cls}">{s}{symbol}</span>')
+        stock_row = "".join(stock_htmls)
+
+        kw_htmls = "".join([f'<span class="kw-pill">{kw}</span>' for kw in prod["keywords"]])
+
+        col_card_html = f"""
+        <div class="comp-col-card">
+            {img_html}
+            <div style="font-weight:900; font-size:15px; text-transform:uppercase; color:#282C3F;">{prod['brand']}</div>
+            <div style="color:#696B79; font-size:12px; margin-bottom:4px;">{prod['name']}</div>
+            <div style="font-weight:800; font-size:15px; color:#282C3F;">₹{prod['price']:,}</div>
+            <div style="color:#03A685; font-weight:700; font-size:13px; margin-bottom:4px;">⭐ {prod['rating']}</div>
+            <div style="margin-bottom:6px;">{stock_row}</div>
+            <div style="font-size:11px; color:#535766; margin-bottom:6px;">🚚 Arrives in {prod['delivery_days']} days</div>
+            <div class="fit-box">"Fit note ({user_size} · {user_height}): {prod['fit_note']}"</div>
+            <div style="margin-bottom:8px;">{kw_htmls}</div>
+        </div>
+        """
+        st.markdown(clean_html(col_card_html), unsafe_allow_html=True)
+        
+        if prod["id"] in st.session_state.cart_ids:
+            st.button("✓ IN BAG", key=f"cart_btn_{prod['id']}", disabled=True, use_container_width=True)
+        else:
+            if st.button("ADD TO CART", key=f"cart_btn_{prod['id']}", type="primary", use_container_width=True):
+                st.session_state.cart_ids.append(prod["id"])
+                st.toast(f"Added {prod['brand']} {prod['name']} to Bag! 🛍️")
+                st.rerun()
     else:
-        winner_item = max(comp_prods, key=lambda x: x["rating"])
-        num_items = len(comp_prods)
-        comp_cols = st.columns(num_items)
+        # 2-Product Side-by-Side Comparison Carousel (Left vs Right)
+        user_size = st.session_state.body_profile["size"]
+        user_height = st.session_state.body_profile["height"]
 
-        for idx, prod in enumerate(comp_prods):
-            user_size = st.session_state.body_profile["size"]
-            user_height = st.session_state.body_profile["height"]
+        idx_a = st.session_state.comp_pair_idx % num_items
+        idx_b = (st.session_state.comp_pair_idx + 1) % num_items
+        if idx_a == idx_b:
+            idx_b = (idx_a + 1) % num_items
 
-            with comp_cols[idx]:
+        prod_a = comp_prods[idx_a]
+        prod_b = comp_prods[idx_b]
+
+        # Stepping Navigation Header
+        nav_c1, nav_c2, nav_c3 = st.columns([1.2, 2, 1.2])
+        with nav_c1:
+            if st.button("◀ PREV", key="comp_prev_pair", use_container_width=True):
+                st.session_state.comp_pair_idx = (st.session_state.comp_pair_idx - 1) % num_items
+                st.rerun()
+        with nav_c2:
+            st.markdown(clean_html(f"""
+            <div style="text-align:center; font-size:11px; font-weight:800; color:#FF3F6C; background:#FFF5F7; padding:6px 2px; border-radius:8px; border:1px solid #FF3F6C; white-space:nowrap;">
+                Item {idx_a+1} vs Item {idx_b+1} (of {num_items})
+            </div>
+            """), unsafe_allow_html=True)
+        with nav_c3:
+            if st.button("NEXT ▶", key="comp_next_pair", use_container_width=True):
+                st.session_state.comp_pair_idx = (st.session_state.comp_pair_idx + 1) % num_items
+                st.rerun()
+
+        st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
+
+        # 2 Columns Side-by-Side (Left vs Right)
+        c_left, c_right = st.columns(2)
+        
+        for col, prod in [(c_left, prod_a), (c_right, prod_b)]:
+            with col:
                 img_b64 = get_image_base64(prod["image_path"])
-                img_html = f'<img src="{img_b64}" style="width:100%; height:120px; border-radius:6px; object-fit:cover; margin-bottom:6px;" />' if img_b64 else ''
+                img_html = f'<img src="{img_b64}" style="width:100%; height:145px; border-radius:8px; object-fit:cover; margin-bottom:6px;" />' if img_b64 else ''
                 
                 stock_htmls = []
                 for s, avail in prod["sizes_stock"].items():
@@ -1054,13 +1125,13 @@ elif st.session_state.current_screen == "comparison" and not st.session_state.sh
                 col_card_html = f"""
                 <div class="comp-col-card">
                     {img_html}
-                    <div style="font-weight:800; text-transform:uppercase; color:#282C3F;">{prod['brand']}</div>
-                    <div style="color:#696B79; font-size:10px; margin-bottom:4px;">{prod['name']}</div>
-                    <div style="font-weight:800; color:#282C3F;">₹{prod['price']:,}</div>
-                    <div style="color:#03A685; font-weight:700; margin-bottom:4px;">⭐ {prod['rating']}</div>
+                    <div style="font-weight:900; font-size:12px; text-transform:uppercase; color:#282C3F; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{prod['brand']}</div>
+                    <div style="color:#696B79; font-size:10px; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{prod['name']}</div>
+                    <div style="font-weight:800; font-size:13px; color:#282C3F;">₹{prod['price']:,}</div>
+                    <div style="color:#03A685; font-weight:700; font-size:11px; margin-bottom:4px;">⭐ {prod['rating']}</div>
                     <div style="margin-bottom:4px;">{stock_row}</div>
-                    <div style="font-size:10px; color:#535766; margin-bottom:6px;">🚚 Arrives in {prod['delivery_days']} days</div>
-                    <div class="fit-box">"People your size ({user_size} · {user_height}) say: {prod['fit_note']}"</div>
+                    <div style="font-size:9.5px; color:#535766; margin-bottom:6px;">🚚 {prod['delivery_days']} days</div>
+                    <div class="fit-box">"Fit ({user_size}): {prod['fit_note']}"</div>
                     <div style="margin-bottom:8px;">{kw_htmls}</div>
                 </div>
                 """
@@ -1074,9 +1145,11 @@ elif st.session_state.current_screen == "comparison" and not st.session_state.sh
                         st.toast(f"Added {prod['brand']} {prod['name']} to Bag! 🛍️")
                         st.rerun()
 
+        # Recommendation Banner
+        pair_winner = max([prod_a, prod_b], key=lambda x: x["rating"])
         st.markdown(clean_html(f"""
         <div class="rec-banner">
-            ✨ Based on ratings and fit reviews from people your size ({user_size} · {user_height}), <b>{winner_item['brand']} {winner_item['name']}</b> (⭐{winner_item['rating']}) has the highest confidence score.
+            ✨ Better Choice: <b>{pair_winner['brand']} {pair_winner['name']}</b> (⭐{pair_winner['rating']}) has higher customer fit ratings for size {user_size}.
         </div>
         """), unsafe_allow_html=True)
 
