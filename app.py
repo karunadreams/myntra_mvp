@@ -597,6 +597,39 @@ st.markdown("""
         font-weight: 700;
         text-align: center;
     }
+
+    /* Always Fixed Sticky Bottom Navigation Bar (Never disappears on scroll) */
+    div[data-testid="stHorizontalBlock"]:has(button[key*="bnav_"]) {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 100% !important;
+        max-width: 430px !important;
+        background: #FFFFFF !important;
+        border-top: 1px solid #EAEAEC !important;
+        padding: 6px 8px 10px 8px !important;
+        z-index: 999999 !important;
+        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08) !important;
+        margin: 0 !important;
+    }
+
+    div[data-testid="column"]:has(button[key*="bnav_"]) {
+        padding: 0 2px !important;
+    }
+
+    button[key*="bnav_"] {
+        font-size: 10px !important;
+        font-weight: 800 !important;
+        padding: 2px 0 !important;
+        height: 44px !important;
+        min-height: 44px !important;
+        line-height: 1.2 !important;
+        white-space: nowrap !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -1059,44 +1092,42 @@ elif st.session_state.current_screen == "cart":
             st.success("🎉 Order Placed Successfully! Thank you for shopping on Myntra.")
 
 # ---------------------------------------------------------
-# INTERACTIVE STICKY BOTTOM NAVIGATION BAR
+# ALWAYS FIXED STICKY BOTTOM NAVIGATION BAR
 # ---------------------------------------------------------
 wishlist_count = len(st.session_state.wishlist_ids)
 cart_count = len(st.session_state.cart_ids)
-
-st.markdown("<div style='height:20px;'></div>", unsafe_allow_html=True)
 
 with st.container():
     b_col1, b_col2, b_col3, b_col4, b_col5 = st.columns(5)
     
     with b_col1:
-        if st.button("🏠\nHome", key="bnav_home", type="primary" if st.session_state.current_screen == "home" else "secondary", use_container_width=True):
+        if st.button("🏠 Home", key="bnav_home", type="primary" if st.session_state.current_screen == "home" else "secondary", use_container_width=True):
             st.session_state.show_profile_modal = False
             st.session_state.current_screen = "home"
             st.rerun()
             
     with b_col2:
-        if st.button("📂\nCategory", key="bnav_cat", type="primary" if st.session_state.current_screen == "categories" else "secondary", use_container_width=True):
+        if st.button("📂 Category", key="bnav_cat", type="primary" if st.session_state.current_screen == "categories" else "secondary", use_container_width=True):
             st.session_state.show_profile_modal = False
             st.session_state.current_screen = "categories"
             st.rerun()
             
     with b_col3:
-        w_lbl = f"❤️ {wishlist_count}\nWishlist" if wishlist_count > 0 else "❤️\nWishlist"
+        w_lbl = f"❤️ Wishlist ({wishlist_count})" if wishlist_count > 0 else "❤️ Wishlist"
         if st.button(w_lbl, key="bnav_wish", type="primary" if st.session_state.current_screen == "wishlist" else "secondary", use_container_width=True):
             st.session_state.show_profile_modal = False
             st.session_state.current_screen = "wishlist"
             st.rerun()
             
     with b_col4:
-        c_lbl = f"🛍️ {cart_count}\nBag" if cart_count > 0 else "🛍️\nBag"
+        c_lbl = f"🛍️ Bag ({cart_count})" if cart_count > 0 else "🛍️ Bag"
         if st.button(c_lbl, key="bnav_bag", type="primary" if st.session_state.current_screen == "cart" else "secondary", use_container_width=True):
             st.session_state.show_profile_modal = False
             st.session_state.current_screen = "cart"
             st.rerun()
             
     with b_col5:
-        if st.button("👤\nProfile", key="bnav_prof", type="primary" if st.session_state.current_screen == "profile" else "secondary", use_container_width=True):
+        if st.button("👤 Profile", key="bnav_prof", type="primary" if st.session_state.current_screen == "profile" else "secondary", use_container_width=True):
             st.session_state.show_profile_modal = False
             st.session_state.current_screen = "profile"
             st.rerun()
