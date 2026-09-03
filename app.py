@@ -1026,11 +1026,6 @@ elif st.session_state.current_screen == "categories":
     """
     st.markdown(clean_html(cat_html), unsafe_allow_html=True)
 
-    if st.button("🪔 EXPLORE ALL 20 KURTAS & SETS ON HOME", type="primary", use_container_width=True, key="cat_home_btn"):
-        st.session_state.show_profile_modal = False
-        st.session_state.current_screen = "home"
-        st.rerun()
-
 # =========================================================
 # PROFILE SCREEN (Interactive Body Fit Profile Settings)
 # =========================================================
