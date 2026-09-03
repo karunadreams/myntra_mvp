@@ -37,7 +37,7 @@ def load_products() -> List[Product]:
             "fit_note": "Runs small — order one size up · 23 matching reviews",
             "keywords": ["Runs small", "Color matches photos", "Good for petite frame"],
             "image_path": "assets/libas.jpg",
-            "occasion": "🪔 Diwali 2024"
+            "occasion": "🪔 Diwali 2026"
         },
         {
             "id": 2,
@@ -52,7 +52,7 @@ def load_products() -> List[Product]:
             "fit_note": "Fits true to size, soft waist fit · 42 matching reviews",
             "keywords": ["Fits true to size", "Soft cotton fabric", "Flattering silhouette"],
             "image_path": "assets/w.jpg",
-            "occasion": "🪔 Diwali 2024"
+            "occasion": "🪔 Diwali 2026"
         },
         {
             "id": 3,
@@ -67,7 +67,7 @@ def load_products() -> List[Product]:
             "fit_note": "Slightly long hemline for petite height · 18 matching reviews",
             "keywords": ["Rich festive look", "Heavy embroidery", "Pair with heels"],
             "image_path": "assets/biba.jpg",
-            "occasion": "🪔 Diwali 2024"
+            "occasion": "🪔 Diwali 2026"
         },
         {
             "id": 4,
@@ -112,7 +112,7 @@ def load_products() -> List[Product]:
             "fit_note": "Flattering A-line flared cut · 19 matching reviews",
             "keywords": ["Vibrant pattern", "Elegant flare", "Soft material"],
             "image_path": "assets/libas.jpg",
-            "occasion": "🪔 Diwali 2024"
+            "occasion": "🪔 Diwali 2026"
         },
         {
             "id": 7,
@@ -127,7 +127,7 @@ def load_products() -> List[Product]:
             "fit_note": "Classic straight fit, true to size · 27 matching reviews",
             "keywords": ["Office ready", "Sturdy stitch", "Clean hemline"],
             "image_path": "assets/aurelia.jpg",
-            "occasion": "🪔 Diwali 2024"
+            "occasion": "🪔 Diwali 2026"
         },
         {
             "id": 8,
@@ -142,7 +142,7 @@ def load_products() -> List[Product]:
             "fit_note": "Grand flare, runs slightly long · 14 matching reviews",
             "keywords": ["Festive woven", "Heavy flare", "Royal look"],
             "image_path": "assets/w.jpg",
-            "occasion": "🪔 Diwali 2024"
+            "occasion": "🪔 Diwali 2026"
         },
         {
             "id": 9,
@@ -157,7 +157,7 @@ def load_products() -> List[Product]:
             "fit_note": "Pure handblock cotton, very breathable · 54 matching reviews",
             "keywords": ["Pure cotton", "Traditional block print", "Comfortable fit"],
             "image_path": "assets/biba.jpg",
-            "occasion": "🪔 Diwali 2024"
+            "occasion": "🪔 Diwali 2026"
         },
         {
             "id": 10,
@@ -172,7 +172,7 @@ def load_products() -> List[Product]:
             "fit_note": "Stunning festive flair, slim waist cut · 38 matching reviews",
             "keywords": ["Mirror work", "Party wear", "High quality finish"],
             "image_path": "assets/global_desi.jpg",
-            "occasion": "🪔 Diwali 2024"
+            "occasion": "🪔 Diwali 2026"
         },
         {
             "id": 11,
@@ -232,7 +232,7 @@ def load_products() -> List[Product]:
             "fit_note": "Super comfortable daily cotton · 29 matching reviews",
             "keywords": ["Budget friendly", "Soft cotton", "Everyday staple"],
             "image_path": "assets/global_desi.jpg",
-            "occasion": "🪔 Diwali 2024"
+            "occasion": "🪔 Diwali 2026"
         },
         {
             "id": 15,
@@ -247,7 +247,7 @@ def load_products() -> List[Product]:
             "fit_note": "Rich paisley colors, true fit · 20 matching reviews",
             "keywords": ["Paisley motif", "Dupatta included", "Vibrant colors"],
             "image_path": "assets/aurelia.jpg",
-            "occasion": "🪔 Diwali 2024"
+            "occasion": "🪔 Diwali 2026"
         },
         {
             "id": 16,
@@ -262,7 +262,7 @@ def load_products() -> List[Product]:
             "fit_note": "Neat neckline embroidery · 33 matching reviews",
             "keywords": ["Elegant neck work", "Side slit", "Graceful silhouette"],
             "image_path": "assets/libas.jpg",
-            "occasion": "🪔 Diwali 2024"
+            "occasion": "🪔 Diwali 2026"
         },
         {
             "id": 17,
@@ -292,7 +292,7 @@ def load_products() -> List[Product]:
             "fit_note": "Flowy festive flared hem · 16 matching reviews",
             "keywords": ["Flared hem", "Subtle print", "Lightweight rayon"],
             "image_path": "assets/biba.jpg",
-            "occasion": "🪔 Diwali 2024"
+            "occasion": "🪔 Diwali 2026"
         },
         {
             "id": 19,
@@ -307,7 +307,7 @@ def load_products() -> List[Product]:
             "fit_note": "Designer luxury zari weave · 65 matching reviews",
             "keywords": ["Designer saree", "Zari border", "Premium silk blend"],
             "image_path": "assets/aurelia.jpg",
-            "occasion": "🪔 Diwali 2024"
+            "occasion": "🪔 Diwali 2026"
         },
         {
             "id": 20,
@@ -1026,7 +1026,7 @@ elif st.session_state.current_screen == "wishlist":
 
     st.markdown(clean_html(f"""
     <div class="pink-banner-chip">
-        <span>You have {len(st.session_state.wishlist_ids)} items saved for Diwali 2024 · 12 days left</span>
+        <span>You have {len(st.session_state.wishlist_ids)} items saved for Diwali 2026 · 12 days left</span>
     </div>
     """), unsafe_allow_html=True)
 
