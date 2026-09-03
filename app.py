@@ -1156,7 +1156,13 @@ elif st.session_state.current_screen == "comparison" and not st.session_state.sh
                 st.session_state.comp_pair_idx = (st.session_state.comp_pair_idx + 1) % num_items
                 st.rerun()
 
-        st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
+        # Recommendation Banner (Prominently placed at TOP for instant visibility without scrolling)
+        pair_winner = max([prod_a, prod_b], key=lambda x: x["rating"])
+        st.markdown(clean_html(f"""
+        <div class="rec-banner" style="margin-top:8px; margin-bottom:10px;">
+            ✨ Better Choice: <b>{pair_winner['brand']} {pair_winner['name']}</b> (⭐{pair_winner['rating']}) has higher customer fit ratings for size {user_size}.
+        </div>
+        """), unsafe_allow_html=True)
 
         # 2 Columns Side-by-Side (Left vs Right)
         c_left, c_right = st.columns(2)
@@ -1198,13 +1204,8 @@ elif st.session_state.current_screen == "comparison" and not st.session_state.sh
                         st.toast(f"Added {prod['brand']} {prod['name']} to Bag! 🛍️")
                         st.rerun()
 
-        # Recommendation Banner
-        pair_winner = max([prod_a, prod_b], key=lambda x: x["rating"])
-        st.markdown(clean_html(f"""
-        <div class="rec-banner">
-            ✨ Better Choice: <b>{pair_winner['brand']} {pair_winner['name']}</b> (⭐{pair_winner['rating']}) has higher customer fit ratings for size {user_size}.
-        </div>
-        """), unsafe_allow_html=True)
+        # Clear scroll space at bottom above sticky bnav
+        st.markdown("<div style='height:120px;'></div>", unsafe_allow_html=True)
 
 # =========================================================
 # CATEGORIES SCREEN (Interactive Category Explorer)
