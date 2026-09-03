@@ -760,34 +760,30 @@ st.markdown("""
         margin: 0 !important;
         padding: 0 !important;
         overflow: visible !important;
+        position: relative !important;
+        z-index: 9999 !important;
     }
 
     button[key*="home_heart_"] {
-        position: absolute !important;
-        top: 10px !important;
-        right: 10px !important;
-        z-index: 9999 !important;
+        position: relative !important;
+        top: 12px !important;
+        left: calc(100% - 42px) !important;
+        z-index: 999999 !important;
         background: rgba(255, 255, 255, 0.95) !important;
         border: 1px solid #EAEAEC !important;
         border-radius: 50% !important;
-        width: 32px !important;
-        height: 32px !important;
-        min-width: 32px !important;
-        min-height: 32px !important;
+        width: 30px !important;
+        height: 30px !important;
+        min-width: 30px !important;
+        min-height: 30px !important;
         padding: 0 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        font-size: 16px !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+        font-size: 15px !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
         cursor: pointer !important;
         margin: 0 !important;
-    }
-
-    div[data-testid="column"]:has(button[key*="home_heart_"]),
-    div.stColumn:has(button[key*="home_heart_"]),
-    div[data-testid="stColumn"]:has(button[key*="home_heart_"]) {
-        position: relative !important;
     }
 
     /* FIX 2: Sticky Selective Compare Button above Bottom Navigation Bar */
