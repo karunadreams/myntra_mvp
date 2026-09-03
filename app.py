@@ -664,18 +664,29 @@ st.markdown("""
     }
 
     div[data-testid="stHorizontalBlock"]:has(#sticky-bnav-target) button {
-        font-size: 9px !important;
+        font-size: 8.5px !important;
         font-weight: 800 !important;
         padding: 2px 0 !important;
-        height: 44px !important;
-        min-height: 44px !important;
-        line-height: 1.2 !important;
+        height: 42px !important;
+        min-height: 42px !important;
+        line-height: 1.1 !important;
         white-space: nowrap !important;
         word-break: keep-all !important;
         text-transform: none !important;
         border-radius: 8px !important;
         overflow: visible !important;
         letter-spacing: -0.2px !important;
+    }
+
+    /* Wishlist Remove Button - Clean Single Line */
+    button[key*="w_rem_"] {
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        padding: 3px 8px !important;
+        height: 32px !important;
+        min-height: 32px !important;
+        white-space: nowrap !important;
+        text-transform: none !important;
     }
 
     /* Category Card Interactive Buttons */
@@ -923,9 +934,9 @@ elif st.session_state.current_screen == "wishlist":
                 """
                 st.markdown(clean_html(row_html), unsafe_allow_html=True)
                 
-                c_del1, c_del2 = st.columns([3, 1])
+                c_del1, c_del2 = st.columns([1.5, 1])
                 with c_del2:
-                    if st.button("❤️ REMOVE", key=f"w_rem_{prod['id']}", use_container_width=True):
+                    if st.button("🗑️ Remove", key=f"w_rem_{prod['id']}", use_container_width=True):
                         toggle_wishlist(prod["id"])
                         st.rerun()
 
