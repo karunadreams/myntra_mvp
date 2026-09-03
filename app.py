@@ -751,13 +751,23 @@ st.markdown("""
         text-transform: none !important;
     }
 
-    /* FIX 1: Home Screen Heart Icon Button on Top-Right Corner of Image */
+    /* Home Screen Heart Icon Button Overlay inside Top Corner of Product Image */
+    div[data-testid="element-container"]:has(button[key*="home_heart_"]),
+    div.stElementContainer:has(button[key*="home_heart_"]),
+    div.element-container:has(button[key*="home_heart_"]) {
+        height: 0 !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+    }
+
     button[key*="home_heart_"] {
         position: absolute !important;
-        top: 8px !important;
-        right: 8px !important;
-        z-index: 20 !important;
-        background: rgba(255, 255, 255, 0.92) !important;
+        top: 10px !important;
+        right: 10px !important;
+        z-index: 9999 !important;
+        background: rgba(255, 255, 255, 0.95) !important;
         border: 1px solid #EAEAEC !important;
         border-radius: 50% !important;
         width: 32px !important;
@@ -768,12 +778,15 @@ st.markdown("""
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        font-size: 15px !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+        font-size: 16px !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
         cursor: pointer !important;
+        margin: 0 !important;
     }
 
-    div[data-testid="column"]:has(button[key*="home_heart_"]) {
+    div[data-testid="column"]:has(button[key*="home_heart_"]),
+    div.stColumn:has(button[key*="home_heart_"]),
+    div[data-testid="stColumn"]:has(button[key*="home_heart_"]) {
         position: relative !important;
     }
 
