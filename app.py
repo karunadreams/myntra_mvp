@@ -602,7 +602,7 @@ st.markdown("""
     .block-container {
         max-width: 430px !important;
         padding-top: 6px !important;
-        padding-bottom: 85px !important;
+        padding-bottom: 140px !important;
         padding-left: 12px !important;
         padding-right: 12px !important;
         margin: 0 auto !important;
@@ -979,7 +979,7 @@ if st.session_state.show_profile_modal:
     )
 
     st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("SAVE & COMPARE →", type="primary", use_container_width=True):
+    if st.button("SAVE & COMPARE →", type="primary", use_container_width=True, key="save_compare_btn"):
         st.session_state.body_profile = {
             "height": prof_h,
             "size": prof_s,
@@ -988,6 +988,8 @@ if st.session_state.show_profile_modal:
         st.session_state.show_profile_modal = False
         st.session_state.current_screen = "comparison"
         st.rerun()
+
+    st.markdown("<div style='height:80px;'></div>", unsafe_allow_html=True)
 
 # =========================================================
 # PAGE 4: COMPARISON SCREEN
