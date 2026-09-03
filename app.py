@@ -751,35 +751,42 @@ st.markdown("""
         text-transform: none !important;
     }
 
-    /* Heart Badge Button directly inside Product Image Top-Right Corner */
-    .grid-img-wrap {
-        position: relative !important;
-        width: 100%;
-        height: 160px;
-    }
-
-    .heart-badge-btn {
+    /* Native Streamlit Heart Button Positioned inside Top-Right Corner of Product Image */
+    div[data-testid="element-container"]:has(button[key*="home_heart_"]),
+    div.stElementContainer:has(button[key*="home_heart_"]),
+    div.element-container:has(button[key*="home_heart_"]) {
         position: absolute !important;
         top: 8px !important;
         right: 8px !important;
-        z-index: 99 !important;
+        z-index: 99999 !important;
+        width: auto !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    button[key*="home_heart_"] {
         background: rgba(255, 255, 255, 0.95) !important;
         border: 1px solid #EAEAEC !important;
         border-radius: 50% !important;
         width: 32px !important;
         height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        padding: 0 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        font-size: 15px !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18) !important;
-        text-decoration: none !important;
+        font-size: 16px !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
         cursor: pointer !important;
+        margin: 0 !important;
     }
 
-    .heart-badge-btn:hover {
-        transform: scale(1.08);
-        box-shadow: 0 4px 12px rgba(255, 63, 108, 0.25) !important;
+    div[data-testid="column"]:has(button[key*="home_heart_"]),
+    div.stColumn:has(button[key*="home_heart_"]),
+    div[data-testid="stColumn"]:has(button[key*="home_heart_"]) {
+        position: relative !important;
     }
 
     /* FIX 2: Sticky Selective Compare Button above Bottom Navigation Bar */
@@ -970,15 +977,6 @@ def toggle_wishlist(prod_id: int):
         if key_name in st.session_state:
             del st.session_state[key_name]
 
-if "toggle_wishlist" in st.query_params:
-    try:
-        w_id = int(st.query_params["toggle_wishlist"])
-        toggle_wishlist(w_id)
-    except Exception:
-        pass
-    st.query_params.clear()
-    st.rerun()
-
 # ---------------------------------------------------------
 # INTERACTIVE TOP NAVBAR HEADER
 # ---------------------------------------------------------
@@ -1033,13 +1031,18 @@ if st.session_state.current_screen == "home":
                 img_tag = f'<img src="{img_b64}" class="grid-img" />' if img_b64 else ''
                 heart_icon = "❤️" if is_wishlisted else "🤍"
 
+                # Native Streamlit Heart Button with on_click callback (No URL page refreshes!)
+                st.button(
+                    heart_icon,
+                    key=f"home_heart_{prod['id']}",
+                    on_click=toggle_wishlist,
+                    args=(prod["id"],)
+                )
+
                 card_html = f"""
                 <div class="grid-card">
                     <div class="grid-img-wrap">
                         {img_tag}
-                        <a href="?toggle_wishlist={prod['id']}" target="_self" class="heart-badge-btn">
-                            {heart_icon}
-                        </a>
                     </div>
                     <div class="grid-card-body">
                         <div class="card-brand">{prod['brand']}</div>
