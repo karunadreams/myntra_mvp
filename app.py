@@ -752,19 +752,37 @@ st.markdown("""
     }
 
     /* Native Streamlit Heart Button Positioned inside Top-Right Corner of Product Image */
-    button[key*="home_heart_"] {
-        position: relative !important;
+    div[data-testid="stColumn"] > div:first-child,
+    div[data-testid="column"] > div:first-child,
+    div.stColumn > div:first-child {
+        position: absolute !important;
         top: 10px !important;
-        left: calc(100% - 44px) !important;
-        margin-bottom: -32px !important;
+        right: 10px !important;
         z-index: 999999 !important;
-        background: rgba(255, 255, 255, 0.95) !important;
-        border: 1px solid #EAEAEC !important;
-        border-radius: 50% !important;
         width: 32px !important;
         height: 32px !important;
         min-width: 32px !important;
         min-height: 32px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    div[data-testid="stColumn"] > div:first-child button,
+    div[data-testid="column"] > div:first-child button,
+    div.stColumn > div:first-child button,
+    button[key*="home_heart_"] {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        max-width: 32px !important;
+        max-height: 32px !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        border: 1px solid #EAEAEC !important;
+        border-radius: 50% !important;
         padding: 0 !important;
         display: flex !important;
         align-items: center !important;
@@ -772,6 +790,14 @@ st.markdown("""
         font-size: 16px !important;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22) !important;
         cursor: pointer !important;
+        margin: 0 !important;
+        z-index: 999999 !important;
+    }
+
+    div[data-testid="stColumn"],
+    div[data-testid="column"],
+    div.stColumn {
+        position: relative !important;
     }
 
     /* FIX 2: Sticky Selective Compare Button above Bottom Navigation Bar */
