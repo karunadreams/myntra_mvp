@@ -23,9 +23,6 @@ class Product(TypedDict):
     occasion: str
 
 def load_products() -> List[Product]:
-    """
-    Loads 20 products dataset mapped with full rich scraped details.
-    """
     raw_products = [
         {
             "id": 1,
@@ -354,18 +351,18 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-    /* Outer Desktop Canvas */
+    /* Canvas */
     .stApp {
         background-color: #F5F5F6 !important;
         color: #282C3F !important;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
-    /* Mobile App Container (Max 430px Width, Centered) */
+    /* Mobile Container 430px */
     .block-container {
         max-width: 430px !important;
-        padding-top: 8px !important;
-        padding-bottom: 80px !important;
+        padding-top: 6px !important;
+        padding-bottom: 85px !important;
         padding-left: 12px !important;
         padding-right: 12px !important;
         margin: 0 auto !important;
@@ -375,30 +372,12 @@ st.markdown("""
         border-radius: 12px;
     }
 
-    /* Hide Streamlit Chrome */
     header, footer { visibility: hidden !important; }
 
-    /* Myntra Top Header Navigation */
-    .top-bar-container {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 6px 0 10px 0;
-        border-bottom: 1px solid #EAEAEC;
-        margin-bottom: 12px;
-    }
-
+    /* Top Logo Bar */
     .top-logo-img {
         height: 32px;
         object-fit: contain;
-    }
-
-    .top-icons-wrap {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        font-size: 18px;
-        color: #282C3F;
     }
 
     /* Pink Banner Chip */
@@ -418,7 +397,6 @@ st.markdown("""
         gap: 6px;
     }
 
-    /* Section Title */
     .section-title {
         font-size: 16px;
         font-weight: 800;
@@ -451,24 +429,6 @@ st.markdown("""
         width: 100%;
         height: 160px;
         object-fit: cover;
-    }
-
-    .heart-btn-overlay {
-        position: absolute;
-        top: 6px;
-        right: 6px;
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(4px);
-        border-radius: 50%;
-        width: 28px;
-        height: 28px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 14px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-        cursor: pointer;
-        z-index: 5;
     }
 
     .grid-card-body {
@@ -522,7 +482,7 @@ st.markdown("""
         margin-top: 2px;
     }
 
-    /* Wishlist Vertical Card */
+    /* Wishlist Card */
     .wishlist-row-card {
         background: #FFFFFF;
         border: 1px solid #EAEAEC;
@@ -548,43 +508,7 @@ st.markdown("""
         overflow: hidden;
     }
 
-    /* Sticky Bottom Compare Button */
-    .sticky-compare-btn-wrap {
-        position: fixed;
-        bottom: 60px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100%;
-        max-width: 410px;
-        padding: 0 12px;
-        z-index: 999;
-    }
-
-    /* Bottom Sheet Modal Styling */
-    .modal-backdrop {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 10000;
-        display: flex;
-        align-items: flex-end;
-        justify-content: center;
-    }
-
-    .bottom-sheet {
-        background: #FFFFFF;
-        width: 100%;
-        max-width: 430px;
-        border-top-left-radius: 16px;
-        border-top-right-radius: 16px;
-        padding: 20px 16px;
-        box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
-    }
-
-    /* Streamlit Button Tweaks */
+    /* General Buttons */
     .stButton > button {
         border-radius: 6px !important;
         font-weight: 800 !important;
@@ -605,52 +529,19 @@ st.markdown("""
         background-color: #E6355F !important;
     }
 
-    /* Sticky Bottom Navbar */
-    .bottom-nav-bar {
-        position: fixed;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100%;
-        max-width: 430px;
-        background: #FFFFFF;
-        border-top: 1px solid #EAEAEC;
-        display: flex;
-        justify-content: space-around;
-        padding: 6px 0;
-        z-index: 9999;
-        box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
+    /* Interactive Bottom Navigation Buttons */
+    button[key*="bnav_"] {
+        font-size: 10px !important;
+        font-weight: 800 !important;
+        padding: 4px 0 !important;
+        height: 48px !important;
+        min-height: 48px !important;
+        line-height: 1.2 !important;
+        white-space: pre-line !important;
+        border-radius: 8px !important;
     }
 
-    .nav-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        font-size: 10px;
-        font-weight: 700;
-        color: #696B79;
-        position: relative;
-        text-decoration: none;
-        cursor: pointer;
-    }
-
-    .nav-item.active {
-        color: #FF3F6C;
-    }
-
-    .nav-badge {
-        position: absolute;
-        top: -4px;
-        right: -8px;
-        background: #FF3F6C;
-        color: #FFFFFF;
-        font-size: 9px;
-        font-weight: 800;
-        border-radius: 10px;
-        padding: 1px 5px;
-    }
-
-    /* Comparison Table Styling */
+    /* Comparison Matrix */
     .comp-col-card {
         background: #FFFFFF;
         border: 1px solid #EAEAEC;
@@ -713,10 +604,10 @@ st.markdown("""
 # SESSION STATE INITIALIZATION
 # ---------------------------------------------------------
 if "current_screen" not in st.session_state:
-    st.session_state.current_screen = "home"  # "home", "wishlist", "comparison"
+    st.session_state.current_screen = "home"  # "home", "wishlist", "comparison", "categories", "profile", "cart"
 
 if "wishlist_ids" not in st.session_state:
-    st.session_state.wishlist_ids = [1, 2, 3, 4, 5]  # Default 5 items wishlisted
+    st.session_state.wishlist_ids = [1, 2, 3, 4, 5]
 
 if "selected_for_compare" not in st.session_state:
     st.session_state.selected_for_compare = [1, 2, 3, 4, 5]
@@ -765,7 +656,7 @@ def toggle_wishlist(prod_id: int):
             st.session_state.selected_for_compare.append(prod_id)
 
 # ---------------------------------------------------------
-# TOP NAVBAR HEADER
+# INTERACTIVE TOP NAVBAR HEADER
 # ---------------------------------------------------------
 wishlist_cnt = len(st.session_state.wishlist_ids)
 cart_cnt = len(st.session_state.cart_ids)
@@ -773,21 +664,25 @@ cart_cnt = len(st.session_state.cart_ids)
 with st.container():
     h_col1, h_col2 = st.columns([1, 1])
     with h_col1:
-        if logo_b64:
-            st.markdown(f'<img src="{logo_b64}" class="top-logo-img" />', unsafe_allow_html=True)
-        else:
-            st.markdown("<h3 style='color:#FF3F6C; margin:0; font-weight:900;'>MYNTRA</h3>", unsafe_allow_html=True)
+        if st.button("🛍️ MYNTRA", key="top_logo_btn", type="primary" if st.session_state.current_screen == "home" else "secondary"):
+            st.session_state.show_profile_modal = False
+            st.session_state.current_screen = "home"
+            st.rerun()
             
     with h_col2:
         btn_c1, btn_c2, btn_c3 = st.columns(3)
         with btn_c1:
-            st.markdown("<div style='text-align:center; cursor:pointer; font-size:16px;'>🔍</div>", unsafe_allow_html=True)
+            st.markdown("<div style='text-align:center; font-size:16px;'>🔍</div>", unsafe_allow_html=True)
         with btn_c2:
-            if st.button(f"❤️ {wishlist_cnt}", key="top_wish_btn"):
+            if st.button(f"❤️ {wishlist_cnt}", key="top_wish_btn", type="primary" if st.session_state.current_screen == "wishlist" else "secondary"):
+                st.session_state.show_profile_modal = False
                 st.session_state.current_screen = "wishlist"
                 st.rerun()
         with btn_c3:
-            st.markdown(f"<div style='text-align:center; font-size:16px;'>🛍️ {cart_cnt}</div>", unsafe_allow_html=True)
+            if st.button(f"🛍️ {cart_cnt}", key="top_bag_btn", type="primary" if st.session_state.current_screen == "cart" else "secondary"):
+                st.session_state.show_profile_modal = False
+                st.session_state.current_screen = "cart"
+                st.rerun()
 
 st.markdown("<hr style='border-color:#EAEAEC; margin-top:4px; margin-bottom:10px;'>", unsafe_allow_html=True)
 
@@ -796,7 +691,6 @@ st.markdown("<hr style='border-color:#EAEAEC; margin-top:4px; margin-bottom:10px
 # =========================================================
 if st.session_state.current_screen == "home":
     
-    # Pink Banner Chip
     st.markdown(clean_html("""
     <div class="pink-banner-chip">
         <span>🪔 Diwali picks · Shop before stock runs out</span>
@@ -805,7 +699,6 @@ if st.session_state.current_screen == "home":
 
     st.markdown("<div class='section-title'>Trending Kurtas & Sets</div>", unsafe_allow_html=True)
 
-    # Render 20 products in 2-column grid
     for i in range(0, len(PRODUCTS), 2):
         row_prods = PRODUCTS[i:i+2]
         cols = st.columns(len(row_prods))
@@ -814,9 +707,7 @@ if st.session_state.current_screen == "home":
             with cols[idx]:
                 is_wishlisted = prod["id"] in st.session_state.wishlist_ids
                 img_b64 = get_image_base64(prod["image_path"])
-                
                 img_tag = f'<img src="{img_b64}" class="grid-img" />' if img_b64 else ''
-                heart_symbol = "❤️" if is_wishlisted else "♡"
                 
                 card_html = f"""
                 <div class="grid-card">
@@ -836,7 +727,6 @@ if st.session_state.current_screen == "home":
                 """
                 st.markdown(clean_html(card_html), unsafe_allow_html=True)
                 
-                # Interactive Heart Toggle Button under each card
                 heart_label = "❤️ WISHLISTED" if is_wishlisted else "♡ WISHLIST"
                 if st.button(heart_label, key=f"home_heart_{prod['id']}", type="primary" if is_wishlisted else "secondary", use_container_width=True):
                     toggle_wishlist(prod["id"])
@@ -852,14 +742,12 @@ elif st.session_state.current_screen == "wishlist":
     st.markdown(f"<div class='section-title' style='margin-bottom:2px;'>My Wishlist</div>", unsafe_allow_html=True)
     st.markdown(f"<div style='font-size:12px; color:#696B79; margin-bottom:12px;'>{len(st.session_state.wishlist_ids)} items saved</div>", unsafe_allow_html=True)
 
-    # Banner Chip
     st.markdown(clean_html(f"""
     <div class="pink-banner-chip">
         <span>You have {len(st.session_state.wishlist_ids)} items saved for Diwali 2024 · 12 days left</span>
     </div>
     """), unsafe_allow_html=True)
 
-    # Full-Width Pink "DECISION MODE" Button
     if st.button("🚀 DECISION MODE (COMPARE ALL)", type="primary", use_container_width=True):
         st.session_state.selected_for_compare = st.session_state.wishlist_ids.copy()
         if not st.session_state.body_profile["is_saved"]:
@@ -873,8 +761,8 @@ elif st.session_state.current_screen == "wishlist":
     wishlist_prods = [p for p in PRODUCTS if p["id"] in st.session_state.wishlist_ids]
 
     if not wishlist_prods:
-        st.info("Your wishlist is empty. Tap ♡ on Home screen to save items!")
-        if st.button("← RETURN TO HOME", use_container_width=True):
+        st.info("Your wishlist is empty. Click Home at the bottom or ♡ on products to add items!")
+        if st.button("🏠 RETURN TO HOME SCREEN", type="primary", use_container_width=True):
             st.session_state.current_screen = "home"
             st.rerun()
     else:
@@ -922,7 +810,6 @@ elif st.session_state.current_screen == "wishlist":
 
             st.markdown("<div style='height:4px;'></div>", unsafe_allow_html=True)
 
-    # Sticky Pink Button for Comparing Selected
     sel_count = len(st.session_state.selected_for_compare)
     if sel_count >= 2:
         st.markdown("<br>", unsafe_allow_html=True)
@@ -995,10 +882,7 @@ elif st.session_state.current_screen == "comparison" and not st.session_state.sh
             st.session_state.current_screen = "wishlist"
             st.rerun()
     else:
-        # Highest rated product for AI Recommendation Banner
         winner_item = max(comp_prods, key=lambda x: x["rating"])
-
-        # Render 2-column or multi-column comparison table
         num_items = len(comp_prods)
         comp_cols = st.columns(num_items)
 
@@ -1010,7 +894,6 @@ elif st.session_state.current_screen == "comparison" and not st.session_state.sh
                 img_b64 = get_image_base64(prod["image_path"])
                 img_html = f'<img src="{img_b64}" style="width:100%; height:120px; border-radius:6px; object-fit:cover; margin-bottom:6px;" />' if img_b64 else ''
                 
-                # Stock pills
                 stock_htmls = []
                 for s, avail in prod["sizes_stock"].items():
                     cls = "stock-green" if avail else "stock-red"
@@ -1018,7 +901,6 @@ elif st.session_state.current_screen == "comparison" and not st.session_state.sh
                     stock_htmls.append(f'<span class="stock-pill {cls}">{s}{symbol}</span>')
                 stock_row = "".join(stock_htmls)
 
-                # Keywords
                 kw_htmls = "".join([f'<span class="kw-pill">{kw}</span>' for kw in prod["keywords"]])
 
                 col_card_html = f"""
@@ -1036,7 +918,6 @@ elif st.session_state.current_screen == "comparison" and not st.session_state.sh
                 """
                 st.markdown(clean_html(col_card_html), unsafe_allow_html=True)
                 
-                # Layer 5: Add to Cart button per column
                 if prod["id"] in st.session_state.cart_ids:
                     st.button("✓ IN BAG", key=f"cart_btn_{prod['id']}", disabled=True, use_container_width=True)
                 else:
@@ -1045,43 +926,177 @@ elif st.session_state.current_screen == "comparison" and not st.session_state.sh
                         st.toast(f"Added {prod['brand']} {prod['name']} to Bag! 🛍️")
                         st.rerun()
 
-        # Layer 4 — AI Recommendation Banner
         st.markdown(clean_html(f"""
         <div class="rec-banner">
             ✨ Based on ratings and fit reviews from people your size ({user_size} · {user_height}), <b>{winner_item['brand']} {winner_item['name']}</b> (⭐{winner_item['rating']}) has the highest confidence score.
         </div>
         """), unsafe_allow_html=True)
 
+# =========================================================
+# CATEGORIES SCREEN (Interactive Category Explorer)
+# =========================================================
+elif st.session_state.current_screen == "categories":
+    st.markdown("<div class='section-title'>Explore Categories</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:12px; color:#696B79; margin-bottom:14px;'>Find ethnic wear & festive outfits</div>", unsafe_allow_html=True)
+
+    cat_list = [
+        {"name": "Kurtas & Kurta Sets", "desc": "Diwali & Festive Collection · 20 Products", "icon": "🪔"},
+        {"name": "Anarkali & Sharara Suits", "desc": "Royal Silk & Sequin Embroidered", "icon": "✨"},
+        {"name": "College Fest Dresses", "desc": "Floral Wrap & Co-ord Sets", "icon": "👗"},
+        {"name": "Silk Sarees & Lehengas", "desc": "Zari Border & Mirror Work", "icon": "🥻"},
+        {"name": "Loungewear & Casuals", "desc": "Soft Cotton Everyday Wear", "icon": "👚"}
+    ]
+
+    for cat in cat_list:
+        st.markdown(clean_html(f"""
+        <div style="background:#FFFFFF; border:1px solid #EAEAEC; border-radius:10px; padding:12px; margin-bottom:10px; display:flex; align-items:center; gap:12px; box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+            <div style="font-size:24px;">{cat['icon']}</div>
+            <div>
+                <div style="font-weight:800; font-size:14px; color:#282C3F;">{cat['name']}</div>
+                <div style="font-size:11px; color:#696B79;">{cat['desc']}</div>
+            </div>
+        </div>
+        """), unsafe_allow_html=True)
+        if st.button(f"BROWSE {cat['name'].upper()}", key=f"cat_btn_{cat['name']}", type="primary", use_container_width=True):
+            st.session_state.current_screen = "home"
+            st.rerun()
+        st.markdown("<div style='height:6px;'></div>", unsafe_allow_html=True)
+
+# =========================================================
+# PROFILE SCREEN (Interactive Body Fit Profile Settings)
+# =========================================================
+elif st.session_state.current_screen == "profile":
+    st.markdown("<div class='section-title'>User Fit Profile & Settings</div>", unsafe_allow_html=True)
+    
+    prof = st.session_state.body_profile
+    st.markdown(clean_html(f"""
+    <div style="background:#FFF5F7; border:1px solid #FF3F6C; border-radius:12px; padding:14px; margin-bottom:16px;">
+        <div style="font-weight:900; font-size:14px; color:#FF3F6C; margin-bottom:4px;">👤 YOUR SAVED FIT PROFILE</div>
+        <div style="font-size:13px; color:#282C3F;">Usual Size: <b>{prof['size']}</b> | Height: <b>{prof['height']}</b></div>
+        <div style="font-size:11px; color:#696B79; margin-top:4px;">Used for AI Fit Intelligence & size stock matching across all 20 items.</div>
+    </div>
+    """), unsafe_allow_html=True)
+
+    if st.button("⚙️ EDIT FIT PROFILE", type="primary", use_container_width=True):
+        st.session_state.show_profile_modal = True
+        st.rerun()
+
+    st.markdown("<br><hr style='border-color:#EAEAEC;'><br>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:13px; font-weight:800; color:#282C3F;'>WISHLIST SUMMARY</div>", unsafe_allow_html=True)
+    st.write(f"• Total Saved Items: **{len(st.session_state.wishlist_ids)}**")
+    st.write(f"• Items in Shopping Bag: **{len(st.session_state.cart_ids)}**")
+
+    if st.button("🏠 RETURN TO HOME CATALOG", use_container_width=True):
+        st.session_state.current_screen = "home"
+        st.rerun()
+
+# =========================================================
+# SHOPPING BAG / CART SCREEN
+# =========================================================
+elif st.session_state.current_screen == "cart":
+    st.markdown("<div class='section-title'>Shopping Bag</div>", unsafe_allow_html=True)
+
+    cart_prods = [p for p in PRODUCTS if p["id"] in st.session_state.cart_ids]
+
+    if not cart_prods:
+        st.info("Your shopping bag is empty.")
+        if st.button("🏠 BROWSE 20 PRODUCTS ON HOME", type="primary", use_container_width=True):
+            st.session_state.current_screen = "home"
+            st.rerun()
+    else:
+        for item in cart_prods:
+            img_b64 = get_image_base64(item["image_path"])
+            img_html = f'<img src="{img_b64}" style="width:65px; height:80px; border-radius:6px; object-fit:cover;" />' if img_b64 else ''
+            discount_pct = int(((item["original_price"] - item["price"]) / item["original_price"]) * 100)
+
+            bag_html = f"""
+            <div style="background:#FFFFFF; border-radius:8px; padding:10px; margin-bottom:10px; display:flex; gap:10px; border:1px solid #EAEAEC;">
+                {img_html}
+                <div>
+                    <div style="font-weight:800; font-size:13px; color:#282C3F; text-transform:uppercase;">{item['brand']}</div>
+                    <div style="font-size:11px; color:#696B79; margin-bottom:4px;">{item['name']}</div>
+                    <div style="font-size:11px; color:#282C3F;">Qty: <b>1</b> · Size: <b>{st.session_state.body_profile['size']}</b></div>
+                    <div style="margin-top:4px;">
+                        <span style="font-weight:800; font-size:13px; color:#282C3F;">₹{item['price']:,}</span>
+                        <span style="font-size:10px; text-decoration:line-through; color:#7E818C; margin-left:4px;">₹{item['original_price']:,}</span>
+                    </div>
+                </div>
+            </div>
+            """
+            st.markdown(clean_html(bag_html), unsafe_allow_html=True)
+
+        mrp_total = sum(i["original_price"] for i in cart_prods)
+        subtotal = sum(i["price"] for i in cart_prods)
+        discount_total = mrp_total - subtotal
+
+        summary_html = f"""
+        <div style="background:#FFFFFF; border-radius:8px; padding:12px; border:1px solid #EAEAEC; margin-top:12px;">
+            <div style="font-weight:800; font-size:11px; color:#7E818C; text-transform:uppercase; margin-bottom:8px;">PRICE DETAILS ({len(cart_prods)} Items)</div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px; color:#282C3F;">
+                <span>Total MRP</span>
+                <span>₹{mrp_total:,}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px; color:#03A685;">
+                <span>Discount on MRP</span>
+                <span>-₹{discount_total:,}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px; color:#282C3F;">
+                <span>Convenience Fee</span>
+                <span style="color:#03A685; font-weight:700;">FREE</span>
+            </div>
+            <hr style="border-color:#EAEAEC; margin:8px 0;">
+            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:800; color:#282C3F; margin-bottom:10px;">
+                <span>Total Amount</span>
+                <span>₹{subtotal:,}</span>
+            </div>
+        </div>
+        """
+        st.markdown(clean_html(summary_html), unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("PLACE ORDER", type="primary", use_container_width=True):
+            st.balloons()
+            st.success("🎉 Order Placed Successfully! Thank you for shopping on Myntra.")
+
 # ---------------------------------------------------------
-# STICKY BOTTOM NAVIGATION BAR (Home | Categories | Wishlist | Bag | Profile)
+# INTERACTIVE STICKY BOTTOM NAVIGATION BAR
 # ---------------------------------------------------------
 wishlist_count = len(st.session_state.wishlist_ids)
 cart_count = len(st.session_state.cart_ids)
 
-bottom_nav_html = f"""
-<div class="bottom-nav-bar">
-    <div class="nav-item {'active' if st.session_state.current_screen == 'home' else ''}">
-        <span style="font-size:15px;">🏠</span>
-        <span>Home</span>
-    </div>
-    <div class="nav-item">
-        <span style="font-size:15px;">📂</span>
-        <span>Categories</span>
-    </div>
-    <div class="nav-item {'active' if st.session_state.current_screen == 'wishlist' else ''}">
-        <span style="font-size:15px;">❤️</span>
-        <span>Wishlist</span>
-        {f'<span class="nav-badge">{wishlist_count}</span>' if wishlist_count > 0 else ''}
-    </div>
-    <div class="nav-item">
-        <span style="font-size:15px;">🛍️</span>
-        <span>Bag</span>
-        {f'<span class="nav-badge">{cart_count}</span>' if cart_count > 0 else ''}
-    </div>
-    <div class="nav-item">
-        <span style="font-size:15px;">👤</span>
-        <span>Profile</span>
-    </div>
-</div>
-"""
-st.markdown(clean_html(bottom_nav_html), unsafe_allow_html=True)
+st.markdown("<div style='height:20px;'></div>", unsafe_allow_html=True)
+
+with st.container():
+    b_col1, b_col2, b_col3, b_col4, b_col5 = st.columns(5)
+    
+    with b_col1:
+        if st.button("🏠\nHome", key="bnav_home", type="primary" if st.session_state.current_screen == "home" else "secondary", use_container_width=True):
+            st.session_state.show_profile_modal = False
+            st.session_state.current_screen = "home"
+            st.rerun()
+            
+    with b_col2:
+        if st.button("📂\nCategory", key="bnav_cat", type="primary" if st.session_state.current_screen == "categories" else "secondary", use_container_width=True):
+            st.session_state.show_profile_modal = False
+            st.session_state.current_screen = "categories"
+            st.rerun()
+            
+    with b_col3:
+        w_lbl = f"❤️ {wishlist_count}\nWishlist" if wishlist_count > 0 else "❤️\nWishlist"
+        if st.button(w_lbl, key="bnav_wish", type="primary" if st.session_state.current_screen == "wishlist" else "secondary", use_container_width=True):
+            st.session_state.show_profile_modal = False
+            st.session_state.current_screen = "wishlist"
+            st.rerun()
+            
+    with b_col4:
+        c_lbl = f"🛍️ {cart_count}\nBag" if cart_count > 0 else "🛍️\nBag"
+        if st.button(c_lbl, key="bnav_bag", type="primary" if st.session_state.current_screen == "cart" else "secondary", use_container_width=True):
+            st.session_state.show_profile_modal = False
+            st.session_state.current_screen = "cart"
+            st.rerun()
+            
+    with b_col5:
+        if st.button("👤\nProfile", key="bnav_prof", type="primary" if st.session_state.current_screen == "profile" else "secondary", use_container_width=True):
+            st.session_state.show_profile_modal = False
+            st.session_state.current_screen = "profile"
+            st.rerun()

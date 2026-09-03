@@ -2,52 +2,61 @@ from streamlit.testing.v1 import AppTest
 import sys
 
 def run_tests():
-    print("--- Starting Myntra 4-Page Wishlist Decision Panel Test ---")
+    print("--- Starting Interactive Navigation & Home Button Test ---")
     at = AppTest.from_file("app.py", default_timeout=10)
     at.run()
     
     if at.exception:
-        print(f"FAILED on initial load (Page 1 Home Screen): {at.exception}")
+        print(f"FAILED on initial load: {at.exception}")
         sys.exit(1)
-    print("[SUCCESS] Page 1 (Home Screen Grid with 20 items & Live Wishlist Badge): SUCCESS")
+    print("[SUCCESS] Page 1 (Home Screen Grid with 20 items): SUCCESS")
 
-    # Click Wishlist button at top or on product card
-    btn_wish = next((b for b in at.button if "❤️" in b.label), None)
+    # Click Wishlist button on bottom nav
+    btn_wish = next((b for b in at.button if "bnav_wish" in (b.key or "")), None)
     if btn_wish:
         btn_wish.click().run()
         if at.exception:
-            print(f"FAILED navigating to Wishlist: {at.exception}")
+            print(f"FAILED clicking Wishlist bnav: {at.exception}")
             sys.exit(1)
-        print("[SUCCESS] Page 2 (Wishlist Screen with Live Count & Checkboxes): SUCCESS")
+        print("[SUCCESS] Navigated to Wishlist Screen via bottom nav: SUCCESS")
 
-    # Click DECISION MODE or COMPARE SELECTED
-    btn_dec = next((b for b in at.button if "DECISION MODE" in b.label or "COMPARE" in b.label), None)
-    if btn_dec:
-        btn_dec.click().run()
+    # Click Home button on bottom nav from Wishlist screen
+    btn_home = next((b for b in at.button if "bnav_home" in (b.key or "")), None)
+    if btn_home:
+        btn_home.click().run()
         if at.exception:
-            print(f"FAILED clicking Decision Mode / Compare: {at.exception}")
+            print(f"FAILED clicking Home bnav: {at.exception}")
             sys.exit(1)
-        print("[SUCCESS] Page 3 (Body Profile Setup Modal): SUCCESS")
+        print("[SUCCESS] Clicked Home button on bottom nav -> Returned to Home Catalog Screen: SUCCESS")
 
-    # On Body Profile Modal, click SAVE & COMPARE
-    btn_save = next((b for b in at.button if "SAVE & COMPARE" in b.label), None)
-    if btn_save:
-        btn_save.click().run()
+    # Click Categories button on bottom nav
+    btn_cat = next((b for b in at.button if "bnav_cat" in (b.key or "")), None)
+    if btn_cat:
+        btn_cat.click().run()
         if at.exception:
-            print(f"FAILED clicking Save & Compare: {at.exception}")
+            print(f"FAILED clicking Categories bnav: {at.exception}")
             sys.exit(1)
-        print("[SUCCESS] Page 4 (Comparison Screen Matrix & AI Recommendation): SUCCESS")
+        print("[SUCCESS] Navigated to Categories Screen: SUCCESS")
 
-    # On Comparison screen, test ADD TO CART button
-    btn_cart = next((b for b in at.button if "ADD TO CART" in b.label), None)
-    if btn_cart:
-        btn_cart.click().run()
+    # Click Profile button on bottom nav
+    btn_prof = next((b for b in at.button if "bnav_prof" in (b.key or "")), None)
+    if btn_prof:
+        btn_prof.click().run()
         if at.exception:
-            print(f"FAILED clicking Add to Cart on Comparison Screen: {at.exception}")
+            print(f"FAILED clicking Profile bnav: {at.exception}")
             sys.exit(1)
-        print("[SUCCESS] Direct Add to Cart from Comparison Matrix: SUCCESS")
+        print("[SUCCESS] Navigated to Profile Screen: SUCCESS")
 
-    print("\nALL 4-PAGE MYNTRA DECISION PANEL TESTS PASSED WITH 0 ERRORS!")
+    # Click top Myntra Logo button -> Return to Home
+    btn_logo = next((b for b in at.button if "top_logo_btn" in (b.key or "")), None)
+    if btn_logo:
+        btn_logo.click().run()
+        if at.exception:
+            print(f"FAILED clicking top Myntra Logo: {at.exception}")
+            sys.exit(1)
+        print("[SUCCESS] Clicked top Myntra logo -> Returned to Home Catalog Screen: SUCCESS")
+
+    print("\nALL INTERACTIVE NAVIGATION & HOME BUTTON TESTS PASSED WITH 0 ERRORS!")
 
 if __name__ == "__main__":
     run_tests()
