@@ -751,17 +751,18 @@ st.markdown("""
         text-transform: none !important;
     }
 
-    /* Home Screen Card Action Buttons (Wishlist & Add to Cart Side-by-Side) */
+    /* Home Screen Card Emoji Action Buttons (Wishlist & Add to Cart) */
     button[key*="home_wish_"],
     button[key*="home_cart_"] {
-        font-size: 10px !important;
+        font-size: 18px !important;
         font-weight: 800 !important;
-        padding: 4px 2px !important;
-        height: 36px !important;
-        min-height: 36px !important;
-        white-space: nowrap !important;
-        text-transform: uppercase !important;
-        border-radius: 6px !important;
+        padding: 0 !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        border-radius: 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 
     /* FIX 2: Sticky Selective Compare Button above Bottom Navigation Bar */
@@ -1023,19 +1024,19 @@ if st.session_state.current_screen == "home":
                 """
                 st.markdown(clean_html(card_html), unsafe_allow_html=True)
 
-                # 2 Side-by-Side Action Buttons directly below card (Wishlist with Heart + Add to Cart)
+                # 2 Side-by-Side Emoji Action Buttons directly below card (Wishlist & Add to Cart)
                 b_wish, b_cart = st.columns(2)
                 with b_wish:
-                    wish_label = "❤️ SAVED" if is_wishlisted else "♡ WISHLIST"
-                    if st.button(wish_label, key=f"home_wish_{prod['id']}", type="primary" if is_wishlisted else "secondary", use_container_width=True):
+                    wish_icon = "❤️" if is_wishlisted else "🤍"
+                    if st.button(wish_icon, key=f"home_wish_{prod['id']}", type="primary" if is_wishlisted else "secondary", use_container_width=True):
                         toggle_wishlist(prod["id"])
                         st.rerun()
 
                 with b_cart:
                     if is_in_bag:
-                        st.button("✓ IN BAG", key=f"home_cart_{prod['id']}", disabled=True, use_container_width=True)
+                        st.button("✅", key=f"home_cart_{prod['id']}", disabled=True, use_container_width=True)
                     else:
-                        if st.button("ADD TO CART", key=f"home_cart_{prod['id']}", type="primary", use_container_width=True):
+                        if st.button("🛍️", key=f"home_cart_{prod['id']}", type="secondary", use_container_width=True):
                             st.session_state.cart_ids.append(prod["id"])
                             st.toast(f"Added {prod['brand']} {prod['name']} to Bag! 🛍️")
                             st.rerun()
