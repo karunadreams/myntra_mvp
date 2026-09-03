@@ -1069,6 +1069,14 @@ elif st.session_state.current_screen == "wishlist":
 
     wishlist_prods = [p for p in PRODUCTS if p["id"] in st.session_state.wishlist_ids]
 
+    # Ensure all wishlisted items are checked (True) by default for selection & comparison
+    for p in wishlist_prods:
+        chk_key = f"chk_sel_{p['id']}"
+        if chk_key not in st.session_state:
+            st.session_state[chk_key] = True
+        if st.session_state[chk_key] and p["id"] not in st.session_state.selected_for_compare:
+            st.session_state.selected_for_compare.append(p["id"])
+
     if not wishlist_prods:
         st.info("Your wishlist is empty. Tap 🤍 on any product on Home screen to save items here!")
         if st.button("🏠 RETURN TO HOME SCREEN", type="primary", use_container_width=True):
@@ -1076,7 +1084,8 @@ elif st.session_state.current_screen == "wishlist":
             st.rerun()
     else:
         for prod in wishlist_prods:
-            is_selected = prod["id"] in st.session_state.selected_for_compare
+            chk_key = f"chk_sel_{prod['id']}"
+            is_selected = st.session_state.get(chk_key, True)
             
             c_chk, c_card = st.columns([1, 6])
             
@@ -1085,7 +1094,7 @@ elif st.session_state.current_screen == "wishlist":
                 st.checkbox(
                     f"Select {prod['brand']} {prod['name']}",
                     value=is_selected,
-                    key=f"chk_sel_{prod['id']}",
+                    key=chk_key,
                     on_change=toggle_compare_item,
                     args=(prod["id"],),
                     label_visibility="collapsed"
@@ -1111,24 +1120,28 @@ elif st.session_state.current_screen == "wishlist":
                 """
                 st.markdown(clean_html(row_html), unsafe_allow_html=True)
                 
-                # FIX 3: Ghost Trash Icon inside Wishlist Card
+                # Ghost Trash Icon inside Wishlist Card
                 if st.button("🗑️", key=f"w_rem_{prod['id']}"):
                     toggle_wishlist(prod["id"])
                     st.rerun()
 
             st.markdown("<div style='height:4px;'></div>", unsafe_allow_html=True)
 
-        # FIX 2: Sticky Selective Compare Button when 2 or more checkboxes checked
+        # Sticky Selective Compare Button when 1 or more items selected
         checked_ids = [p_id for p_id in st.session_state.wishlist_ids if st.session_state.get(f"chk_sel_{p_id}", False)]
         X = len(checked_ids)
-        if X >= 2:
-            if st.button(f"⚡ Compare Selected ({X}) →", key="btn_compare_selected", type="primary", use_container_width=True):
+        if X >= 1:
+            btn_label = f"⚡ Compare Selected ({X}) →" if X > 1 else f"⚡ Compare Selected (1) →"
+            if st.button(btn_label, key="btn_compare_selected", type="primary", use_container_width=True):
                 st.session_state.selected_for_compare = checked_ids.copy()
                 if not st.session_state.body_profile["is_saved"]:
                     st.session_state.show_profile_modal = True
                 else:
                     st.session_state.current_screen = "comparison"
                 st.rerun()
+
+        # Clear scroll space at bottom above sticky bottom navigation bar
+        st.markdown("<div style='height:120px;'></div>", unsafe_allow_html=True)
 
 # =========================================================
 # PAGE 3: BODY PROFILE SETUP MODAL (FIX 4: Bottom Sheet Modal)
