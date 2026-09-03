@@ -1,416 +1,394 @@
 import streamlit as st
-from datetime import date, timedelta
-from PIL import Image
 import os
 import base64
-import json
 from typing import TypedDict, List
 
-# Define Product and ScoredProduct Data Models
-class Review(TypedDict):
-    user: str
-    size: str
-    height: str
-    rating: float
-    comment: str
-    date: str
-
+# ---------------------------------------------------------
+# DATA MODELS & DATASET DEFINITION
+# ---------------------------------------------------------
 class Product(TypedDict):
     id: int
-    name: str
     brand: str
+    name: str
+    occasion: str
+    occasion_type: str
     price: int
     original_price: int
     rating: float
     rating_count: int
-    sizes: List[str]
-    occasions: List[str]
-    delivery_days: int
-    fabric: str
-    wash_care: str
-    pattern: str
-    sleeve: str
-    fit_summary_template: str
-    fit_review_count: int
-    keywords: List[str]
     image_path: str
-    reviews: List[Review]
+    tag_bg: str
+    tag_color: str
 
-class ScoredProduct(TypedDict):
-    product: Product
-    score: int
-    has_size: bool
-    occ_match: bool
-    arrives_on_time: bool
+WISHLIST_PRODUCTS: List[Product] = [
+    {
+        "id": 1,
+        "brand": "Libas",
+        "name": "Embroidered Anarkali Kurta",
+        "occasion": "Diwali 2024 🪔",
+        "occasion_type": "diwali",
+        "price": 1299,
+        "original_price": 2999,
+        "rating": 4.4,
+        "rating_count": 1280,
+        "image_path": "assets/libas.jpg",
+        "tag_bg": "#FFF3E0",
+        "tag_color": "#E65100"
+    },
+    {
+        "id": 2,
+        "brand": "W for Woman",
+        "name": "Floral Printed Kurta Set",
+        "occasion": "Diwali 2024 🪔",
+        "occasion_type": "diwali",
+        "price": 2499,
+        "original_price": 4999,
+        "rating": 4.5,
+        "rating_count": 890,
+        "image_path": "assets/w.jpg",
+        "tag_bg": "#FFF3E0",
+        "tag_color": "#E65100"
+    },
+    {
+        "id": 3,
+        "brand": "Biba",
+        "name": "Sequin Sharara Suit",
+        "occasion": "Diwali 2024 🪔",
+        "occasion_type": "diwali",
+        "price": 3199,
+        "original_price": 5999,
+        "rating": 4.6,
+        "rating_count": 2150,
+        "image_path": "assets/biba.jpg",
+        "tag_bg": "#FFF3E0",
+        "tag_color": "#E65100"
+    },
+    {
+        "id": 4,
+        "brand": "Global Desi",
+        "name": "Floral Wrap Dress",
+        "occasion": "College Fest ✨",
+        "occasion_type": "college",
+        "price": 899,
+        "original_price": 1999,
+        "rating": 4.3,
+        "rating_count": 640,
+        "image_path": "assets/global_desi.jpg",
+        "tag_bg": "#EDE7F6",
+        "tag_color": "#4A148C"
+    },
+    {
+        "id": 5,
+        "brand": "Anouk",
+        "name": "Printed Co-ord Set",
+        "occasion": "College Fest ✨",
+        "occasion_type": "college",
+        "price": 1749,
+        "original_price": 3499,
+        "rating": 4.2,
+        "rating_count": 420,
+        "image_path": "assets/aurelia.jpg",
+        "tag_bg": "#EDE7F6",
+        "tag_color": "#4A148C"
+    }
+]
 
-# Load 20 products dataset from JSON file
-def load_products_dataset() -> List[Product]:
-    json_path = "assets/kurtas_dataset.json"
-    if os.path.exists(json_path):
-        with open(json_path, "r") as f:
-            return json.load(f)
-    return []
+# Helper to convert image file to Base64
+def get_image_base64(image_path: str) -> str:
+    if os.path.exists(image_path):
+        with open(image_path, "rb") as f:
+            return f"data:image/jpeg;base64,{base64.b64encode(f.read()).decode('utf-8')}"
+    return ""
 
-PRODUCTS: List[Product] = load_products_dataset()
-
-def calculate_winner_scoring(
-    selected_products: List[Product],
-    user_occ: str,
-    user_size: str,
-    days_to_event: int
-) -> List[ScoredProduct]:
-    """
-    Silent Winner Confidence Engine Algorithm:
-    Evaluates size availability, body-fit match, delivery speed, and star rating.
-    Returns list of ScoredProduct sorted by (score DESC, rating DESC, price ASC).
-    """
-    scored_products: List[ScoredProduct] = []
-    for prod in selected_products:
-        score = 0
-        
-        has_size = user_size in prod["sizes"]
-        if has_size:
-            score += 3
-
-        occ_match = user_occ in prod["occasions"]
-        if occ_match:
-            score += 2
-
-        arrives_on_time = prod["delivery_days"] <= days_to_event
-        if arrives_on_time:
-            score += 2
-
-        if prod["rating"] >= 4.2:
-            score += 1
-
-        sp: ScoredProduct = {
-            "product": prod,
-            "score": score,
-            "has_size": has_size,
-            "occ_match": occ_match,
-            "arrives_on_time": arrives_on_time
-        }
-        scored_products.append(sp)
-
-    scored_products.sort(
-        key=lambda x: (x["score"], x["product"]["rating"], -x["product"]["price"]),
-        reverse=True
-    )
-    return scored_products
-
-# Helper to clean multi-line HTML strings so no line starts with 4+ spaces (preventing Markdown code block parsing)
 def clean_html(html_str: str) -> str:
     lines = [line.strip() for line in html_str.strip().split("\n") if line.strip()]
     return "\n".join(lines)
 
-# Set page configuration
+# ---------------------------------------------------------
+# PAGE CONFIG & CSS INJECTION (Mobile Container max 480px)
+# ---------------------------------------------------------
 st.set_page_config(
-    page_title="Myntra — Wishlist Decision Panel",
+    page_title="Myntra Wishlist — Decision Mode",
     page_icon="🛍️",
-    layout="wide",
+    layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# Inject Custom CSS for Pure White Live Myntra Theme (#FFFFFF Page, #FF3F6C Pink Primary, #282C3F Text)
 st.markdown("""
 <style>
-    /* Pure White Page Canvas */
+    /* Global Page Background */
     .stApp {
-        background-color: #FFFFFF !important;
+        background-color: #F4F4F6 !important;
         color: #282C3F !important;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
-    /* Top Navigation Header Styling */
-    .myntra-header-bar {
-        background: #FFFFFF;
-        border-bottom: 1px solid #EAEAEC;
-        padding: 10px 20px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        margin-bottom: 20px;
+    /* Mobile First Centered App Container (Max Width 480px) */
+    .block-container {
+        max-width: 480px !important;
+        padding-top: 10px !important;
+        padding-bottom: 75px !important;
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+        margin: 0 auto !important;
+        background-color: #FFFFFF !important;
+        min-height: 100vh;
+        box-shadow: 0 0 24px rgba(0, 0, 0, 0.08);
+        border-radius: 8px;
     }
 
-    .myntra-search-box {
+    /* Hide Streamlit Header & Footer */
+    header, footer { visibility: hidden !important; }
+
+    /* Top Navbar Bar */
+    .top-navbar {
         display: flex;
         align-items: center;
-        background: #F5F5F6;
-        border-radius: 4px;
-        padding: 8px 14px;
-        gap: 10px;
-        border: 1px solid #F5F5F6;
-    }
-
-    .myntra-search-input {
-        border: none;
-        background: transparent;
-        width: 100%;
-        font-size: 14px;
-        color: #282C3F;
-        outline: none;
-    }
-
-    /* Product Card Surface (Pure White) */
-    .product-card-white {
-        background: #FFFFFF;
-        border: 1px solid #EAEAEC;
-        border-radius: 4px;
-        padding: 10px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        position: relative;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
         justify-content: space-between;
+        padding: 8px 0 12px 0;
+        border-bottom: 1px solid #EAEAEC;
+        margin-bottom: 12px;
     }
 
-    .product-card-white:hover {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-    }
-
-    .product-card-white.selected {
-        border: 2.5px solid #FF3F6C;
-        background: #FFF5F7;
-    }
-
-    /* Top-Right Heart Overlay Badge on Image */
-    .img-heart-overlay {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        background: rgba(255, 255, 255, 0.92);
-        backdrop-filter: blur(4px);
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 14px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-        z-index: 2;
-    }
-
-    /* Image Overlay Rating Badge (Bottom Left) */
-    .img-rating-badge {
-        position: absolute;
-        bottom: 8px;
-        left: 8px;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(4px);
-        border-radius: 2px;
-        padding: 2px 6px;
-        font-size: 11px;
-        font-weight: 700;
-        color: #282C3F;
-        display: inline-flex;
-        align-items: center;
-        gap: 3px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-    }
-
-    .star-icon-green {
-        color: #03A685;
-        font-size: 12px;
-    }
-
-    .card-brand-name {
-        font-size: 15px;
+    .top-nav-title {
+        font-size: 18px;
         font-weight: 800;
         color: #282C3F;
+    }
+
+    .top-nav-sub {
+        font-size: 11px;
+        color: #7E818C;
+        margin-top: 2px;
+    }
+
+    /* Primary CTA Button (#FF3F6C Pink) */
+    .stButton > button {
+        border-radius: 6px !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.3px !important;
+        text-transform: uppercase !important;
+        transition: all 0.2s ease !important;
+        font-size: 12px !important;
+    }
+
+    button[kind="primary"] {
+        background-color: #FF3F6C !important;
+        color: #FFFFFF !important;
+        border: none !important;
+        box-shadow: 0 4px 12px rgba(255, 63, 108, 0.25) !important;
+    }
+
+    button[kind="primary"]:hover {
+        background-color: #E6355F !important;
+        box-shadow: 0 6px 16px rgba(255, 63, 108, 0.35) !important;
+    }
+
+    /* Decision CTA Banner */
+    .decision-cta-box {
+        background: linear-gradient(135deg, #FFF0F4 0%, #FFE4EC 100%);
+        border: 1.5px solid #FF3F6C;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 18px;
+        box-shadow: 0 4px 12px rgba(255, 63, 108, 0.12);
+        text-align: center;
+    }
+
+    .decision-cta-title {
+        font-size: 16px;
+        font-weight: 900;
+        color: #282C3F;
+        margin-bottom: 4px;
+    }
+
+    .decision-cta-sub {
+        font-size: 12px;
+        color: #535766;
+        margin-bottom: 12px;
+    }
+
+    /* Section Header Banners */
+    .section-header-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        border-radius: 8px;
+        margin-top: 18px;
+        margin-bottom: 12px;
+        font-weight: 800;
+        font-size: 13px;
+    }
+
+    .section-header-box.diwali {
+        background: #FFF3E0;
+        color: #E65100;
+        border-left: 4px solid #FF9800;
+    }
+
+    .section-header-box.college {
+        background: #EDE7F6;
+        color: #4A148C;
+        border-left: 4px solid #7E57C2;
+    }
+
+    /* Wishlist Product Card */
+    .wishlist-card {
+        background: #FFFFFF;
+        border: 1px solid #EAEAEC;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        position: relative;
+    }
+
+    .wishlist-thumb {
+        width: 82px;
+        height: 82px;
+        border-radius: 8px;
+        object-fit: cover;
+        border: 1px solid #F0F0F0;
+        flex-shrink: 0;
+    }
+
+    .wishlist-info {
+        flex-grow: 1;
+        overflow: hidden;
+    }
+
+    .brand-name {
+        font-size: 13px;
+        font-weight: 900;
+        color: #282C3F;
         text-transform: uppercase;
-        margin-top: 8px;
         margin-bottom: 2px;
     }
 
-    .card-title-text {
-        font-size: 13px;
+    .prod-name {
+        font-size: 12px;
         color: #535766;
+        margin-bottom: 4px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        margin-bottom: 8px;
+    }
+
+    .pill-tag {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 10px;
+        font-weight: 700;
+        margin-bottom: 4px;
     }
 
     .price-wrap {
         display: flex;
         align-items: center;
         gap: 6px;
-        margin-bottom: 8px;
     }
 
     .price-current {
-        font-size: 15px;
+        font-size: 14px;
         font-weight: 800;
         color: #282C3F;
     }
 
     .price-mrp {
-        font-size: 12px;
+        font-size: 11px;
         text-decoration: line-through;
         color: #7E818C;
     }
 
-    .price-off {
-        font-size: 12px;
-        font-weight: 700;
-        color: #FF905A;
+    .heart-icon {
+        color: #FF3F6C;
+        font-size: 18px;
+        padding: 4px;
     }
 
-    /* PDP Page Styling */
-    .pdp-container {
+    /* Decision Mode Grid Card */
+    .decision-card {
         background: #FFFFFF;
         border: 1px solid #EAEAEC;
-        border-radius: 6px;
-        padding: 24px;
-        margin-bottom: 24px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
     }
 
-    .pdp-spec-box {
-        background: #F5F5F6;
+    .decision-thumb {
+        width: 100%;
+        height: 150px;
         border-radius: 6px;
-        padding: 14px;
-        margin-top: 16px;
+        object-fit: cover;
+        margin-bottom: 8px;
+    }
+
+    /* Urgency Banner */
+    .urgency-banner {
+        background: #FFF0F4;
+        border: 1.5px solid #FF3F6C;
+        color: #FF3F6C;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 13px;
+        text-align: center;
         margin-bottom: 16px;
     }
 
-    .pdp-review-card {
-        border-bottom: 1px solid #EAEAEC;
-        padding: 12px 0;
-    }
-
-    /* Decision Panel Column Surface */
-    .decision-card-white {
-        background: #FFFFFF;
-        border: 1px solid #EAEAEC;
-        border-radius: 6px;
-        padding: 14px;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
-        position: relative;
-    }
-
-    .decision-card-white.winner {
-        border: 2.5px solid #FF3F6C;
-        box-shadow: 0 4px 20px rgba(255, 63, 108, 0.25);
-    }
-
-    .winner-flag-badge {
-        position: absolute;
-        top: -12px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: #FF3F6C;
-        color: #FFFFFF;
-        font-size: 10px;
-        font-weight: 800;
-        letter-spacing: 0.6px;
-        padding: 4px 14px;
-        border-radius: 12px;
-        text-transform: uppercase;
-        box-shadow: 0 2px 6px rgba(255, 63, 108, 0.35);
-    }
-
-    .attr-label {
-        font-size: 11px;
-        font-weight: 700;
-        color: #7E818C;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-top: 10px;
-        margin-bottom: 2px;
-    }
-
-    .attr-value {
-        font-size: 13px;
-        font-weight: 600;
-        color: #282C3F;
-    }
-
-    .keyword-pill {
-        display: inline-block;
-        background: #F5F5F6;
-        color: #3E4152;
-        border-radius: 12px;
-        padding: 3px 9px;
-        font-size: 11px;
-        font-weight: 600;
-        margin: 2px;
-        border: 1px solid #EAEAEC;
-    }
-
-    /* Passive AI Recommendation Banner */
-    .rec-banner-white {
-        background: #FFFFFF;
-        border: 1.5px solid #FF3F6C;
-        border-radius: 8px;
-        padding: 18px 24px;
-        margin-top: 24px;
-        margin-bottom: 20px;
-        text-align: center;
-        box-shadow: 0 4px 14px rgba(255, 63, 108, 0.12);
-    }
-
-    .rec-title-bold {
-        font-size: 16px;
-        font-weight: 800;
-        color: #282C3F;
-        margin-bottom: 4px;
-    }
-
-    .text-pink {
-        color: #FF3F6C;
-    }
-
-    .rec-subtitle {
-        font-size: 13px;
-        color: #535766;
-    }
-
     /* Sticky Bottom Nav Bar */
-    .myntra-bottom-bar {
+    .bottom-nav-bar {
         position: fixed;
         bottom: 0;
-        left: 0;
-        right: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 480px;
         background: #FFFFFF;
         border-top: 1px solid #EAEAEC;
         display: flex;
         justify-content: space-around;
         padding: 8px 0;
-        z-index: 1000;
-        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        z-index: 9999;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.06);
     }
 
-    .bottom-item {
+    .nav-btn {
         display: flex;
         flex-direction: column;
         align-items: center;
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 700;
         color: #696E79;
-        cursor: pointer;
+        position: relative;
         text-decoration: none;
+        cursor: pointer;
     }
 
-    .bottom-item.active {
+    .nav-btn.active {
         color: #FF3F6C;
     }
 
-    /* Primary & Secondary Buttons Styling */
-    .stButton > button {
-        border-radius: 4px;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        transition: all 0.2s ease;
-    }
-
-    /* Mobile Responsiveness Rules */
-    @media (max-width: 768px) {
-        div[data-testid="column"] {
-            min-width: 250px !important;
-        }
+    .nav-badge {
+        position: absolute;
+        top: -4px;
+        right: -8px;
+        background: #FF3F6C;
+        color: #FFFFFF;
+        font-size: 9px;
+        font-weight: 800;
+        border-radius: 10px;
+        padding: 1px 5px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -419,626 +397,350 @@ st.markdown("""
 # SESSION STATE INITIALIZATION
 # ---------------------------------------------------------
 if "current_screen" not in st.session_state:
-    st.session_state.current_screen = 1  # Screen 1: Home / Catalog Store
+    st.session_state.current_screen = "wishlist"  # "wishlist", "decision", "confirmation", "cart"
 
-if "pdp_product_id" not in st.session_state:
-    st.session_state.pdp_product_id = None
+if "wishlist_items" not in st.session_state:
+    st.session_state.wishlist_items = WISHLIST_PRODUCTS.copy()
 
-if "wishlist_ids" not in st.session_state:
-    st.session_state.wishlist_ids = [1, 3, 6, 9, 14]
-
-if "selected_ids" not in st.session_state:
-    st.session_state.selected_ids = [3, 14]
-
-if "body_profile" not in st.session_state:
-    st.session_state.body_profile = {
-        "height": "5'3\" - 5'5\"",
-        "size": "S",
-        "occasion": "Wedding Guest",
-        "event_date": date.today() + timedelta(days=5)
-    }
+if "chosen_product" not in st.session_state:
+    st.session_state.chosen_product = None
 
 if "cart_items" not in st.session_state:
     st.session_state.cart_items = []
 
-# Helper to convert image to Base64
-def get_image_base64(image_path: str) -> str:
-    if os.path.exists(image_path):
-        with open(image_path, "rb") as f:
-            return f"data:image/jpeg;base64,{base64.b64encode(f.read()).decode('utf-8')}"
-    return ""
+if "decision_occasion" not in st.session_state:
+    st.session_state.decision_occasion = "Diwali 2024 🪔"
+
+logo_b64 = get_image_base64("assets/myntra_logo.jpg")
 
 # ---------------------------------------------------------
-# REAL LIVE MYNTRA TOP NAVBAR WITH INTERACTIVE HEADER ICONS
+# TOP NAVBAR HEADER
 # ---------------------------------------------------------
-cart_count = len(st.session_state.cart_items)
-wishlist_count = len(st.session_state.wishlist_ids)
-
-# Header container
 with st.container():
-    h_col1, h_col2, h_col3 = st.columns([3, 4, 3])
-    
+    h_col1, h_col2 = st.columns([1, 4])
     with h_col1:
-        if st.button("🏠 myntra", key="hdr_home", use_container_width=False):
-            st.session_state.pdp_product_id = None
-            st.session_state.current_screen = 1
-            st.rerun()
-
+        if logo_b64:
+            st.markdown(f'<img src="{logo_b64}" style="height:36px; object-fit:contain; border-radius:4px; margin-top:4px;" />', unsafe_allow_html=True)
+        else:
+            st.markdown("<h3 style='color:#FF3F6C; margin:0; font-weight:900;'>MYNTRA</h3>", unsafe_allow_html=True)
     with h_col2:
         st.markdown(clean_html("""
-        <div class="myntra-search-box">
-            <span style="color:#696E79;">🔍</span>
-            <input type="text" class="myntra-search-input" placeholder="Search for products, brands and more" readonly />
+        <div style="text-align:right;">
+            <div class="top-nav-title">My Wishlist</div>
+            <div class="top-nav-sub">5 items saved · 12 days left for Diwali</div>
         </div>
         """), unsafe_allow_html=True)
 
-    with h_col3:
-        c_prof, c_wish, c_bag = st.columns(3)
-        with c_prof:
-            if st.button("👤 Profile", key="hdr_prof"):
-                st.session_state.pdp_product_id = None
-                st.session_state.current_screen = 3
-                st.rerun()
-        with c_wish:
-            if st.button(f"❤️ Wishlist ({wishlist_count})", key="hdr_wish", type="primary" if st.session_state.current_screen == 2 else "secondary"):
-                st.session_state.pdp_product_id = None
-                st.session_state.current_screen = 2
-                st.rerun()
-        with c_bag:
-            if st.button(f"🛍️ Bag ({cart_count})", key="hdr_bag", type="primary" if st.session_state.current_screen == 5 else "secondary"):
-                st.session_state.pdp_product_id = None
-                st.session_state.current_screen = 5
-                st.rerun()
-
-st.markdown("<hr style='border-color:#EAEAEC; margin-top:4px; margin-bottom:16px;'>", unsafe_allow_html=True)
+st.markdown("<hr style='border-color:#EAEAEC; margin-top:6px; margin-bottom:14px;'>", unsafe_allow_html=True)
 
 # =========================================================
-# PRODUCT DETAILS PAGE (PDP VIEW) IF AN ITEM WAS CLICKED
+# SCREEN 1: WISHLIST HOME PAGE
 # =========================================================
-if st.session_state.pdp_product_id is not None:
-    pdp_prod = next((p for p in PRODUCTS if p["id"] == st.session_state.pdp_product_id), PRODUCTS[0])
-    is_in_wishlist = pdp_prod["id"] in st.session_state.wishlist_ids
+if st.session_state.current_screen == "wishlist":
     
-    if st.button("← BACK TO CATALOG", type="secondary"):
-        st.session_state.pdp_product_id = None
+    # Prominent Decision Mode CTA Box
+    st.markdown(clean_html("""
+    <div class="decision-cta-box">
+        <div class="decision-cta-title">🎯 Hard to Choose What to Buy?</div>
+        <div class="decision-cta-sub">Compare wishlisted items side-by-side & pick your Diwali outfit!</div>
+    </div>
+    """), unsafe_allow_html=True)
+
+    if st.button("🚀 OPEN DECISION MODE (5 ITEMS)", type="primary", use_container_width=True):
+        st.session_state.current_screen = "decision"
         st.rerun()
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    pdp_col1, pdp_col2 = st.columns([1, 1])
-    
-    with pdp_col1:
-        img_b64 = get_image_base64(pdp_prod["image_path"])
-        if img_b64:
-            st.markdown(f'<img src="{img_b64}" style="width:100%; max-height:480px; border-radius:6px; object-fit:cover; border:1px solid #EAEAEC;" />', unsafe_allow_html=True)
-    
-    with pdp_col2:
-        discount_pct = int(((pdp_prod["original_price"] - pdp_prod["price"]) / pdp_prod["original_price"]) * 100)
-        
-        st.markdown(clean_html(f"""
-        <div style="padding-left:12px;">
-            <h2 style="font-size:22px; font-weight:900; color:#282C3F; margin-bottom:4px; text-transform:uppercase;">{pdp_prod['brand']}</h2>
-            <p style="font-size:16px; color:#535766; margin-bottom:12px;">{pdp_prod['name']}</p>
-            
-            <div style="display:inline-flex; align-items:center; gap:6px; background:#F5F5F6; padding:4px 10px; border-radius:4px; margin-bottom:16px; border:1px solid #EAEAEC;">
-                <span style="font-weight:800; font-size:13px;">{pdp_prod['rating']} ★</span>
-                <span style="color:#7E818C;">|</span>
-                <span style="font-size:13px; color:#535766;">{pdp_prod['rating_count']} Verified Ratings</span>
-            </div>
-            
-            <hr style="border-color:#EAEAEC; margin:12px 0;">
-            
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
-                <span style="font-size:24px; font-weight:800; color:#282C3F;">₹{pdp_prod['price']:,}</span>
-                <span style="font-size:16px; text-decoration:line-through; color:#7E818C;">MRP ₹{pdp_prod['original_price']:,}</span>
-                <span style="font-size:16px; font-weight:800; color:#FF905A;">({discount_pct}% OFF)</span>
-            </div>
-            <p style="color:#03A685; font-size:12px; font-weight:700; margin-bottom:20px;">inclusive of all taxes</p>
-        </div>
-        """), unsafe_allow_html=True)
-
-        st.markdown("### SELECT SIZE")
-        selected_size = st.radio("Available Sizes:", options=pdp_prod["sizes"], horizontal=True, key="pdp_size_select")
-        
-        st.markdown("<br>", unsafe_allow_html=True)
-        
-        btn_c1, btn_c2 = st.columns(2)
-        with btn_c1:
-            if pdp_prod["id"] in [p["id"] for p in st.session_state.cart_items]:
-                st.button("✓ IN YOUR BAG", disabled=True, use_container_width=True, type="primary")
-            else:
-                if st.button("🛍️ ADD TO BAG", type="primary", use_container_width=True):
-                    st.session_state.cart_items.append(pdp_prod)
-                    st.toast("Added to Bag! ✓", icon="🛍️")
-                    st.rerun()
-
-        with btn_c2:
-            if is_in_wishlist:
-                if st.button("❤️ WISHLISTED", use_container_width=True):
-                    st.session_state.wishlist_ids.remove(pdp_prod["id"])
-                    st.rerun()
-            else:
-                if st.button("♡ SAVE TO WISHLIST", use_container_width=True):
-                    st.session_state.wishlist_ids.append(pdp_prod["id"])
-                    st.rerun()
-
-        st.markdown(clean_html(f"""
-        <div class="pdp-spec-box">
-            <h4 style="margin:0 0 10px 0; color:#282C3F;">PRODUCT SPECIFICATIONS</h4>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:13px;">
-                <div><b>Fabric:</b> {pdp_prod['fabric']}</div>
-                <div><b>Wash Care:</b> {pdp_prod['wash_care']}</div>
-                <div><b>Pattern:</b> {pdp_prod['pattern']}</div>
-                <div><b>Sleeve:</b> {pdp_prod['sleeve']}</div>
-            </div>
-        </div>
-        """), unsafe_allow_html=True)
-
-    st.markdown("<br><hr style='border-color:#EAEAEC;'><br>", unsafe_allow_html=True)
-    st.markdown(f"### RATINGS & CUSTOMER REVIEWS ({len(pdp_prod['reviews'])} Reviews)")
-    
-    for rev in pdp_prod["reviews"]:
-        st.markdown(clean_html(f"""
-        <div class="pdp-review-card">
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
-                <span style="background:#03A685; color:#FFF; font-weight:800; font-size:11px; padding:2px 6px; border-radius:3px;">{rev['rating']} ★</span>
-                <span style="font-weight:700; color:#282C3F; font-size:14px;">{rev['user']}</span>
-                <span style="color:#7E818C; font-size:12px;">(Height: {rev['height']} · Size: {rev['size']})</span>
-            </div>
-            <p style="font-size:13px; color:#535766; margin:4px 0;">"{rev['comment']}"</p>
-            <div style="font-size:11px; color:#7E818C;">Verified Buyer · {rev['date']}</div>
-        </div>
-        """), unsafe_allow_html=True)
-
-# =========================================================
-# SCREEN 1: PRODUCT CATALOG — 20 ITEMS IN 5-COLUMN GRID
-# =========================================================
-elif st.session_state.current_screen == 1:
-    banner_html = f"""
-    <div style="background:#FFFFFF; border-radius:4px; padding:18px 24px; margin-bottom:16px; border:1px solid #EAEAEC; box-shadow:0 2px 8px rgba(0,0,0,0.03);">
-    <h2 style="color:#282C3F; margin-bottom:2px; font-weight:800;">Women's Ethnic Kurta Store <span style="font-size:14px; color:#7E818C; font-weight:500;">({len(PRODUCTS)} Products)</span></h2>
-    <p style="color:#FF3F6C; font-weight:800; font-size:15px; margin-bottom:4px;">UP TO 60% OFF ON FESTIVE & WEDDING COLLECTION</p>
-    <p style="color:#535766; font-size:13px; margin:0;">Browse items below. Click any photo/brand name to open <b>Product Details & Reviews</b>, or click <b>❤️ Heart</b> on top right to save to Wishlist.</p>
+    # Occasion Section 1: Diwali 2024 🪔
+    diwali_items = [item for item in WISHLIST_PRODUCTS if item["occasion_type"] == "diwali"]
+    st.markdown(clean_html(f"""
+    <div class="section-header-box diwali">
+        <span>🪔 Diwali 2024 ({len(diwali_items)} Items)</span>
+        <span style="font-size:11px; font-weight:700;">12 days left</span>
     </div>
-    """
-    st.markdown(clean_html(banner_html), unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
 
-    # Render 20 products in rows of 5
-    for row_start in range(0, len(PRODUCTS), 5):
-        row_prods = PRODUCTS[row_start:row_start + 5]
-        cols = st.columns(len(row_prods))
-        for idx, prod in enumerate(row_prods):
-            with cols[idx]:
-                is_in_wishlist = prod["id"] in st.session_state.wishlist_ids
-                card_class = "product-card-white selected" if is_in_wishlist else "product-card-white"
-                
-                img_b64 = get_image_base64(prod["image_path"])
-                
-                heart_overlay_html = f"""
-                <div class="img-heart-overlay">
-                    {'❤️' if is_in_wishlist else '♡'}
-                </div>
-                """
-                
-                rating_overlay_html = f"""
-                <div class="img-rating-badge">
-                <span>{prod['rating']}</span>
-                <span class="star-icon-green">★</span>
-                <span>|</span>
-                <span>{prod['rating_count']}</span>
-                </div>
-                """
-                
-                img_container_html = f"""
-                <div style="position:relative; width:100%; height:200px; margin-bottom:8px;">
-                <img src="{img_b64}" style="width:100%; height:200px; border-radius:4px; object-fit:cover;" />
-                {heart_overlay_html}
-                {rating_overlay_html}
-                </div>
-                """ if img_b64 else ''
-                
-                discount_pct = int(((prod["original_price"] - prod["price"]) / prod["original_price"]) * 100)
-                
-                card_html = f"""
-                <div class="{card_class}">
-                {img_container_html}
-                <div class="card-brand-name">{prod['brand']}</div>
-                <div class="card-title-text">{prod['name']}</div>
+    for item in diwali_items:
+        img_b64 = get_image_base64(item["image_path"])
+        img_html = f'<img src="{img_b64}" class="wishlist-thumb" />' if img_b64 else ''
+        discount_pct = int(((item["original_price"] - item["price"]) / item["original_price"]) * 100)
+        
+        card_html = f"""
+        <div class="wishlist-card">
+            {img_html}
+            <div class="wishlist-info">
+                <div class="brand-name">{item['brand']}</div>
+                <div class="prod-name">{item['name']}</div>
+                <div><span class="pill-tag" style="background:{item['tag_bg']}; color:{item['tag_color']};">{item['occasion']}</span></div>
                 <div class="price-wrap">
-                <span class="price-current">₹{prod['price']:,}</span>
-                <span class="price-mrp">₹{prod['original_price']:,}</span>
-                <span class="price-off">({discount_pct}% OFF)</span>
+                    <span class="price-current">₹{item['price']:,}</span>
+                    <span class="price-mrp">₹{item['original_price']:,}</span>
+                    <span style="font-size:11px; font-weight:800; color:#FF905A;">({discount_pct}% OFF)</span>
                 </div>
+            </div>
+            <div class="heart-icon">❤️</div>
+        </div>
+        """
+        st.markdown(clean_html(card_html), unsafe_allow_html=True)
+
+    # Occasion Section 2: College Fest ✨
+    college_items = [item for item in WISHLIST_PRODUCTS if item["occasion_type"] == "college"]
+    st.markdown(clean_html(f"""
+    <div class="section-header-box college">
+        <span>✨ College Fest ({len(college_items)} Items)</span>
+        <span style="font-size:11px; font-weight:700;">Upcoming</span>
+    </div>
+    """), unsafe_allow_html=True)
+
+    for item in college_items:
+        img_b64 = get_image_base64(item["image_path"])
+        img_html = f'<img src="{img_b64}" class="wishlist-thumb" />' if img_b64 else ''
+        discount_pct = int(((item["original_price"] - item["price"]) / item["original_price"]) * 100)
+        
+        card_html = f"""
+        <div class="wishlist-card">
+            {img_html}
+            <div class="wishlist-info">
+                <div class="brand-name">{item['brand']}</div>
+                <div class="prod-name">{item['name']}</div>
+                <div><span class="pill-tag" style="background:{item['tag_bg']}; color:{item['tag_color']};">{item['occasion']}</span></div>
+                <div class="price-wrap">
+                    <span class="price-current">₹{item['price']:,}</span>
+                    <span class="price-mrp">₹{item['original_price']:,}</span>
+                    <span style="font-size:11px; font-weight:800; color:#FF905A;">({discount_pct}% OFF)</span>
+                </div>
+            </div>
+            <div class="heart-icon">❤️</div>
+        </div>
+        """
+        st.markdown(clean_html(card_html), unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    if st.button("✨ START DECISION MODE COMPARISON", type="primary", use_container_width=True):
+        st.session_state.current_screen = "decision"
+        st.rerun()
+
+# =========================================================
+# SCREEN 2: DECISION MODE PAGE (/decision)
+# =========================================================
+elif st.session_state.current_screen == "decision":
+    
+    col_back, col_title = st.columns([1, 3])
+    with col_back:
+        if st.button("← BACK", use_container_width=True):
+            st.session_state.current_screen = "wishlist"
+            st.rerun()
+    with col_title:
+        st.markdown("<div style='font-size:16px; font-weight:900; color:#282C3F; text-align:right;'>🎯 DECISION MODE</div>", unsafe_allow_html=True)
+
+    # Urgency Banner
+    st.markdown(clean_html("""
+    <div class="urgency-banner">
+        ⚡ Diwali is in 12 days — time to decide & order!
+    </div>
+    """), unsafe_allow_html=True)
+
+    # Occasion Filter Selector
+    selected_occ = st.radio(
+        "Select Occasion Group:",
+        options=["Diwali 2024 🪔 (3 Items)", "College Fest ✨ (2 Items)", "All Wishlist Items (5)"],
+        horizontal=True,
+        key="dec_occ_select"
+    )
+
+    if "Diwali" in selected_occ:
+        filtered_products = [item for item in WISHLIST_PRODUCTS if item["occasion_type"] == "diwali"]
+    elif "College" in selected_occ:
+        filtered_products = [item for item in WISHLIST_PRODUCTS if item["occasion_type"] == "college"]
+    else:
+        filtered_products = WISHLIST_PRODUCTS
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:13px; font-weight:800; color:#535766; margin-bottom:10px;'>SIDE-BY-SIDE COMPARISON:</div>", unsafe_allow_html=True)
+
+    # Side-by-Side 2 Column Grid for Decision Mode Comparison
+    for row_start in range(0, len(filtered_products), 2):
+        row_prods = filtered_products[row_start:row_start + 2]
+        cols = st.columns(len(row_prods))
+        
+        for idx, item in enumerate(row_prods):
+            with cols[idx]:
+                img_b64 = get_image_base64(item["image_path"])
+                img_html = f'<img src="{img_b64}" class="decision-thumb" />' if img_b64 else ''
+                discount_pct = int(((item["original_price"] - item["price"]) / item["original_price"]) * 100)
+
+                card_html = f"""
+                <div class="decision-card">
+                    <div>
+                        {img_html}
+                        <div class="brand-name">{item['brand']}</div>
+                        <div class="prod-name">{item['name']}</div>
+                        <div style="margin:4px 0;"><span class="pill-tag" style="background:{item['tag_bg']}; color:{item['tag_color']};">{item['occasion']}</span></div>
+                        <div class="price-wrap" style="justify-content:center; margin-bottom:8px;">
+                            <span class="price-current">₹{item['price']:,}</span>
+                            <span class="price-mrp">₹{item['original_price']:,}</span>
+                        </div>
+                    </div>
                 </div>
                 """
                 st.markdown(clean_html(card_html), unsafe_allow_html=True)
+                st.markdown("<div style='height:4px;'></div>", unsafe_allow_html=True)
                 
-                st.markdown("<div style='height:6px;'></div>", unsafe_allow_html=True)
-                
-                btn_pdp, btn_wish = st.columns([1, 1])
-                with btn_pdp:
-                    if st.button("VIEW DETAILS", key=f"pdp_btn_{prod['id']}", use_container_width=True):
-                        st.session_state.pdp_product_id = prod["id"]
-                        st.rerun()
-
-                with btn_wish:
-                    if is_in_wishlist:
-                        if st.button("❤️ WISHLISTED", key=f"cat_btn_{prod['id']}", type="primary", use_container_width=True):
-                            st.session_state.wishlist_ids.remove(prod["id"])
-                            if prod["id"] in st.session_state.selected_ids:
-                                st.session_state.selected_ids.remove(prod["id"])
-                            st.rerun()
-                    else:
-                        if st.button("♡ WISHLIST", key=f"cat_btn_{prod['id']}", use_container_width=True):
-                            st.session_state.wishlist_ids.append(prod["id"])
-                            st.rerun()
-
-        st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
-
-    st.markdown("<br><hr style='border-color:#EAEAEC;'><br>", unsafe_allow_html=True)
-
-    c1, c2, c3 = st.columns([1, 2, 1])
-    with c2:
-        if st.session_state.wishlist_ids:
-            if st.button(f"GO TO MY WISHLIST ({len(st.session_state.wishlist_ids)} Items Saved) →", type="primary", use_container_width=True):
-                st.session_state.current_screen = 2
-                st.rerun()
-        else:
-            st.button("WISHLIST IS EMPTY — SAVE ITEMS ABOVE", disabled=True, use_container_width=True)
-
-# =========================================================
-# SCREEN 2: NATIVE MYNTRA WISHLIST PAGE (Compare Selection)
-# =========================================================
-elif st.session_state.current_screen == 2:
-    wishlist_products = [p for p in PRODUCTS if p["id"] in st.session_state.wishlist_ids]
-
-    w_head_html = f"""
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-    <h3 style="margin:0; color:#282C3F; font-weight:800;">MY WISHLIST <span style="font-size:14px; color:#7E818C; font-weight:500;">({len(wishlist_products)} Items)</span></h3>
-    <span style="font-size:12px; color:#FF3F6C; font-weight:700;">Select 2 to 4 items to Compare</span>
-    </div>
-    """
-    st.markdown(clean_html(w_head_html), unsafe_allow_html=True)
-
-    if not wishlist_products:
-        st.info("Your wishlist is currently empty. Go back to the Catalog Feed and save items!")
-        if st.button("← GO TO CATALOG STORE", use_container_width=True):
-            st.session_state.current_screen = 1
-            st.rerun()
-    else:
-        for row_start in range(0, len(wishlist_products), 5):
-            row_prods = wishlist_products[row_start:row_start + 5]
-            cols = st.columns(len(row_prods))
-            for idx, prod in enumerate(row_prods):
-                with cols[idx]:
-                    is_selected = prod["id"] in st.session_state.selected_ids
-                    card_class = "product-card-white selected" if is_selected else "product-card-white"
-                    
-                    img_b64 = get_image_base64(prod["image_path"])
-                    
-                    rating_overlay_html = f"""
-                    <div class="img-rating-badge">
-                    <span>{prod['rating']}</span>
-                    <span class="star-icon-green">★</span>
-                    <span>|</span>
-                    <span>{prod['rating_count']}</span>
-                    </div>
-                    """
-                    
-                    img_container_html = f"""
-                    <div style="position:relative; width:100%; height:200px; margin-bottom:8px;">
-                    <img src="{img_b64}" style="width:100%; height:200px; border-radius:4px; object-fit:cover;" />
-                    <div class="img-heart-overlay">❤️</div>
-                    {rating_overlay_html}
-                    </div>
-                    """ if img_b64 else ''
-                    
-                    discount_pct = int(((prod["original_price"] - prod["price"]) / prod["original_price"]) * 100)
-                    
-                    w_card_html = f"""
-                    <div class="{card_class}">
-                    {img_container_html}
-                    <div class="card-brand-name">{prod['brand']}</div>
-                    <div class="card-title-text">{prod['name']}</div>
-                    <div class="price-wrap">
-                    <span class="price-current">₹{prod['price']:,}</span>
-                    <span class="price-mrp">₹{prod['original_price']:,}</span>
-                    <span class="price-off">({discount_pct}% OFF)</span>
-                    </div>
-                    </div>
-                    """
-                    st.markdown(clean_html(w_card_html), unsafe_allow_html=True)
-                    
-                    st.markdown("<div style='height:6px;'></div>", unsafe_allow_html=True)
-                    
-                    btn_pdp_w, btn_sel_w = st.columns([1, 1])
-                    with btn_pdp_w:
-                        if st.button("DETAILS", key=f"w_pdp_{prod['id']}", use_container_width=True):
-                            st.session_state.pdp_product_id = prod["id"]
-                            st.rerun()
-
-                    with btn_sel_w:
-                        if is_selected:
-                            if st.button("✓ SELECTED", key=f"w_btn_{prod['id']}", type="primary", use_container_width=True):
-                                st.session_state.selected_ids.remove(prod["id"])
-                                st.rerun()
-                        else:
-                            if st.button("+ COMPARE", key=f"w_btn_{prod['id']}", use_container_width=True):
-                                if len(st.session_state.selected_ids) >= 4:
-                                    st.warning("⚠️ Maximum 4 items can be selected for comparison.")
-                                else:
-                                    st.session_state.selected_ids.append(prod["id"])
-                                    st.rerun()
-
-            st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
-
-        st.markdown("<br><hr style='border-color:#EAEAEC;'><br>", unsafe_allow_html=True)
-
-        sel_count = len(st.session_state.selected_ids)
-        c1, c2, c3 = st.columns([1, 2, 1])
-        with c2:
-            if 2 <= sel_count <= 4:
-                if st.button(f"COMPARE SELECTED ({sel_count} ITEMS) →", type="primary", use_container_width=True):
-                    st.session_state.current_screen = 3
+                if st.button("CHOOSE THIS", key=f"choose_{item['id']}", type="primary", use_container_width=True):
+                    st.session_state.chosen_product = item
+                    st.session_state.current_screen = "confirmation"
                     st.rerun()
-            else:
-                st.button(f"SELECT AT LEAST 2 ITEMS TO COMPARE ({sel_count}/4)", disabled=True, use_container_width=True)
+
+        st.markdown("<div style='height:14px;'></div>", unsafe_allow_html=True)
 
 # =========================================================
-# SCREEN 3: BODY FIT PROFILE SETUP
+# CONFIRMATION MODAL / SCREEN (After "Choose This")
 # =========================================================
-elif st.session_state.current_screen == 3:
-    p_head_html = """
-    <div style="background:#FFFFFF; border-radius:6px; padding:24px; max-width:600px; margin:0 auto; box-shadow:0 4px 14px rgba(0,0,0,0.05); border:1px solid #EAEAEC;">
-    <h3 style="color:#282C3F; margin-bottom:4px; text-align:center; font-weight:800;">Body Fit Profile Setup</h3>
-    <p style="color:#535766; font-size:13px; text-align:center; margin-bottom:20px;">Save your profile once to unlock body-type filtered fit intelligence & review highlights across your wishlist.</p>
-    </div>
-    """
-    st.markdown(clean_html(p_head_html), unsafe_allow_html=True)
+elif st.session_state.current_screen == "confirmation":
+    chosen = st.session_state.chosen_product
+    if chosen:
+        st.balloons()
+        
+        st.markdown(clean_html("""
+        <div style="background:#FFF5F7; border:2px solid #FF3F6C; border-radius:12px; padding:20px; text-align:center; margin-bottom:20px;">
+            <div style="font-size:24px; margin-bottom:6px;">🎉</div>
+            <div style="font-size:18px; font-weight:900; color:#FF3F6C; margin-bottom:4px;">GREAT CHOICE! READY TO BUY?</div>
+            <div style="font-size:13px; color:#535766;">You picked the perfect outfit for your occasion.</div>
+        </div>
+        """), unsafe_allow_html=True)
 
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.markdown("### 👤 Body Fit Profile")
-        user_height = st.selectbox(
-            "1. Select Your Height Range:",
-            options=["5'0\" - 5'2\"", "5'3\" - 5'5\"", "5'6\" - 5'8\"", "5'9\"+"],
-            index=1,
-            key="input_height"
-        )
-        user_size = st.radio(
-            "2. Select Your Usual Size:",
-            options=["XS", "S", "M", "L", "XL"],
-            index=1,
-            horizontal=True,
-            key="input_size"
-        )
+        img_b64 = get_image_base64(chosen["image_path"])
+        img_html = f'<img src="{img_b64}" style="width:100%; height:240px; border-radius:8px; object-fit:cover; margin-bottom:12px;" />' if img_b64 else ''
+        discount_pct = int(((chosen["original_price"] - chosen["price"]) / chosen["original_price"]) * 100)
 
-        st.markdown("<br>### 📅 Occasion Details", unsafe_allow_html=True)
-        user_occ = st.selectbox(
-            "3. What is your occasion?",
-            options=["Wedding Guest", "Festival", "Office Party", "Date Night", "Casual"],
-            index=0,
-            key="input_occasion"
-        )
-        date_preset = st.selectbox(
-            "4. When is your event?",
-            options=["In 5 days (Recommended)", "In 3 days", "In 1 week", "In 2 weeks"],
-            index=0,
-            key="input_date_preset"
-        )
-
-        if date_preset == "In 3 days":
-            selected_event_date = date.today() + timedelta(days=3)
-        elif date_preset == "In 5 days (Recommended)":
-            selected_event_date = date.today() + timedelta(days=5)
-        elif date_preset == "In 1 week":
-            selected_event_date = date.today() + timedelta(days=7)
-        else:
-            selected_event_date = date.today() + timedelta(days=14)
-
-        st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("SAVE PROFILE & OPEN DECISION PANEL →", type="primary", use_container_width=True):
-            st.session_state.body_profile = {
-                "height": user_height,
-                "size": user_size,
-                "occasion": user_occ,
-                "event_date": selected_event_date
-            }
-            st.session_state.current_screen = 4
-            st.rerun()
-
-# =========================================================
-# SCREEN 4: NATIVE MYNTRA DECISION PANEL
-# =========================================================
-elif st.session_state.current_screen == 4:
-    selected_products: List[Product] = [p for p in PRODUCTS if p["id"] in st.session_state.selected_ids]
-    profile = st.session_state.body_profile
-    user_height = profile["height"]
-    user_size = profile["size"]
-    user_occ = profile["occasion"]
-    event_date = profile["event_date"]
-    days_to_event = (event_date - date.today()).days
-
-    scored_products = calculate_winner_scoring(selected_products, user_occ, user_size, days_to_event)
-    winner_item: Product = scored_products[0]["product"]
-
-    h_col1, h_col2 = st.columns([3, 1])
-    with h_col1:
-        st.markdown("<h3 style='margin:0; color:#282C3F; font-weight:800;'>WISHLIST DECISION PANEL</h3>", unsafe_allow_html=True)
-        d_badge_html = f"""
-        <div style="background:#FFF5F7; border:1px solid #FF3F6C; border-radius:20px; padding:4px 12px; font-size:12px; font-weight:700; color:#FF3F6C; display:inline-flex; align-items:center; gap:6px; margin-top:6px;">
-        <span>👤 Body Filter: <b>{user_size} · {user_height}</b></span>
-        <span>|</span>
-        <span>Occasion: <b>{user_occ}</b></span>
+        card_html = f"""
+        <div style="background:#FFFFFF; border:1px solid #EAEAEC; border-radius:10px; padding:16px; margin-bottom:20px; box-shadow:0 4px 12px rgba(0,0,0,0.06);">
+            {img_html}
+            <div style="font-size:16px; font-weight:900; color:#282C3F; text-transform:uppercase;">{chosen['brand']}</div>
+            <div style="font-size:14px; color:#535766; margin-bottom:8px;">{chosen['name']}</div>
+            <div style="margin-bottom:12px;"><span class="pill-tag" style="background:{chosen['tag_bg']}; color:{chosen['tag_color']}; font-size:11px;">{chosen['occasion']}</span></div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:20px; font-weight:900; color:#282C3F;">₹{chosen['price']:,}</span>
+                <span style="font-size:14px; text-decoration:line-through; color:#7E818C;">₹{chosen['original_price']:,}</span>
+                <span style="font-size:14px; font-weight:800; color:#FF905A;">({discount_pct}% OFF)</span>
+            </div>
         </div>
         """
-        st.markdown(clean_html(d_badge_html), unsafe_allow_html=True)
-    with h_col2:
-        if st.button("⚙️ EDIT PROFILE", use_container_width=True):
-            st.session_state.current_screen = 3
-            st.rerun()
+        st.markdown(clean_html(card_html), unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("### SELECT YOUR SIZE:")
+        selected_size = st.radio("Size", options=["S", "M", "L", "XL"], index=1, horizontal=True, key="conf_size")
+        st.markdown("<br>", unsafe_allow_html=True)
 
-    num_items = len(selected_products)
-    comp_cols = st.columns(num_items)
-
-    for idx, item_data in enumerate(scored_products):
-        prod = item_data["product"]
-        is_winner = (prod["id"] == winner_item["id"])
-        
-        with comp_cols[idx]:
-            col_class = "decision-card-white winner" if is_winner else "decision-card-white"
-            winner_html = '<div class="winner-flag-badge">★ HIGHEST CONFIDENCE MATCH</div>' if is_winner else ''
-
-            img_b64 = get_image_base64(prod["image_path"])
-            img_html = f'<img src="{img_b64}" style="width:100%; border-radius:4px; margin-bottom:8px; object-fit:cover; height:180px;" />' if img_b64 else ''
-            discount_pct = int(((prod["original_price"] - prod["price"]) / prod["original_price"]) * 100)
-            
-            size_str = f"<span style='color:#03A685; font-weight:700;'>🟢 Available in {user_size}</span>" if item_data['has_size'] else f"<span style='color:#FF3F6C; font-weight:700;'>🔴 Out of Stock in {user_size}</span>"
-            del_str = f"Delivers in {prod['delivery_days']} days ({'🟢 Arrives before event' if item_data['arrives_on_time'] else '🔴 Arrives after event'})"
-            
-            fit_summary = f"\"People your size ({user_size} · {user_height}) say: {prod['fit_summary_template']} · {prod['fit_review_count']} matching reviews.\""
-            chips_html = "".join([f'<span class="keyword-pill">{kw}</span>' for kw in prod['keywords']])
-
-            column_card_html = f"""
-            <div class="{col_class}">
-            {winner_html}
-            <div style="margin-top: 8px;"></div>
-            {img_html}
-            <div class="card-brand-name">{prod['brand']}</div>
-            <div class="card-title-text">{prod['name']}</div>
-            <div class="attr-label">Price</div>
-            <div class="price-wrap">
-            <span class="price-current">₹{prod['price']:,}</span>
-            <span class="price-mrp">₹{prod['original_price']:,}</span>
-            <span class="price-off">({discount_pct}% OFF)</span>
-            </div>
-            <div class="attr-label">Average Rating</div>
-            <div class="attr-value">★ {prod['rating']} ({prod['rating_count']:,} reviews)</div>
-            <div class="attr-label">Size Availability ({user_size})</div>
-            <div class="attr-value">{size_str}</div>
-            <div class="attr-label">Estimated Delivery</div>
-            <div class="attr-value">{del_str}</div>
-            <div class="attr-label">Fit Summary ({user_size} · {user_height})</div>
-            <div class="attr-value" style="font-style: italic; color:#2B6CB0; font-size:11px;">{fit_summary}</div>
-            <div class="attr-label">Review Highlights</div>
-            <div style="margin-bottom: 8px;">{chips_html}</div>
-            </div>
-            """
-
-            st.markdown(clean_html(column_card_html), unsafe_allow_html=True)
-            st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
-
-            if is_winner:
-                if prod["id"] in [p["id"] for p in st.session_state.cart_items]:
-                    st.button("✓ IN YOUR BAG", key=f"c_btn_{prod['id']}", type="primary", disabled=True, use_container_width=True)
-                else:
-                    if st.button("ADD TO BAG", key=f"c_btn_{prod['id']}", type="primary", use_container_width=True):
-                        st.session_state.cart_items.append(prod)
-                        st.toast("Added to Bag! ✓ Complete your purchase on Myntra.", icon="🛍️")
-                        st.rerun()
-            else:
-                st.button("SAVE TO WISHLIST", key=f"s_btn_{prod['id']}", use_container_width=True)
-
-    rec_bar_html = f"""
-    <div class="rec-banner-white">
-    <div class="rec-title-bold">
-    Based on ratings and fit reviews from people your size (<span class="text-pink">{user_size} · {user_height}</span>), <span class="text-pink">{winner_item['brand']} {winner_item['name']}</span> has the highest confidence score.
-    </div>
-    <div class="rec-subtitle">
-    4.5★ rating, 48 body-matched fit reviews, guaranteed size availability, and delivery before your event date.
-    </div>
-    </div>
-    """
-    st.markdown(clean_html(rec_bar_html), unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("VIEW BAG & CHECKOUT →", type="primary", use_container_width=True):
-        st.session_state.current_screen = 5
-        st.rerun()
+        btn_c1, btn_c2 = st.columns(2)
+        with btn_c1:
+            if st.button("🛍️ GO TO CART", type="primary", use_container_width=True):
+                if chosen not in st.session_state.cart_items:
+                    st.session_state.cart_items.append(chosen)
+                st.session_state.current_screen = "cart"
+                st.rerun()
+        with btn_c2:
+            if st.button("← KEEP BROWSING", use_container_width=True):
+                st.session_state.current_screen = "decision"
+                st.rerun()
 
 # =========================================================
-# SCREEN 5: REAL MYNTRA BAG / CART PAGE
+# SCREEN 3: CART / BAG PAGE
 # =========================================================
-elif st.session_state.current_screen == 5:
-    st.markdown("<h3 style='color:#282C3F; font-weight:800;'>SHOPPING BAG</h3>", unsafe_allow_html=True)
+elif st.session_state.current_screen == "cart":
+    st.markdown("<h3 style='color:#282C3F; font-weight:900; margin-bottom:14px;'>SHOPPING BAG</h3>", unsafe_allow_html=True)
 
     if not st.session_state.cart_items:
-        st.info("Your bag is currently empty.")
-        if st.button("← RETURN TO HOME", use_container_width=True):
-            st.session_state.pdp_product_id = None
-            st.session_state.current_screen = 1
+        st.info("Your shopping bag is empty.")
+        if st.button("← RETURN TO WISHLIST", use_container_width=True):
+            st.session_state.current_screen = "wishlist"
             st.rerun()
     else:
-        col1, col2 = st.columns([2, 1])
-        with col1:
-            for item in st.session_state.cart_items:
-                img_b64 = get_image_base64(item["image_path"])
-                img_html = f'<img src="{img_b64}" style="width:70px; height:90px; border-radius:4px; object-fit:cover;" />' if img_b64 else ''
-                discount_pct = int(((item["original_price"] - item["price"]) / item["original_price"]) * 100)
+        for item in st.session_state.cart_items:
+            img_b64 = get_image_base64(item["image_path"])
+            img_html = f'<img src="{img_b64}" style="width:65px; height:80px; border-radius:6px; object-fit:cover;" />' if img_b64 else ''
+            discount_pct = int(((item["original_price"] - item["price"]) / item["original_price"]) * 100)
 
-                bag_item_html = f"""
-                <div style="background:#FFFFFF; border-radius:4px; padding:14px; margin-bottom:12px; display:flex; gap:14px; border:1px solid #EAEAEC;">
+            bag_html = f"""
+            <div style="background:#FFFFFF; border-radius:8px; padding:12px; margin-bottom:12px; display:flex; gap:12px; border:1px solid #EAEAEC;">
                 {img_html}
                 <div>
-                <div style="font-weight:800; font-size:14px; color:#282C3F;">{item['brand']}</div>
-                <div style="font-size:12px; color:#535766; margin-bottom:6px;">{item['name']}</div>
-                <div style="font-size:12px; color:#535766;">Size: <b>{st.session_state.body_profile['size']}</b> | Qty: <b>1</b></div>
-                <div style="margin-top:6px;">
-                <span style="font-weight:700; font-size:14px; color:#282C3F;">₹{item['price']:,}</span>
-                <span style="font-size:11px; text-decoration:line-through; color:#7E818C; margin-left:6px;">₹{item['original_price']:,}</span>
-                <span style="font-size:11px; font-weight:700; color:#FF905A; margin-left:6px;">({discount_pct}% OFF)</span>
+                    <div style="font-weight:900; font-size:14px; color:#282C3F; text-transform:uppercase;">{item['brand']}</div>
+                    <div style="font-size:12px; color:#535766; margin-bottom:4px;">{item['name']}</div>
+                    <div style="font-size:11px; color:#535766;">Qty: <b>1</b> · Size: <b>M</b></div>
+                    <div style="margin-top:4px;">
+                        <span style="font-weight:800; font-size:14px; color:#282C3F;">₹{item['price']:,}</span>
+                        <span style="font-size:11px; text-decoration:line-through; color:#7E818C; margin-left:6px;">₹{item['original_price']:,}</span>
+                    </div>
                 </div>
-                </div>
-                </div>
-                """
-                st.markdown(clean_html(bag_item_html), unsafe_allow_html=True)
-
-        with col2:
-            subtotal = sum(i["price"] for i in st.session_state.cart_items)
-            mrp_total = sum(i["original_price"] for i in st.session_state.cart_items)
-            discount_total = mrp_total - subtotal
-
-            price_summary_html = f"""
-            <div style="background:#FFFFFF; border-radius:4px; padding:16px; border:1px solid #EAEAEC;">
-            <div style="font-weight:800; font-size:12px; color:#7E818C; text-transform:uppercase; margin-bottom:12px;">PRICE DETAILS ({len(st.session_state.cart_items)} Items)</div>
-            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px; color:#282C3F;">
-            <span>Total MRP</span>
-            <span>₹{mrp_total:,}</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px; color:#03A685;">
-            <span>Discount on MRP</span>
-            <span>-₹{discount_total:,}</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px; color:#282C3F;">
-            <span>Convenience Fee</span>
-            <span style="color:#03A685; font-weight:700;">FREE</span>
-            </div>
-            <hr style="border-color:#EAEAEC; margin:12px 0;">
-            <div style="display:flex; justify-content:space-between; font-size:15px; font-weight:800; color:#282C3F; margin-bottom:16px;">
-            <span>Total Amount</span>
-            <span>₹{subtotal:,}</span>
-            </div>
             </div>
             """
-            st.markdown(clean_html(price_summary_html), unsafe_allow_html=True)
+            st.markdown(clean_html(bag_html), unsafe_allow_html=True)
 
-            st.markdown("<div style='height:10px;'></div>", unsafe_allow_html=True)
-            if st.button("PLACE ORDER", type="primary", use_container_width=True):
-                st.balloons()
-                st.success("Order Placed Successfully! 🎉 Thank you for shopping on Myntra.")
+        mrp_total = sum(i["original_price"] for i in st.session_state.cart_items)
+        subtotal = sum(i["price"] for i in st.session_state.cart_items)
+        discount_total = mrp_total - subtotal
+
+        summary_html = f"""
+        <div style="background:#FFFFFF; border-radius:8px; padding:14px; border:1px solid #EAEAEC; margin-top:16px;">
+            <div style="font-weight:800; font-size:11px; color:#7E818C; text-transform:uppercase; margin-bottom:10px;">PRICE DETAILS ({len(st.session_state.cart_items)} Items)</div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; color:#282C3F;">
+                <span>Total MRP</span>
+                <span>₹{mrp_total:,}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; color:#03A685;">
+                <span>Discount on MRP</span>
+                <span>-₹{discount_total:,}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; color:#282C3F;">
+                <span>Convenience Fee</span>
+                <span style="color:#03A685; font-weight:700;">FREE</span>
+            </div>
+            <hr style="border-color:#EAEAEC; margin:10px 0;">
+            <div style="display:flex; justify-content:space-between; font-size:15px; font-weight:900; color:#282C3F; margin-bottom:14px;">
+                <span>Total Amount</span>
+                <span>₹{subtotal:,}</span>
+            </div>
+        </div>
+        """
+        st.markdown(clean_html(summary_html), unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("PLACE ORDER", type="primary", use_container_width=True):
+            st.balloons()
+            st.success("🎉 Order Placed Successfully! Thank you for shopping on Myntra.")
 
 # ---------------------------------------------------------
-# STICKY BOTTOM NAV BAR (Real Myntra Look)
+# STICKY BOTTOM NAVIGATION BAR (Mobile Style)
 # ---------------------------------------------------------
-bottom_nav_html = """
-<div class="myntra-bottom-bar">
-<div class="bottom-item">🏠<br>Home</div>
-<div class="bottom-item">📂<br>Categories</div>
-<div class="bottom-item">🎬<br>Studio</div>
-<div class="bottom-item active">❤️<br>Wishlist</div>
-<div class="bottom-item">👤<br>Profile</div>
+cart_count = len(st.session_state.cart_items)
+wishlist_count = len(WISHLIST_PRODUCTS)
+
+bottom_nav_html = f"""
+<div class="bottom-nav-bar">
+    <div class="nav-btn {'active' if st.session_state.current_screen == 'wishlist' else ''}">
+        <span style="font-size:16px;">🏠</span>
+        <span>Home</span>
+    </div>
+    <div class="nav-btn">
+        <span style="font-size:16px;">📂</span>
+        <span>Categories</span>
+    </div>
+    <div class="nav-btn {'active' if st.session_state.current_screen in ['wishlist', 'decision'] else ''}">
+        <span style="font-size:16px;">❤️</span>
+        <span>Wishlist</span>
+        <span class="nav-badge">{wishlist_count}</span>
+    </div>
+    <div class="nav-btn {'active' if st.session_state.current_screen == 'cart' else ''}">
+        <span style="font-size:16px;">🛍️</span>
+        <span>Bag</span>
+        {'<span class="nav-badge">' + str(cart_count) + '</span>' if cart_count > 0 else ''}
+    </div>
+    <div class="nav-btn">
+        <span style="font-size:16px;">👤</span>
+        <span>Profile</span>
+    </div>
 </div>
 """
 st.markdown(clean_html(bottom_nav_html), unsafe_allow_html=True)
