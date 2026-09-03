@@ -541,7 +541,13 @@ st.markdown("""
         border-radius: 8px !important;
     }
 
-    /* Comparison Matrix */
+    /* Comparison Matrix Side-by-Side Columns */
+    div[data-testid="column"]:has(.comp-col-card) {
+        min-width: 0 !important;
+        flex: 1 1 0% !important;
+        padding: 0 3px !important;
+    }
+
     .comp-col-card {
         background: #FFFFFF;
         border: 1px solid #EAEAEC;
@@ -550,6 +556,10 @@ st.markdown("""
         margin-bottom: 10px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         font-size: 11px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     .stock-pill {
@@ -776,12 +786,16 @@ def toggle_wishlist(prod_id: int):
         st.session_state.wishlist_ids.remove(prod_id)
         if prod_id in st.session_state.selected_for_compare:
             st.session_state.selected_for_compare.remove(prod_id)
-        st.session_state[f"chk_sel_{prod_id}"] = False
+        key_name = f"chk_sel_{prod_id}"
+        if key_name in st.session_state:
+            del st.session_state[key_name]
     else:
         st.session_state.wishlist_ids.append(prod_id)
         if prod_id not in st.session_state.selected_for_compare:
             st.session_state.selected_for_compare.append(prod_id)
-        st.session_state[f"chk_sel_{prod_id}"] = True
+        key_name = f"chk_sel_{prod_id}"
+        if key_name in st.session_state:
+            del st.session_state[key_name]
 
 # ---------------------------------------------------------
 # INTERACTIVE TOP NAVBAR HEADER
