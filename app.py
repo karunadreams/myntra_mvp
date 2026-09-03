@@ -599,7 +599,10 @@ st.markdown("""
     }
 
     /* Always Fixed Sticky Bottom Navigation Bar (Never disappears on scroll) */
-    div[data-testid="stHorizontalBlock"]:has(button[key*="bnav_"]) {
+    div[data-testid="stHorizontalBlock"]:has(#fixed-bottom-nav-anchor),
+    div[data-testid="stHorizontalBlock"]:has(button[key*="bnav_"]),
+    div[data-testid="element-container"]:has(button[key*="bnav_"]),
+    div.element-container:has(button[key*="bnav_"]) {
         position: fixed !important;
         bottom: 0 !important;
         left: 50% !important;
@@ -607,10 +610,10 @@ st.markdown("""
         width: 100% !important;
         max-width: 430px !important;
         background: #FFFFFF !important;
-        border-top: 1px solid #EAEAEC !important;
+        border-top: 1.5px solid #EAEAEC !important;
         padding: 6px 8px 10px 8px !important;
         z-index: 999999 !important;
-        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.12) !important;
         margin: 0 !important;
     }
 
@@ -640,10 +643,10 @@ if "current_screen" not in st.session_state:
     st.session_state.current_screen = "home"  # "home", "wishlist", "comparison", "categories", "profile", "cart"
 
 if "wishlist_ids" not in st.session_state:
-    st.session_state.wishlist_ids = [1, 2, 3, 4, 5]
+    st.session_state.wishlist_ids = []  # Starts completely empty for new users
 
 if "selected_for_compare" not in st.session_state:
-    st.session_state.selected_for_compare = [1, 2, 3, 4, 5]
+    st.session_state.selected_for_compare = []
 
 if "cart_ids" not in st.session_state:
     st.session_state.cart_ids = []
@@ -1098,6 +1101,7 @@ wishlist_count = len(st.session_state.wishlist_ids)
 cart_count = len(st.session_state.cart_ids)
 
 with st.container():
+    st.markdown('<div id="fixed-bottom-nav-anchor" style="display:none;"></div>', unsafe_allow_html=True)
     b_col1, b_col2, b_col3, b_col4, b_col5 = st.columns(5)
     
     with b_col1:
