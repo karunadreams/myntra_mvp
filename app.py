@@ -1014,10 +1014,11 @@ if st.session_state.current_screen == "home":
         for idx, prod in enumerate(row_prods):
             with cols[idx]:
                 is_wishlisted = prod["id"] in st.session_state.wishlist_ids
+                is_in_bag = prod["id"] in st.session_state.cart_ids
                 img_b64 = get_image_base64(prod["image_path"])
                 img_tag = f'<img src="{img_b64}" class="grid-img" />' if img_b64 else ''
                 
-                # FIX 1: Heart Icon Button on Top-Right Corner of Product Image
+                # Heart Icon Button on Top-Right Corner of Product Image
                 heart_icon = "❤️" if is_wishlisted else "🤍"
                 if st.button(heart_icon, key=f"home_heart_{prod['id']}"):
                     toggle_wishlist(prod["id"])
@@ -1040,6 +1041,15 @@ if st.session_state.current_screen == "home":
                 </div>
                 """
                 st.markdown(clean_html(card_html), unsafe_allow_html=True)
+
+                # Working ADD TO CART button below each card
+                if is_in_bag:
+                    st.button("✓ IN BAG", key=f"home_cart_{prod['id']}", disabled=True, use_container_width=True)
+                else:
+                    if st.button("ADD TO CART", key=f"home_cart_{prod['id']}", type="primary", use_container_width=True):
+                        st.session_state.cart_ids.append(prod["id"])
+                        st.toast(f"Added {prod['brand']} {prod['name']} to Bag! 🛍️")
+                        st.rerun()
 
         st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
 
