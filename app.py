@@ -752,35 +752,44 @@ st.markdown("""
     }
 
     /* Native Streamlit Heart Button Positioned inside Top-Right Corner of Product Image */
+    div[data-testid="stElementContainer"]:has(button[key*="home_heart_"]),
     div[data-testid="element-container"]:has(button[key*="home_heart_"]),
     div.stElementContainer:has(button[key*="home_heart_"]),
-    div.element-container:has(button[key*="home_heart_"]) {
+    div.element-container:has(button[key*="home_heart_"]),
+    div[data-testid="stButton"]:has(button[key*="home_heart_"]),
+    div.stButton:has(button[key*="home_heart_"]) {
         position: absolute !important;
-        top: 8px !important;
-        right: 8px !important;
-        z-index: 99999 !important;
-        width: auto !important;
-        height: auto !important;
+        top: 10px !important;
+        right: 10px !important;
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        z-index: 999999 !important;
         margin: 0 !important;
         padding: 0 !important;
     }
 
     button[key*="home_heart_"] {
-        background: rgba(255, 255, 255, 0.95) !important;
-        border: 1px solid #EAEAEC !important;
-        border-radius: 50% !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
         width: 32px !important;
         height: 32px !important;
         min-width: 32px !important;
         min-height: 32px !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        border: 1px solid #EAEAEC !important;
+        border-radius: 50% !important;
         padding: 0 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         font-size: 16px !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22) !important;
         cursor: pointer !important;
         margin: 0 !important;
+        z-index: 999999 !important;
     }
 
     div[data-testid="column"]:has(button[key*="home_heart_"]),
