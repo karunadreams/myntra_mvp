@@ -599,7 +599,8 @@ st.markdown("""
     }
 
     /* Always Fixed Sticky Bottom Navigation Bar (Floating at viewport bottom) */
-    div[data-testid="stHorizontalBlock"]:has(button[key*="bnav_"]) {
+    div[data-testid="stHorizontalBlock"]:has(button[key*="bnav_"]),
+    div[data-testid="element-container"]:has(button[key*="bnav_"]) {
         position: fixed !important;
         bottom: 0 !important;
         left: 50% !important;
@@ -608,8 +609,8 @@ st.markdown("""
         max-width: 430px !important;
         background: #FFFFFF !important;
         border-top: 2px solid #EAEAEC !important;
-        padding: 4px 4px 8px 4px !important;
-        z-index: 999999 !important;
+        padding: 4px 2px 8px 2px !important;
+        z-index: 9999999 !important;
         box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
         margin: 0 !important;
     }
@@ -621,17 +622,20 @@ st.markdown("""
     }
 
     button[key*="bnav_"] {
-        font-size: 9.5px !important;
+        font-size: 9px !important;
         font-weight: 800 !important;
-        padding: 2px 1px !important;
-        height: 42px !important;
-        min-height: 42px !important;
-        line-height: 1.1 !important;
+        padding: 2px 0 !important;
+        height: 44px !important;
+        min-height: 44px !important;
+        line-height: 1.2 !important;
         white-space: nowrap !important;
+        word-break: keep-all !important;
+        text-transform: none !important;
         border-radius: 8px !important;
         overflow: visible !important;
-        text-overflow: clip !important;
         letter-spacing: -0.2px !important;
+    }
+
     /* Category Card Interactive Buttons */
     button[key*="category_item_"] {
         background-color: #FFFFFF !important;
@@ -741,18 +745,13 @@ with st.container():
             st.rerun()
             
     with h_col2:
-        btn_c1, btn_c2, btn_c3 = st.columns(3)
+        btn_c1, btn_c2 = st.columns(2)
         with btn_c1:
-            if st.button("🔍", key="top_search_btn"):
-                st.session_state.show_profile_modal = False
-                st.session_state.current_screen = "home"
-                st.rerun()
-        with btn_c2:
             if st.button(f"❤️ {wishlist_cnt}", key="top_wish_btn", type="primary" if st.session_state.current_screen == "wishlist" else "secondary"):
                 st.session_state.show_profile_modal = False
                 st.session_state.current_screen = "wishlist"
                 st.rerun()
-        with btn_c3:
+        with btn_c2:
             if st.button(f"🛍️ {cart_cnt}", key="top_bag_btn", type="primary" if st.session_state.current_screen == "cart" else "secondary"):
                 st.session_state.show_profile_modal = False
                 st.session_state.current_screen = "cart"
