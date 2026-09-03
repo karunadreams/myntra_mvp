@@ -1009,11 +1009,7 @@ elif st.session_state.current_screen == "categories":
     st.markdown("<div style='font-size:12px; color:#696B79; margin-bottom:14px;'>Find ethnic wear & festive outfits</div>", unsafe_allow_html=True)
 
     cat_list = [
-        {"name": "Kurtas & Kurta Sets", "desc": "Diwali & Festive Collection · 20 Products", "icon": "🪔"},
-        {"name": "Anarkali & Sharara Suits", "desc": "Royal Silk & Sequin Embroidered", "icon": "✨"},
-        {"name": "College Fest Dresses", "desc": "Floral Wrap & Co-ord Sets", "icon": "👗"},
-        {"name": "Silk Sarees & Lehengas", "desc": "Zari Border & Mirror Work", "icon": "🥻"},
-        {"name": "Loungewear & Casuals", "desc": "Soft Cotton Everyday Wear", "icon": "👚"}
+        {"name": "Kurtas & Kurta Sets", "desc": "Diwali & Festive Collection · 20 Products", "icon": "🪔"}
     ]
 
     for idx, cat in enumerate(cat_list):
