@@ -751,53 +751,51 @@ st.markdown("""
         text-transform: none !important;
     }
 
-    /* Native Streamlit Heart Button Positioned inside Top-Right Corner of Product Image */
-    div[data-testid="stColumn"] > div:first-child,
-    div[data-testid="column"] > div:first-child,
-    div.stColumn > div:first-child {
-        position: absolute !important;
-        top: 10px !important;
-        right: 10px !important;
-        z-index: 999999 !important;
-        width: 32px !important;
-        height: 32px !important;
-        min-width: 32px !important;
-        min-height: 32px !important;
-        margin: 0 !important;
-        padding: 0 !important;
+    /* Home Screen Heart Icon Button Overlay inside Top Corner of Product Image */
+    div[data-testid="column"]:has(button[key*="home_heart_"]),
+    div.stColumn:has(button[key*="home_heart_"]),
+    div[data-testid="stColumn"]:has(button[key*="home_heart_"]) {
+        position: relative !important;
     }
 
-    div[data-testid="stColumn"] > div:first-child button,
-    div[data-testid="column"] > div:first-child button,
-    div.stColumn > div:first-child button,
-    button[key*="home_heart_"] {
+    div[data-testid="element-container"]:has(button[key*="home_heart_"]),
+    div.stElementContainer:has(button[key*="home_heart_"]),
+    div.element-container:has(button[key*="home_heart_"]) {
+        height: 0 !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
         position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
+        top: 8px !important;
+        right: 8px !important;
+        z-index: 9999 !important;
         width: 32px !important;
-        height: 32px !important;
-        min-width: 32px !important;
-        min-height: 32px !important;
-        max-width: 32px !important;
-        max-height: 32px !important;
+    }
+
+    button[key*="home_heart_"] {
+        position: relative !important;
+        z-index: 999999 !important;
         background: rgba(255, 255, 255, 0.95) !important;
         border: 1px solid #EAEAEC !important;
         border-radius: 50% !important;
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
         padding: 0 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        font-size: 16px !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22) !important;
+        font-size: 15px !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18) !important;
         cursor: pointer !important;
         margin: 0 !important;
-        z-index: 999999 !important;
     }
 
-    div[data-testid="stColumn"],
-    div[data-testid="column"],
-    div.stColumn {
-        position: relative !important;
+    button[key*="home_heart_"]:hover {
+        transform: scale(1.08);
+        box-shadow: 0 4px 12px rgba(255, 63, 108, 0.25) !important;
     }
 
     /* FIX 2: Sticky Selective Compare Button above Bottom Navigation Bar */
@@ -1040,15 +1038,12 @@ if st.session_state.current_screen == "home":
                 is_in_bag = prod["id"] in st.session_state.cart_ids
                 img_b64 = get_image_base64(prod["image_path"])
                 img_tag = f'<img src="{img_b64}" class="grid-img" />' if img_b64 else ''
+                
+                # Native Streamlit Heart Icon Button (In-session rerun without browser page refresh!)
                 heart_icon = "❤️" if is_wishlisted else "🤍"
-
-                # Native Streamlit Heart Button with on_click callback (No URL page refreshes!)
-                st.button(
-                    heart_icon,
-                    key=f"home_heart_{prod['id']}",
-                    on_click=toggle_wishlist,
-                    args=(prod["id"],)
-                )
+                if st.button(heart_icon, key=f"home_heart_{prod['id']}"):
+                    toggle_wishlist(prod["id"])
+                    st.rerun()
 
                 card_html = f"""
                 <div class="grid-card">
