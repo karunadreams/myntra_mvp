@@ -751,6 +751,120 @@ st.markdown("""
         text-transform: none !important;
     }
 
+    /* FIX 1: Home Screen Heart Icon Button on Top-Right Corner of Image */
+    button[key*="home_heart_"] {
+        position: absolute !important;
+        top: 8px !important;
+        right: 8px !important;
+        z-index: 20 !important;
+        background: rgba(255, 255, 255, 0.92) !important;
+        border: 1px solid #EAEAEC !important;
+        border-radius: 50% !important;
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 15px !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+        cursor: pointer !important;
+    }
+
+    div[data-testid="column"]:has(button[key*="home_heart_"]) {
+        position: relative !important;
+    }
+
+    /* FIX 2: Sticky Selective Compare Button above Bottom Navigation Bar */
+    div[data-testid="element-container"]:has(button[key="btn_compare_selected"]),
+    div.stElementContainer:has(button[key="btn_compare_selected"]),
+    div.element-container:has(button[key="btn_compare_selected"]) {
+        position: fixed !important;
+        bottom: 58px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 100% !important;
+        max-width: 430px !important;
+        padding: 0 12px !important;
+        z-index: 9999999 !important;
+        margin: 0 !important;
+    }
+
+    @media (max-width: 480px) {
+        div[data-testid="element-container"]:has(button[key="btn_compare_selected"]) {
+            max-width: 100% !important;
+            left: 0 !important;
+            transform: none !important;
+        }
+    }
+
+    /* FIX 3: Ghost Trash Icon inside Wishlist Card */
+    button[key*="w_rem_"] {
+        position: absolute !important;
+        bottom: 8px !important;
+        right: 10px !important;
+        z-index: 15 !important;
+        background: transparent !important;
+        border: none !important;
+        font-size: 15px !important;
+        color: #94969F !important;
+        padding: 2px !important;
+        height: 28px !important;
+        min-height: 28px !important;
+        width: 28px !important;
+        min-width: 28px !important;
+        box-shadow: none !important;
+        cursor: pointer !important;
+    }
+
+    button[key*="w_rem_"]:hover {
+        color: #FF3F6C !important;
+        background: transparent !important;
+    }
+
+    div[data-testid="column"]:has(button[key*="w_rem_"]) {
+        position: relative !important;
+    }
+
+    /* FIX 4: Bottom Sheet Modal Backdrop Overlay & Sheet Card */
+    .bottom-sheet-backdrop {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background: rgba(0, 0, 0, 0.55) !important;
+        z-index: 99999990 !important;
+    }
+
+    div[data-testid="stVerticalBlock"]:has(#bottom-sheet-target),
+    div[data-testid="element-container"]:has(#bottom-sheet-target),
+    div.stElementContainer:has(#bottom-sheet-target),
+    div.element-container:has(#bottom-sheet-target) {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 100% !important;
+        max-width: 430px !important;
+        background: #FFFFFF !important;
+        border-top-left-radius: 20px !important;
+        border-top-right-radius: 20px !important;
+        padding: 24px 20px 40px 20px !important;
+        z-index: 99999999 !important;
+        box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    @media (max-width: 480px) {
+        div[data-testid="stVerticalBlock"]:has(#bottom-sheet-target) {
+            max-width: 100% !important;
+            left: 0 !important;
+            transform: none !important;
+        }
+    }
+
     /* Category Card Interactive Buttons */
     button[key*="category_item_"] {
         background-color: #FFFFFF !important;
@@ -903,6 +1017,12 @@ if st.session_state.current_screen == "home":
                 img_b64 = get_image_base64(prod["image_path"])
                 img_tag = f'<img src="{img_b64}" class="grid-img" />' if img_b64 else ''
                 
+                # FIX 1: Heart Icon Button on Top-Right Corner of Product Image
+                heart_icon = "❤️" if is_wishlisted else "🤍"
+                if st.button(heart_icon, key=f"home_heart_{prod['id']}"):
+                    toggle_wishlist(prod["id"])
+                    st.rerun()
+
                 card_html = f"""
                 <div class="grid-card">
                     <div class="grid-img-wrap">
@@ -920,11 +1040,6 @@ if st.session_state.current_screen == "home":
                 </div>
                 """
                 st.markdown(clean_html(card_html), unsafe_allow_html=True)
-                
-                heart_label = "❤️ WISHLISTED" if is_wishlisted else "♡ WISHLIST"
-                if st.button(heart_label, key=f"home_heart_{prod['id']}", type="primary" if is_wishlisted else "secondary", use_container_width=True):
-                    toggle_wishlist(prod["id"])
-                    st.rerun()
 
         st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
 
@@ -954,14 +1069,8 @@ elif st.session_state.current_screen == "wishlist":
 
     wishlist_prods = [p for p in PRODUCTS if p["id"] in st.session_state.wishlist_ids]
 
-    # Ensure all wishlisted items are in selected_for_compare by default and checkbox keys are True
-    for p in wishlist_prods:
-        if p["id"] not in st.session_state.selected_for_compare:
-            st.session_state.selected_for_compare.append(p["id"])
-        st.session_state[f"chk_sel_{p['id']}"] = True
-
     if not wishlist_prods:
-        st.info("Your wishlist is empty. Tap ♡ on any product on Home screen to save items here!")
+        st.info("Your wishlist is empty. Tap 🤍 on any product on Home screen to save items here!")
         if st.button("🏠 RETURN TO HOME SCREEN", type="primary", use_container_width=True):
             st.session_state.current_screen = "home"
             st.rerun()
@@ -987,7 +1096,7 @@ elif st.session_state.current_screen == "wishlist":
                 img_html = f'<img src="{img_b64}" class="wishlist-thumb" />' if img_b64 else ''
                 
                 row_html = f"""
-                <div class="wishlist-row-card">
+                <div class="wishlist-row-card" style="position:relative;">
                     {img_html}
                     <div class="wishlist-details">
                         <div class="card-brand">{prod['brand']}</div>
@@ -1002,62 +1111,64 @@ elif st.session_state.current_screen == "wishlist":
                 """
                 st.markdown(clean_html(row_html), unsafe_allow_html=True)
                 
-                c_del1, c_del2 = st.columns([1.5, 1])
-                with c_del2:
-                    if st.button("🗑️ Remove", key=f"w_rem_{prod['id']}", use_container_width=True):
-                        toggle_wishlist(prod["id"])
-                        st.rerun()
+                # FIX 3: Ghost Trash Icon inside Wishlist Card
+                if st.button("🗑️", key=f"w_rem_{prod['id']}"):
+                    toggle_wishlist(prod["id"])
+                    st.rerun()
 
             st.markdown("<div style='height:4px;'></div>", unsafe_allow_html=True)
 
-    sel_count = len([p_id for p_id in st.session_state.selected_for_compare if p_id in st.session_state.wishlist_ids])
-    if sel_count >= 1:
-        st.markdown("<br>", unsafe_allow_html=True)
-        btn_txt = f"⚡ DECISION MODE · COMPARE {sel_count} SELECTED ITEM" if sel_count == 1 else f"⚡ DECISION MODE · COMPARE {sel_count} SELECTED ITEMS"
-        if st.button(f"{btn_txt} →", type="primary", use_container_width=True):
-            if not st.session_state.body_profile["is_saved"]:
-                st.session_state.show_profile_modal = True
-            else:
-                st.session_state.current_screen = "comparison"
-            st.rerun()
+        # FIX 2: Sticky Selective Compare Button when 2 or more checkboxes checked
+        checked_ids = [p_id for p_id in st.session_state.wishlist_ids if st.session_state.get(f"chk_sel_{p_id}", False)]
+        X = len(checked_ids)
+        if X >= 2:
+            if st.button(f"⚡ Compare Selected ({X}) →", key="btn_compare_selected", type="primary", use_container_width=True):
+                st.session_state.selected_for_compare = checked_ids.copy()
+                if not st.session_state.body_profile["is_saved"]:
+                    st.session_state.show_profile_modal = True
+                else:
+                    st.session_state.current_screen = "comparison"
+                st.rerun()
 
 # =========================================================
-# PAGE 3: BODY PROFILE SETUP MODAL
+# PAGE 3: BODY PROFILE SETUP MODAL (FIX 4: Bottom Sheet Modal)
 # =========================================================
 if st.session_state.show_profile_modal:
-    st.markdown("""
-    <div style="background: #FFF5F7; border: 2px solid #FF3F6C; border-radius: 12px; padding: 16px; margin-bottom: 20px;">
-        <h4 style="margin: 0 0 4px 0; color: #282C3F; font-weight: 800;">⚡ Quick Fit Setup</h4>
-        <p style="margin: 0; font-size: 12px; color: #696B79;">Takes 30 seconds. Never asked again.</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown('<div class="bottom-sheet-backdrop"></div>', unsafe_allow_html=True)
+    st.markdown('<div id="bottom-sheet-target"></div>', unsafe_allow_html=True)
+    
+    with st.container():
+        st.markdown(clean_html("""
+        <div style="margin-bottom: 14px;">
+            <h3 style="margin: 0 0 4px 0; color: #282C3F; font-weight: 800; font-size: 18px;">⚡ Quick Fit Setup</h3>
+            <p style="margin: 0; font-size: 13px; color: #696B79;">Takes 30 seconds. Never asked again.</p>
+        </div>
+        """), unsafe_allow_html=True)
 
-    prof_h = st.selectbox(
-        "1. Select Height Range:",
-        options=["5'0\"–5'2\"", "5'3\"–5'5\"", "5'6\"+"],
-        index=1,
-        key="mod_height_sel"
-    )
+        prof_h = st.selectbox(
+            "Select Height Range:",
+            options=["5'0\"–5'2\"", "5'3\"–5'5\"", "5'6\"+"],
+            index=1,
+            key="mod_height_sel"
+        )
 
-    prof_s = st.selectbox(
-        "2. Select Usual Size:",
-        options=["XS", "S", "M", "L", "XL"],
-        index=1,
-        key="mod_size_sel"
-    )
+        prof_s = st.selectbox(
+            "Select Usual Size:",
+            options=["XS", "S", "M", "L", "XL"],
+            index=1,
+            key="mod_size_sel"
+        )
 
-    st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("SAVE & COMPARE →", type="primary", use_container_width=True, key="save_compare_btn"):
-        st.session_state.body_profile = {
-            "height": prof_h,
-            "size": prof_s,
-            "is_saved": True
-        }
-        st.session_state.show_profile_modal = False
-        st.session_state.current_screen = "comparison"
-        st.rerun()
-
-    st.markdown("<div style='height:80px;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='height:14px;'></div>", unsafe_allow_html=True)
+        if st.button("SAVE & COMPARE →", type="primary", use_container_width=True, key="save_compare_btn"):
+            st.session_state.body_profile = {
+                "height": prof_h,
+                "size": prof_s,
+                "is_saved": True
+            }
+            st.session_state.show_profile_modal = False
+            st.session_state.current_screen = "comparison"
+            st.rerun()
 
 # =========================================================
 # PAGE 4: COMPARISON SCREEN (2-Product Side-by-Side Carousel)
@@ -1104,11 +1215,13 @@ elif st.session_state.current_screen == "comparison" and not st.session_state.sh
 
         kw_htmls = "".join([f'<span class="kw-pill">{kw}</span>' for kw in prod["keywords"]])
 
+        # FIX 5: Added Occasion Pill Tag in Comparison Card
         col_card_html = f"""
         <div class="comp-col-card">
             {img_html}
             <div style="font-weight:900; font-size:15px; text-transform:uppercase; color:#282C3F;">{prod['brand']}</div>
-            <div style="color:#696B79; font-size:12px; margin-bottom:4px;">{prod['name']}</div>
+            <div style="color:#696B79; font-size:12px; margin-bottom:2px;">{prod['name']}</div>
+            <div style="margin-bottom:4px;"><span class="occasion-pill">{prod['occasion']}</span></div>
             <div style="font-weight:800; font-size:15px; color:#282C3F;">₹{prod['price']:,}</div>
             <div style="color:#03A685; font-weight:700; font-size:13px; margin-bottom:4px;">⭐ {prod['rating']}</div>
             <div style="margin-bottom:6px;">{stock_row}</div>
@@ -1181,11 +1294,13 @@ elif st.session_state.current_screen == "comparison" and not st.session_state.sh
 
                 kw_htmls = "".join([f'<span class="kw-pill">{kw}</span>' for kw in prod["keywords"]])
 
+                # FIX 5: Added Occasion Pill Tag in Comparison Card
                 col_card_html = f"""
                 <div class="comp-col-card">
                     {img_html}
                     <div style="font-weight:900; font-size:12px; text-transform:uppercase; color:#282C3F; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{prod['brand']}</div>
-                    <div style="color:#696B79; font-size:10px; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{prod['name']}</div>
+                    <div style="color:#696B79; font-size:10px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{prod['name']}</div>
+                    <div style="margin-bottom:4px;"><span class="occasion-pill">{prod['occasion']}</span></div>
                     <div style="font-weight:800; font-size:13px; color:#282C3F;">₹{prod['price']:,}</div>
                     <div style="color:#03A685; font-weight:700; font-size:11px; margin-bottom:4px;">⭐ {prod['rating']}</div>
                     <div style="margin-bottom:4px;">{stock_row}</div>
