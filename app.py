@@ -751,51 +751,17 @@ st.markdown("""
         text-transform: none !important;
     }
 
-    /* Home Screen Heart Icon Button Overlay inside Top Corner of Product Image */
-    div[data-testid="column"]:has(button[key*="home_heart_"]),
-    div.stColumn:has(button[key*="home_heart_"]),
-    div[data-testid="stColumn"]:has(button[key*="home_heart_"]) {
-        position: relative !important;
-    }
-
-    div[data-testid="element-container"]:has(button[key*="home_heart_"]),
-    div.stElementContainer:has(button[key*="home_heart_"]),
-    div.element-container:has(button[key*="home_heart_"]) {
-        height: 0 !important;
-        min-height: 0 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        overflow: visible !important;
-        position: absolute !important;
-        top: 8px !important;
-        right: 8px !important;
-        z-index: 9999 !important;
-        width: 32px !important;
-    }
-
-    button[key*="home_heart_"] {
-        position: relative !important;
-        z-index: 999999 !important;
-        background: rgba(255, 255, 255, 0.95) !important;
-        border: 1px solid #EAEAEC !important;
-        border-radius: 50% !important;
-        width: 32px !important;
-        height: 32px !important;
-        min-width: 32px !important;
-        min-height: 32px !important;
-        padding: 0 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        font-size: 15px !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18) !important;
-        cursor: pointer !important;
-        margin: 0 !important;
-    }
-
-    button[key*="home_heart_"]:hover {
-        transform: scale(1.08);
-        box-shadow: 0 4px 12px rgba(255, 63, 108, 0.25) !important;
+    /* Home Screen Card Action Buttons (Wishlist & Add to Cart Side-by-Side) */
+    button[key*="home_wish_"],
+    button[key*="home_cart_"] {
+        font-size: 10px !important;
+        font-weight: 800 !important;
+        padding: 4px 2px !important;
+        height: 36px !important;
+        min-height: 36px !important;
+        white-space: nowrap !important;
+        text-transform: uppercase !important;
+        border-radius: 6px !important;
     }
 
     /* FIX 2: Sticky Selective Compare Button above Bottom Navigation Bar */
@@ -1039,12 +1005,6 @@ if st.session_state.current_screen == "home":
                 img_b64 = get_image_base64(prod["image_path"])
                 img_tag = f'<img src="{img_b64}" class="grid-img" />' if img_b64 else ''
                 
-                # Native Streamlit Heart Icon Button (In-session rerun without browser page refresh!)
-                heart_icon = "❤️" if is_wishlisted else "🤍"
-                if st.button(heart_icon, key=f"home_heart_{prod['id']}"):
-                    toggle_wishlist(prod["id"])
-                    st.rerun()
-
                 card_html = f"""
                 <div class="grid-card">
                     <div class="grid-img-wrap">
@@ -1063,14 +1023,22 @@ if st.session_state.current_screen == "home":
                 """
                 st.markdown(clean_html(card_html), unsafe_allow_html=True)
 
-                # Working ADD TO CART button below each card
-                if is_in_bag:
-                    st.button("✓ IN BAG", key=f"home_cart_{prod['id']}", disabled=True, use_container_width=True)
-                else:
-                    if st.button("ADD TO CART", key=f"home_cart_{prod['id']}", type="primary", use_container_width=True):
-                        st.session_state.cart_ids.append(prod["id"])
-                        st.toast(f"Added {prod['brand']} {prod['name']} to Bag! 🛍️")
+                # 2 Side-by-Side Action Buttons directly below card (Wishlist with Heart + Add to Cart)
+                b_wish, b_cart = st.columns(2)
+                with b_wish:
+                    wish_label = "❤️ SAVED" if is_wishlisted else "♡ WISHLIST"
+                    if st.button(wish_label, key=f"home_wish_{prod['id']}", type="primary" if is_wishlisted else "secondary", use_container_width=True):
+                        toggle_wishlist(prod["id"])
                         st.rerun()
+
+                with b_cart:
+                    if is_in_bag:
+                        st.button("✓ IN BAG", key=f"home_cart_{prod['id']}", disabled=True, use_container_width=True)
+                    else:
+                        if st.button("ADD TO CART", key=f"home_cart_{prod['id']}", type="primary", use_container_width=True):
+                            st.session_state.cart_ids.append(prod["id"])
+                            st.toast(f"Added {prod['brand']} {prod['name']} to Bag! 🛍️")
+                            st.rerun()
 
         st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
 
