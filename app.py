@@ -598,18 +598,51 @@ st.markdown("""
         text-align: center;
     }
 
-    /* Lock fixed bottom navigation bar directly to viewport window */
-    div[data-testid="stAppViewContainer"], section.main {
-        position: static !important;
-    }
-
+    /* Mobile Container 430px */
     .block-container {
-        position: static !important;
+        max-width: 430px !important;
+        padding-top: 6px !important;
+        padding-bottom: 85px !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+        margin: 0 auto !important;
+        background-color: #FFFFFF !important;
+        min-height: 100vh;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border-radius: 12px;
+        overflow: visible !important;
     }
 
-    /* Always Fixed Sticky Bottom Navigation Bar (Floating locked at viewport bottom) */
-    div[data-testid="stHorizontalBlock"]:has(button[key*="bnav_"]),
-    div[data-testid="element-container"]:has(button[key*="bnav_"]) {
+    header, footer { visibility: hidden !important; }
+
+    /* Top Logo Bar */
+    .top-logo-img {
+        height: 32px;
+        object-fit: contain;
+    }
+
+    /* Pink Banner Chip */
+    .pink-banner-chip {
+        background: #FFF0F4;
+        border: 1px solid #FF3F6C;
+        color: #FF3F6C;
+        font-weight: 700;
+        font-size: 12px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        text-align: center;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    /* Always Fixed Sticky Bottom Navigation Bar (Floating at viewport bottom) */
+    div[data-testid="stHorizontalBlock"]:has(#sticky-bnav-target),
+    div[data-testid="element-container"]:has(#sticky-bnav-target),
+    div.stElementContainer:has(#sticky-bnav-target),
+    div.element-container:has(#sticky-bnav-target) {
         position: fixed !important;
         bottom: 0 !important;
         left: 50% !important;
@@ -619,18 +652,18 @@ st.markdown("""
         background: #FFFFFF !important;
         border-top: 2px solid #EAEAEC !important;
         padding: 4px 2px 8px 2px !important;
-        z-index: 999999999 !important;
-        box-shadow: 0 -4px 25px rgba(0, 0, 0, 0.18) !important;
+        z-index: 99999999 !important;
+        box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.18) !important;
         margin: 0 !important;
     }
 
-    div[data-testid="column"]:has(button[key*="bnav_"]) {
+    div[data-testid="stHorizontalBlock"]:has(#sticky-bnav-target) div[data-testid="column"] {
         padding: 0 1px !important;
         min-width: 0 !important;
         flex: 1 1 0% !important;
     }
 
-    button[key*="bnav_"] {
+    div[data-testid="stHorizontalBlock"]:has(#sticky-bnav-target) button {
         font-size: 9px !important;
         font-weight: 800 !important;
         padding: 2px 0 !important;
@@ -1152,6 +1185,7 @@ with st.container():
     b_col1, b_col2, b_col3, b_col4, b_col5 = st.columns(5)
     
     with b_col1:
+        st.markdown('<div id="sticky-bnav-target" style="display:none;"></div>', unsafe_allow_html=True)
         if st.button("🏠 Home", key="bnav_home", type="primary" if st.session_state.current_screen == "home" else "secondary", use_container_width=True):
             st.session_state.show_profile_modal = False
             st.session_state.current_screen = "home"
