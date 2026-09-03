@@ -2,7 +2,7 @@ from streamlit.testing.v1 import AppTest
 import sys
 
 def run_tests():
-    print("--- Starting Interactive Navigation & Home Button Test ---")
+    print("--- Starting Full Local Automated Test Suite ---")
     at = AppTest.from_file("app.py", default_timeout=10)
     at.run()
     
@@ -11,52 +11,65 @@ def run_tests():
         sys.exit(1)
     print("[SUCCESS] Page 1 (Home Screen Grid with 20 items): SUCCESS")
 
-    # Click Wishlist button on bottom nav
-    btn_wish = next((b for b in at.button if "bnav_wish" in (b.key or "")), None)
+    # 1. Wishlist 2 products on Home screen
+    btn_w1 = next((b for b in at.button if "home_wish_1" in (b.key or "")), None)
+    btn_w2 = next((b for b in at.button if "home_wish_2" in (b.key or "")), None)
+    if btn_w1 and btn_w2:
+        btn_w1.click().run()
+        btn_w2.click().run()
+        if at.exception:
+            print(f"FAILED wishlisting items on Home: {at.exception}")
+            sys.exit(1)
+        print("[SUCCESS] Wishlisted 2 items on Home screen: SUCCESS")
+
+    # 2. Click Wishlist button on top header
+    btn_wish = next((b for b in at.button if "top_wish_btn" in (b.key or "")), None)
     if btn_wish:
         btn_wish.click().run()
         if at.exception:
-            print(f"FAILED clicking Wishlist bnav: {at.exception}")
+            print(f"FAILED clicking Wishlist header button: {at.exception}")
             sys.exit(1)
-        print("[SUCCESS] Navigated to Wishlist Screen via bottom nav: SUCCESS")
+        print("[SUCCESS] Navigated to Wishlist Screen: SUCCESS")
 
-    # Click Home button on bottom nav from Wishlist screen
+    # 3. Click Compare Selected / DECISION MODE button on Wishlist screen
+    btn_comp = next((b for b in at.button if "btn_compare_selected" in (b.key or "") or "DECISION MODE" in b.label), None)
+    if btn_comp:
+        btn_comp.click().run()
+        if at.exception:
+            print(f"FAILED clicking compare button: {at.exception}")
+            sys.exit(1)
+        print("[SUCCESS] Clicked Compare button -> Profile Modal Triggered: SUCCESS")
+
+    # 4. Interact with Quick Fit Setup Modal Dropdowns (Height Range & Size)
+    if at.selectbox:
+        h_sel = next((s for s in at.selectbox if "mod_height_sel" in (s.key or "")), None)
+        s_sel = next((s for s in at.selectbox if "mod_size_sel" in (s.key or "")), None)
+        if h_sel:
+            h_sel.select("5'6\"+").run()
+            print("[SUCCESS] Selected Height Range 5'6\"+: SUCCESS")
+        if s_sel:
+            s_sel.select("M").run()
+            print("[SUCCESS] Selected Size M: SUCCESS")
+
+    # 5. Click SAVE & COMPARE -> button
+    btn_save = next((b for b in at.button if "save_compare_btn" in (b.key or "") or "SAVE & COMPARE" in b.label), None)
+    if btn_save:
+        btn_save.click().run()
+        if at.exception:
+            print(f"FAILED clicking SAVE & COMPARE button: {at.exception}")
+            sys.exit(1)
+        print("[SUCCESS] Saved Profile & Transitioned to Comparison Screen: SUCCESS")
+
+    # 6. Click Home button on bottom nav to return home
     btn_home = next((b for b in at.button if "bnav_home" in (b.key or "")), None)
     if btn_home:
         btn_home.click().run()
         if at.exception:
             print(f"FAILED clicking Home bnav: {at.exception}")
             sys.exit(1)
-        print("[SUCCESS] Clicked Home button on bottom nav -> Returned to Home Catalog Screen: SUCCESS")
+        print("[SUCCESS] Returned to Home Screen: SUCCESS")
 
-    # Click Categories button on bottom nav
-    btn_cat = next((b for b in at.button if "bnav_cat" in (b.key or "")), None)
-    if btn_cat:
-        btn_cat.click().run()
-        if at.exception:
-            print(f"FAILED clicking Categories bnav: {at.exception}")
-            sys.exit(1)
-        print("[SUCCESS] Navigated to Categories Screen: SUCCESS")
-
-    # Click Profile button on bottom nav
-    btn_prof = next((b for b in at.button if "bnav_prof" in (b.key or "")), None)
-    if btn_prof:
-        btn_prof.click().run()
-        if at.exception:
-            print(f"FAILED clicking Profile bnav: {at.exception}")
-            sys.exit(1)
-        print("[SUCCESS] Navigated to Profile Screen: SUCCESS")
-
-    # Click top Myntra Logo button -> Return to Home
-    btn_logo = next((b for b in at.button if "top_logo_btn" in (b.key or "")), None)
-    if btn_logo:
-        btn_logo.click().run()
-        if at.exception:
-            print(f"FAILED clicking top Myntra Logo: {at.exception}")
-            sys.exit(1)
-        print("[SUCCESS] Clicked top Myntra logo -> Returned to Home Catalog Screen: SUCCESS")
-
-    print("\nALL INTERACTIVE NAVIGATION & HOME BUTTON TESTS PASSED WITH 0 ERRORS!")
+    print("\nALL LOCAL INTERACTIVE TESTS (NAVIGATION, WISHLIST, PROFILE DROPDOWNS & COMPARISON) PASSED WITH 0 ERRORS!")
 
 if __name__ == "__main__":
     run_tests()

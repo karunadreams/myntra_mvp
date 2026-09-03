@@ -823,8 +823,8 @@ st.markdown("""
         left: 0 !important;
         width: 100vw !important;
         height: 100vh !important;
-        background: rgba(0, 0, 0, 0.65) !important;
-        z-index: 999999900 !important;
+        background: rgba(0, 0, 0, 0.6) !important;
+        z-index: 1000 !important;
     }
 
     div[data-testid="stVerticalBlock"]:has(#bottom-sheet-target),
@@ -838,9 +838,16 @@ st.markdown("""
         background: #FFFFFF !important;
         border-radius: 16px !important;
         padding: 20px 20px 24px 20px !important;
-        z-index: 999999999 !important;
+        z-index: 1001 !important;
         box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4) !important;
         border: 2px solid #FF3F6C !important;
+    }
+
+    /* Force Streamlit BaseWeb Dropdown Popover Menus to render ON TOP of Modal Card & Backdrop */
+    div[data-baseweb="popover"],
+    div[role="listbox"],
+    ul[role="listbox"] {
+        z-index: 1002 !important;
     }
 
     @media (max-width: 480px) {
