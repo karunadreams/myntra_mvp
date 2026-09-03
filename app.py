@@ -816,7 +816,7 @@ st.markdown("""
         position: relative !important;
     }
 
-    /* FIX 4: Bottom Sheet Modal Backdrop Overlay & Sheet Card */
+    /* FIX 4: Quick Fit Setup Modal Card & Dark Backdrop Overlay */
     .bottom-sheet-backdrop {
         position: fixed !important;
         top: 0 !important;
@@ -828,28 +828,26 @@ st.markdown("""
     }
 
     div[data-testid="stVerticalBlock"]:has(#bottom-sheet-target),
-    div[data-testid="element-container"]:has(#bottom-sheet-target),
-    div.stElementContainer:has(#bottom-sheet-target),
-    div.element-container:has(#bottom-sheet-target) {
+    div.stVerticalBlock:has(#bottom-sheet-target) {
         position: fixed !important;
-        bottom: 0 !important;
+        bottom: 30px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
-        width: 100% !important;
-        max-width: 430px !important;
+        width: 90% !important;
+        max-width: 400px !important;
         background: #FFFFFF !important;
-        border-top-left-radius: 20px !important;
-        border-top-right-radius: 20px !important;
-        padding: 20px 20px 95px 20px !important;
+        border-radius: 16px !important;
+        padding: 20px 20px 24px 20px !important;
         z-index: 999999999 !important;
-        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.4) !important;
+        box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4) !important;
+        border: 2px solid #FF3F6C !important;
     }
 
     @media (max-width: 480px) {
         div[data-testid="stVerticalBlock"]:has(#bottom-sheet-target) {
-            max-width: 100% !important;
-            left: 0 !important;
-            transform: none !important;
+            width: 92% !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
         }
     }
 
@@ -1148,9 +1146,9 @@ elif st.session_state.current_screen == "wishlist":
 # =========================================================
 if st.session_state.show_profile_modal:
     st.markdown('<div class="bottom-sheet-backdrop"></div>', unsafe_allow_html=True)
-    st.markdown('<div id="bottom-sheet-target"></div>', unsafe_allow_html=True)
     
     with st.container():
+        st.markdown('<div id="bottom-sheet-target"></div>', unsafe_allow_html=True)
         st.markdown(clean_html("""
         <div style="margin-bottom: 14px;">
             <h3 style="margin: 0 0 4px 0; color: #282C3F; font-weight: 800; font-size: 18px;">⚡ Quick Fit Setup</h3>
