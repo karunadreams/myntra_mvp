@@ -823,8 +823,8 @@ st.markdown("""
         left: 0 !important;
         width: 100vw !important;
         height: 100vh !important;
-        background: rgba(0, 0, 0, 0.55) !important;
-        z-index: 99999990 !important;
+        background: rgba(0, 0, 0, 0.65) !important;
+        z-index: 999999900 !important;
     }
 
     div[data-testid="stVerticalBlock"]:has(#bottom-sheet-target),
@@ -840,9 +840,9 @@ st.markdown("""
         background: #FFFFFF !important;
         border-top-left-radius: 20px !important;
         border-top-right-radius: 20px !important;
-        padding: 24px 20px 40px 20px !important;
-        z-index: 99999999 !important;
-        box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.3) !important;
+        padding: 20px 20px 95px 20px !important;
+        z-index: 999999999 !important;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.4) !important;
     }
 
     @media (max-width: 480px) {
