@@ -1,99 +1,337 @@
 import streamlit as st
 import os
 import base64
-from typing import TypedDict, List
+import json
+from typing import TypedDict, List, Dict
 
 # ---------------------------------------------------------
-# DATA MODELS & DATASET DEFINITION
+# DATASET & PRODUCT MODELS
 # ---------------------------------------------------------
 class Product(TypedDict):
     id: int
     brand: str
     name: str
-    occasion: str
-    occasion_type: str
     price: int
     original_price: int
     rating: float
     rating_count: int
+    sizes_stock: Dict[str, bool]
+    delivery_days: int
+    fit_note: str
+    keywords: List[str]
     image_path: str
-    tag_bg: str
-    tag_color: str
+    occasion: str
 
-WISHLIST_PRODUCTS: List[Product] = [
-    {
-        "id": 1,
-        "brand": "Libas",
-        "name": "Embroidered Anarkali Kurta",
-        "occasion": "Diwali 2024 🪔",
-        "occasion_type": "diwali",
-        "price": 1299,
-        "original_price": 2999,
-        "rating": 4.4,
-        "rating_count": 1280,
-        "image_path": "assets/libas.jpg",
-        "tag_bg": "#FFF3E0",
-        "tag_color": "#E65100"
-    },
-    {
-        "id": 2,
-        "brand": "W for Woman",
-        "name": "Floral Printed Kurta Set",
-        "occasion": "Diwali 2024 🪔",
-        "occasion_type": "diwali",
-        "price": 2499,
-        "original_price": 4999,
-        "rating": 4.5,
-        "rating_count": 890,
-        "image_path": "assets/w.jpg",
-        "tag_bg": "#FFF3E0",
-        "tag_color": "#E65100"
-    },
-    {
-        "id": 3,
-        "brand": "Biba",
-        "name": "Sequin Sharara Suit",
-        "occasion": "Diwali 2024 🪔",
-        "occasion_type": "diwali",
-        "price": 3199,
-        "original_price": 5999,
-        "rating": 4.6,
-        "rating_count": 2150,
-        "image_path": "assets/biba.jpg",
-        "tag_bg": "#FFF3E0",
-        "tag_color": "#E65100"
-    },
-    {
-        "id": 4,
-        "brand": "Global Desi",
-        "name": "Floral Wrap Dress",
-        "occasion": "College Fest ✨",
-        "occasion_type": "college",
-        "price": 899,
-        "original_price": 1999,
-        "rating": 4.3,
-        "rating_count": 640,
-        "image_path": "assets/global_desi.jpg",
-        "tag_bg": "#EDE7F6",
-        "tag_color": "#4A148C"
-    },
-    {
-        "id": 5,
-        "brand": "Anouk",
-        "name": "Printed Co-ord Set",
-        "occasion": "College Fest ✨",
-        "occasion_type": "college",
-        "price": 1749,
-        "original_price": 3499,
-        "rating": 4.2,
-        "rating_count": 420,
-        "image_path": "assets/aurelia.jpg",
-        "tag_bg": "#EDE7F6",
-        "tag_color": "#4A148C"
-    }
-]
+def load_products() -> List[Product]:
+    """
+    Loads 20 products dataset mapped with full rich scraped details.
+    """
+    raw_products = [
+        {
+            "id": 1,
+            "brand": "Libas",
+            "name": "Embroidered Anarkali Kurta",
+            "price": 1299,
+            "original_price": 2999,
+            "rating": 4.1,
+            "rating_count": 1280,
+            "sizes_stock": {"S": True, "M": True, "L": False, "XL": True},
+            "delivery_days": 2,
+            "fit_note": "Runs small — order one size up · 23 matching reviews",
+            "keywords": ["Runs small", "Color matches photos", "Good for petite frame"],
+            "image_path": "assets/libas.jpg",
+            "occasion": "🪔 Diwali 2024"
+        },
+        {
+            "id": 2,
+            "brand": "W for Woman",
+            "name": "Floral Printed Kurta Set",
+            "price": 2499,
+            "original_price": 4999,
+            "rating": 4.4,
+            "rating_count": 890,
+            "sizes_stock": {"S": True, "M": True, "L": True, "XL": False},
+            "delivery_days": 3,
+            "fit_note": "Fits true to size, soft waist fit · 42 matching reviews",
+            "keywords": ["Fits true to size", "Soft cotton fabric", "Flattering silhouette"],
+            "image_path": "assets/w.jpg",
+            "occasion": "🪔 Diwali 2024"
+        },
+        {
+            "id": 3,
+            "brand": "Biba",
+            "name": "Sequin Sharara Suit",
+            "price": 3199,
+            "original_price": 5999,
+            "rating": 4.3,
+            "rating_count": 2150,
+            "sizes_stock": {"S": False, "M": True, "L": True, "XL": True},
+            "delivery_days": 4,
+            "fit_note": "Slightly long hemline for petite height · 18 matching reviews",
+            "keywords": ["Rich festive look", "Heavy embroidery", "Pair with heels"],
+            "image_path": "assets/biba.jpg",
+            "occasion": "🪔 Diwali 2024"
+        },
+        {
+            "id": 4,
+            "brand": "Global Desi",
+            "name": "Floral Wrap Dress",
+            "price": 899,
+            "original_price": 1999,
+            "rating": 3.9,
+            "rating_count": 640,
+            "sizes_stock": {"S": True, "M": False, "L": True, "XL": True},
+            "delivery_days": 2,
+            "fit_note": "Flowy fit, comfortable wrap waist · 15 matching reviews",
+            "keywords": ["Lightweight", "Vibrant print", "Easy breezy wear"],
+            "image_path": "assets/global_desi.jpg",
+            "occasion": "✨ College Fest"
+        },
+        {
+            "id": 5,
+            "brand": "Anouk",
+            "name": "Printed Co-ord Set",
+            "price": 1749,
+            "original_price": 3499,
+            "rating": 4.2,
+            "rating_count": 420,
+            "sizes_stock": {"S": True, "M": True, "L": True, "XL": True},
+            "delivery_days": 3,
+            "fit_note": "Modern relaxed fit, true to size · 31 matching reviews",
+            "keywords": ["Trendy co-ord", "Breathable fabric", "Perfect for events"],
+            "image_path": "assets/aurelia.jpg",
+            "occasion": "✨ College Fest"
+        },
+        {
+            "id": 6,
+            "brand": "Sangria",
+            "name": "Ethnic Printed Maxi Dress",
+            "price": 1399,
+            "original_price": 2799,
+            "rating": 4.0,
+            "rating_count": 510,
+            "sizes_stock": {"S": True, "M": True, "L": False, "XL": True},
+            "delivery_days": 3,
+            "fit_note": "Flattering A-line flared cut · 19 matching reviews",
+            "keywords": ["Vibrant pattern", "Elegant flare", "Soft material"],
+            "image_path": "assets/libas.jpg",
+            "occasion": "🪔 Diwali 2024"
+        },
+        {
+            "id": 7,
+            "brand": "Aurelia",
+            "name": "Solid Straight Kurta",
+            "price": 999,
+            "original_price": 1999,
+            "rating": 4.3,
+            "rating_count": 780,
+            "sizes_stock": {"S": True, "M": True, "L": True, "XL": False},
+            "delivery_days": 2,
+            "fit_note": "Classic straight fit, true to size · 27 matching reviews",
+            "keywords": ["Office ready", "Sturdy stitch", "Clean hemline"],
+            "image_path": "assets/aurelia.jpg",
+            "occasion": "🪔 Diwali 2024"
+        },
+        {
+            "id": 8,
+            "brand": "Rangmanch by Pantaloons",
+            "name": "Woven Anarkali",
+            "price": 2199,
+            "original_price": 4399,
+            "rating": 4.1,
+            "rating_count": 390,
+            "sizes_stock": {"S": False, "M": True, "L": True, "XL": True},
+            "delivery_days": 4,
+            "fit_note": "Grand flare, runs slightly long · 14 matching reviews",
+            "keywords": ["Festive woven", "Heavy flare", "Royal look"],
+            "image_path": "assets/w.jpg",
+            "occasion": "🪔 Diwali 2024"
+        },
+        {
+            "id": 9,
+            "brand": "Fabindia",
+            "name": "Block Print Kurta",
+            "price": 1599,
+            "original_price": 2999,
+            "rating": 4.5,
+            "rating_count": 1420,
+            "sizes_stock": {"S": True, "M": True, "L": True, "XL": True},
+            "delivery_days": 2,
+            "fit_note": "Pure handblock cotton, very breathable · 54 matching reviews",
+            "keywords": ["Pure cotton", "Traditional block print", "Comfortable fit"],
+            "image_path": "assets/biba.jpg",
+            "occasion": "🪔 Diwali 2024"
+        },
+        {
+            "id": 10,
+            "brand": "Indya",
+            "name": "Mirror Work Lehenga Set",
+            "price": 3499,
+            "original_price": 6999,
+            "rating": 4.6,
+            "rating_count": 910,
+            "sizes_stock": {"S": True, "M": True, "L": False, "XL": True},
+            "delivery_days": 3,
+            "fit_note": "Stunning festive flair, slim waist cut · 38 matching reviews",
+            "keywords": ["Mirror work", "Party wear", "High quality finish"],
+            "image_path": "assets/global_desi.jpg",
+            "occasion": "🪔 Diwali 2024"
+        },
+        {
+            "id": 11,
+            "brand": "AND",
+            "name": "Solid Shift Dress",
+            "price": 1299,
+            "original_price": 2599,
+            "rating": 3.8,
+            "rating_count": 320,
+            "sizes_stock": {"S": True, "M": False, "L": True, "XL": True},
+            "delivery_days": 2,
+            "fit_note": "Minimalist modern cut, slightly boxy · 11 matching reviews",
+            "keywords": ["Sleek design", "College casual", "Easy styling"],
+            "image_path": "assets/libas.jpg",
+            "occasion": "✨ College Fest"
+        },
+        {
+            "id": 12,
+            "brand": "Tokyo Talkies",
+            "name": "Floral Mini Dress",
+            "price": 799,
+            "original_price": 1599,
+            "rating": 3.9,
+            "rating_count": 680,
+            "sizes_stock": {"S": True, "M": True, "L": True, "XL": False},
+            "delivery_days": 3,
+            "fit_note": "Cute mini cut, fits slim · 22 matching reviews",
+            "keywords": ["Chic floral", "Short sleeve", "Youthful style"],
+            "image_path": "assets/w.jpg",
+            "occasion": "✨ College Fest"
+        },
+        {
+            "id": 13,
+            "brand": "Sassafras",
+            "name": "Printed Wrap Dress",
+            "price": 1099,
+            "original_price": 2199,
+            "rating": 4.0,
+            "rating_count": 470,
+            "sizes_stock": {"S": True, "M": True, "L": True, "XL": True},
+            "delivery_days": 2,
+            "fit_note": "Adjustable wrap tie waist · 17 matching reviews",
+            "keywords": ["Wrap waist", "V-neckline", "Light chiffon"],
+            "image_path": "assets/biba.jpg",
+            "occasion": "✨ College Fest"
+        },
+        {
+            "id": 14,
+            "brand": "Nayo",
+            "name": "Cotton A-Line Kurta",
+            "price": 599,
+            "original_price": 1299,
+            "rating": 4.2,
+            "rating_count": 890,
+            "sizes_stock": {"S": True, "M": True, "L": True, "XL": True},
+            "delivery_days": 2,
+            "fit_note": "Super comfortable daily cotton · 29 matching reviews",
+            "keywords": ["Budget friendly", "Soft cotton", "Everyday staple"],
+            "image_path": "assets/global_desi.jpg",
+            "occasion": "🪔 Diwali 2024"
+        },
+        {
+            "id": 15,
+            "brand": "Janasya",
+            "name": "Paisley Print Kurta Set",
+            "price": 1199,
+            "original_price": 2399,
+            "rating": 4.1,
+            "rating_count": 530,
+            "sizes_stock": {"S": False, "M": True, "L": True, "XL": True},
+            "delivery_days": 3,
+            "fit_note": "Rich paisley colors, true fit · 20 matching reviews",
+            "keywords": ["Paisley motif", "Dupatta included", "Vibrant colors"],
+            "image_path": "assets/aurelia.jpg",
+            "occasion": "🪔 Diwali 2024"
+        },
+        {
+            "id": 16,
+            "brand": "Vishudh",
+            "name": "Embroidered Straight Kurta",
+            "price": 1499,
+            "original_price": 2999,
+            "rating": 4.3,
+            "rating_count": 740,
+            "sizes_stock": {"S": True, "M": True, "L": True, "XL": False},
+            "delivery_days": 2,
+            "fit_note": "Neat neckline embroidery · 33 matching reviews",
+            "keywords": ["Elegant neck work", "Side slit", "Graceful silhouette"],
+            "image_path": "assets/libas.jpg",
+            "occasion": "🪔 Diwali 2024"
+        },
+        {
+            "id": 17,
+            "brand": "Zoella",
+            "name": "Ruffle Hem Co-ord Set",
+            "price": 1349,
+            "original_price": 2699,
+            "rating": 3.7,
+            "rating_count": 210,
+            "sizes_stock": {"S": True, "M": False, "L": True, "XL": True},
+            "delivery_days": 3,
+            "fit_note": "Trendy ruffle bottom cut · 8 matching reviews",
+            "keywords": ["Ruffle hem", "Playful design", "Party ready"],
+            "image_path": "assets/w.jpg",
+            "occasion": "✨ College Fest"
+        },
+        {
+            "id": 18,
+            "brand": "Pannkh",
+            "name": "Ethnic Flared Kurta",
+            "price": 899,
+            "original_price": 1799,
+            "rating": 4.0,
+            "rating_count": 360,
+            "sizes_stock": {"S": True, "M": True, "L": True, "XL": True},
+            "delivery_days": 2,
+            "fit_note": "Flowy festive flared hem · 16 matching reviews",
+            "keywords": ["Flared hem", "Subtle print", "Lightweight rayon"],
+            "image_path": "assets/biba.jpg",
+            "occasion": "🪔 Diwali 2024"
+        },
+        {
+            "id": 19,
+            "brand": "Ritu Kumar",
+            "name": "Zari Border Saree",
+            "price": 4999,
+            "original_price": 9999,
+            "rating": 4.8,
+            "rating_count": 1850,
+            "sizes_stock": {"S": True, "M": True, "L": True, "XL": True},
+            "delivery_days": 4,
+            "fit_note": "Designer luxury zari weave · 65 matching reviews",
+            "keywords": ["Designer saree", "Zari border", "Premium silk blend"],
+            "image_path": "assets/aurelia.jpg",
+            "occasion": "🪔 Diwali 2024"
+        },
+        {
+            "id": 20,
+            "brand": "Clovia",
+            "name": "Printed Loungewear Set",
+            "price": 699,
+            "original_price": 1399,
+            "rating": 3.8,
+            "rating_count": 420,
+            "sizes_stock": {"S": True, "M": True, "L": False, "XL": True},
+            "delivery_days": 2,
+            "fit_note": "Ultra soft relaxed lounge fit · 25 matching reviews",
+            "keywords": ["Super soft", "Relaxed fit", "Comfortable sleepwear"],
+            "image_path": "assets/global_desi.jpg",
+            "occasion": "✨ College Fest"
+        }
+    ]
+    return raw_products
 
-# Helper to convert image file to Base64
+PRODUCTS: List[Product] = load_products()
+
 def get_image_base64(image_path: str) -> str:
     if os.path.exists(image_path):
         with open(image_path, "rb") as f:
@@ -105,7 +343,7 @@ def clean_html(html_str: str) -> str:
     return "\n".join(lines)
 
 # ---------------------------------------------------------
-# PAGE CONFIG & CSS INJECTION (Mobile Container max 480px)
+# PAGE CONFIG & MOBILE-FIRST CSS (430px MAX WIDTH)
 # ---------------------------------------------------------
 st.set_page_config(
     page_title="Myntra Wishlist — Decision Mode",
@@ -116,60 +354,244 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-    /* Global Page Background */
+    /* Outer Desktop Canvas */
     .stApp {
-        background-color: #F4F4F6 !important;
+        background-color: #F5F5F6 !important;
         color: #282C3F !important;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
-    /* Mobile First Centered App Container (Max Width 480px) */
+    /* Mobile App Container (Max 430px Width, Centered) */
     .block-container {
-        max-width: 480px !important;
-        padding-top: 10px !important;
-        padding-bottom: 75px !important;
-        padding-left: 14px !important;
-        padding-right: 14px !important;
+        max-width: 430px !important;
+        padding-top: 8px !important;
+        padding-bottom: 80px !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
         margin: 0 auto !important;
         background-color: #FFFFFF !important;
         min-height: 100vh;
-        box-shadow: 0 0 24px rgba(0, 0, 0, 0.08);
-        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border-radius: 12px;
     }
 
-    /* Hide Streamlit Header & Footer */
+    /* Hide Streamlit Chrome */
     header, footer { visibility: hidden !important; }
 
-    /* Top Navbar Bar */
-    .top-navbar {
+    /* Myntra Top Header Navigation */
+    .top-bar-container {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 8px 0 12px 0;
+        padding: 6px 0 10px 0;
         border-bottom: 1px solid #EAEAEC;
         margin-bottom: 12px;
     }
 
-    .top-nav-title {
+    .top-logo-img {
+        height: 32px;
+        object-fit: contain;
+    }
+
+    .top-icons-wrap {
+        display: flex;
+        align-items: center;
+        gap: 16px;
         font-size: 18px;
+        color: #282C3F;
+    }
+
+    /* Pink Banner Chip */
+    .pink-banner-chip {
+        background: #FFF0F4;
+        border: 1px solid #FF3F6C;
+        color: #FF3F6C;
+        font-weight: 700;
+        font-size: 12px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        text-align: center;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    /* Section Title */
+    .section-title {
+        font-size: 16px;
+        font-weight: 800;
+        color: #282C3F;
+        margin-bottom: 12px;
+    }
+
+    /* Product Grid Card (Home Screen) */
+    .grid-card {
+        background: #FFFFFF;
+        border: 1px solid #EAEAEC;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+    }
+
+    .grid-img-wrap {
+        position: relative;
+        width: 100%;
+        height: 160px;
+    }
+
+    .grid-img {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+    }
+
+    .heart-btn-overlay {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(4px);
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        cursor: pointer;
+        z-index: 5;
+    }
+
+    .grid-card-body {
+        padding: 8px;
+    }
+
+    .card-brand {
+        font-size: 12px;
+        font-weight: 800;
+        color: #282C3F;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+    }
+
+    .card-title {
+        font-size: 11px;
+        color: #696B79;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 4px;
+    }
+
+    .card-price-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 4px;
+    }
+
+    .card-price {
+        font-size: 13px;
         font-weight: 800;
         color: #282C3F;
     }
 
-    .top-nav-sub {
+    .card-rating {
         font-size: 11px;
-        color: #7E818C;
+        font-weight: 700;
+        color: #03A685;
+    }
+
+    .occasion-pill {
+        display: inline-block;
+        background: #F5F5F6;
+        color: #535766;
+        font-size: 9px;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 10px;
         margin-top: 2px;
     }
 
-    /* Primary CTA Button (#FF3F6C Pink) */
+    /* Wishlist Vertical Card */
+    .wishlist-row-card {
+        background: #FFFFFF;
+        border: 1px solid #EAEAEC;
+        border-radius: 12px;
+        padding: 10px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .wishlist-thumb {
+        width: 90px;
+        height: 110px;
+        border-radius: 8px;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    .wishlist-details {
+        flex-grow: 1;
+        overflow: hidden;
+    }
+
+    /* Sticky Bottom Compare Button */
+    .sticky-compare-btn-wrap {
+        position: fixed;
+        bottom: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 410px;
+        padding: 0 12px;
+        z-index: 999;
+    }
+
+    /* Bottom Sheet Modal Styling */
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 10000;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+    }
+
+    .bottom-sheet {
+        background: #FFFFFF;
+        width: 100%;
+        max-width: 430px;
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+        padding: 20px 16px;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+    }
+
+    /* Streamlit Button Tweaks */
     .stButton > button {
         border-radius: 6px !important;
         font-weight: 800 !important;
         letter-spacing: 0.3px !important;
         text-transform: uppercase !important;
-        transition: all 0.2s ease !important;
         font-size: 12px !important;
+        height: 38px !important;
     }
 
     button[kind="primary"] {
@@ -181,201 +603,38 @@ st.markdown("""
 
     button[kind="primary"]:hover {
         background-color: #E6355F !important;
-        box-shadow: 0 6px 16px rgba(255, 63, 108, 0.35) !important;
     }
 
-    /* Decision CTA Banner */
-    .decision-cta-box {
-        background: linear-gradient(135deg, #FFF0F4 0%, #FFE4EC 100%);
-        border: 1.5px solid #FF3F6C;
-        border-radius: 12px;
-        padding: 16px;
-        margin-bottom: 18px;
-        box-shadow: 0 4px 12px rgba(255, 63, 108, 0.12);
-        text-align: center;
-    }
-
-    .decision-cta-title {
-        font-size: 16px;
-        font-weight: 900;
-        color: #282C3F;
-        margin-bottom: 4px;
-    }
-
-    .decision-cta-sub {
-        font-size: 12px;
-        color: #535766;
-        margin-bottom: 12px;
-    }
-
-    /* Section Header Banners */
-    .section-header-box {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px 14px;
-        border-radius: 8px;
-        margin-top: 18px;
-        margin-bottom: 12px;
-        font-weight: 800;
-        font-size: 13px;
-    }
-
-    .section-header-box.diwali {
-        background: #FFF3E0;
-        color: #E65100;
-        border-left: 4px solid #FF9800;
-    }
-
-    .section-header-box.college {
-        background: #EDE7F6;
-        color: #4A148C;
-        border-left: 4px solid #7E57C2;
-    }
-
-    /* Wishlist Product Card */
-    .wishlist-card {
-        background: #FFFFFF;
-        border: 1px solid #EAEAEC;
-        border-radius: 10px;
-        padding: 10px;
-        margin-bottom: 12px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        position: relative;
-    }
-
-    .wishlist-thumb {
-        width: 82px;
-        height: 82px;
-        border-radius: 8px;
-        object-fit: cover;
-        border: 1px solid #F0F0F0;
-        flex-shrink: 0;
-    }
-
-    .wishlist-info {
-        flex-grow: 1;
-        overflow: hidden;
-    }
-
-    .brand-name {
-        font-size: 13px;
-        font-weight: 900;
-        color: #282C3F;
-        text-transform: uppercase;
-        margin-bottom: 2px;
-    }
-
-    .prod-name {
-        font-size: 12px;
-        color: #535766;
-        margin-bottom: 4px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .pill-tag {
-        display: inline-block;
-        padding: 2px 8px;
-        border-radius: 12px;
-        font-size: 10px;
-        font-weight: 700;
-        margin-bottom: 4px;
-    }
-
-    .price-wrap {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .price-current {
-        font-size: 14px;
-        font-weight: 800;
-        color: #282C3F;
-    }
-
-    .price-mrp {
-        font-size: 11px;
-        text-decoration: line-through;
-        color: #7E818C;
-    }
-
-    .heart-icon {
-        color: #FF3F6C;
-        font-size: 18px;
-        padding: 4px;
-    }
-
-    /* Decision Mode Grid Card */
-    .decision-card {
-        background: #FFFFFF;
-        border: 1px solid #EAEAEC;
-        border-radius: 10px;
-        padding: 10px;
-        margin-bottom: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        height: 100%;
-    }
-
-    .decision-thumb {
-        width: 100%;
-        height: 150px;
-        border-radius: 6px;
-        object-fit: cover;
-        margin-bottom: 8px;
-    }
-
-    /* Urgency Banner */
-    .urgency-banner {
-        background: #FFF0F4;
-        border: 1.5px solid #FF3F6C;
-        color: #FF3F6C;
-        padding: 10px 14px;
-        border-radius: 8px;
-        font-weight: 800;
-        font-size: 13px;
-        text-align: center;
-        margin-bottom: 16px;
-    }
-
-    /* Sticky Bottom Nav Bar */
+    /* Sticky Bottom Navbar */
     .bottom-nav-bar {
         position: fixed;
         bottom: 0;
         left: 50%;
         transform: translateX(-50%);
         width: 100%;
-        max-width: 480px;
+        max-width: 430px;
         background: #FFFFFF;
         border-top: 1px solid #EAEAEC;
         display: flex;
         justify-content: space-around;
-        padding: 8px 0;
+        padding: 6px 0;
         z-index: 9999;
-        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.06);
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
     }
 
-    .nav-btn {
+    .nav-item {
         display: flex;
         flex-direction: column;
         align-items: center;
         font-size: 10px;
         font-weight: 700;
-        color: #696E79;
+        color: #696B79;
         position: relative;
         text-decoration: none;
         cursor: pointer;
     }
 
-    .nav-btn.active {
+    .nav-item.active {
         color: #FF3F6C;
     }
 
@@ -390,6 +649,63 @@ st.markdown("""
         border-radius: 10px;
         padding: 1px 5px;
     }
+
+    /* Comparison Table Styling */
+    .comp-col-card {
+        background: #FFFFFF;
+        border: 1px solid #EAEAEC;
+        border-radius: 10px;
+        padding: 8px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        font-size: 11px;
+    }
+
+    .stock-pill {
+        display: inline-block;
+        padding: 1px 5px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-weight: 700;
+        margin: 1px;
+    }
+
+    .stock-green { background: #E6F4EA; color: #137333; }
+    .stock-red { background: #FCE8E6; color: #C5221F; }
+
+    .fit-box {
+        background: #F0F4F9;
+        border-radius: 6px;
+        padding: 8px;
+        margin-top: 8px;
+        margin-bottom: 8px;
+        font-size: 10.5px;
+        color: #1A73E8;
+        font-style: italic;
+    }
+
+    .kw-pill {
+        display: inline-block;
+        background: #F5F5F6;
+        color: #535766;
+        font-size: 9.5px;
+        padding: 2px 6px;
+        border-radius: 8px;
+        margin: 1px;
+    }
+
+    .rec-banner {
+        background: #FFF0F4;
+        border: 1px solid #FF3F6C;
+        color: #282C3F;
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin-top: 14px;
+        margin-bottom: 14px;
+        font-size: 12px;
+        font-weight: 700;
+        text-align: center;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -397,348 +713,373 @@ st.markdown("""
 # SESSION STATE INITIALIZATION
 # ---------------------------------------------------------
 if "current_screen" not in st.session_state:
-    st.session_state.current_screen = "wishlist"  # "wishlist", "decision", "confirmation", "cart"
+    st.session_state.current_screen = "home"  # "home", "wishlist", "comparison"
 
-if "wishlist_items" not in st.session_state:
-    st.session_state.wishlist_items = WISHLIST_PRODUCTS.copy()
+if "wishlist_ids" not in st.session_state:
+    st.session_state.wishlist_ids = [1, 2, 3, 4, 5]  # Default 5 items wishlisted
 
-if "chosen_product" not in st.session_state:
-    st.session_state.chosen_product = None
+if "selected_for_compare" not in st.session_state:
+    st.session_state.selected_for_compare = [1, 2, 3, 4, 5]
 
-if "cart_items" not in st.session_state:
-    st.session_state.cart_items = []
+if "cart_ids" not in st.session_state:
+    st.session_state.cart_ids = []
 
-if "decision_occasion" not in st.session_state:
-    st.session_state.decision_occasion = "Diwali 2024 🪔"
+if "body_profile" not in st.session_state:
+    st.session_state.body_profile = {
+        "height": "5'3\"–5'5\"",
+        "size": "S",
+        "is_saved": False
+    }
+
+if "show_profile_modal" not in st.session_state:
+    st.session_state.show_profile_modal = False
+
+if "mod_height_sel" not in st.session_state:
+    st.session_state.mod_height_sel = "5'3\"–5'5\""
+if "mod_size_sel" not in st.session_state:
+    st.session_state.mod_size_sel = "S"
+
+for prod in PRODUCTS:
+    key_name = f"chk_sel_{prod['id']}"
+    if key_name not in st.session_state:
+        st.session_state[key_name] = prod["id"] in st.session_state.selected_for_compare
 
 logo_b64 = get_image_base64("assets/myntra_logo.jpg")
+
+# Helper to toggle item selection for comparison
+def toggle_compare_item(prod_id: int):
+    if prod_id in st.session_state.selected_for_compare:
+        st.session_state.selected_for_compare.remove(prod_id)
+    else:
+        st.session_state.selected_for_compare.append(prod_id)
+
+# Helper to toggle wishlist status on heart click
+def toggle_wishlist(prod_id: int):
+    if prod_id in st.session_state.wishlist_ids:
+        st.session_state.wishlist_ids.remove(prod_id)
+        if prod_id in st.session_state.selected_for_compare:
+            st.session_state.selected_for_compare.remove(prod_id)
+    else:
+        st.session_state.wishlist_ids.append(prod_id)
+        if prod_id not in st.session_state.selected_for_compare:
+            st.session_state.selected_for_compare.append(prod_id)
 
 # ---------------------------------------------------------
 # TOP NAVBAR HEADER
 # ---------------------------------------------------------
+wishlist_cnt = len(st.session_state.wishlist_ids)
+cart_cnt = len(st.session_state.cart_ids)
+
 with st.container():
-    h_col1, h_col2 = st.columns([1, 4])
+    h_col1, h_col2 = st.columns([1, 1])
     with h_col1:
         if logo_b64:
-            st.markdown(f'<img src="{logo_b64}" style="height:36px; object-fit:contain; border-radius:4px; margin-top:4px;" />', unsafe_allow_html=True)
+            st.markdown(f'<img src="{logo_b64}" class="top-logo-img" />', unsafe_allow_html=True)
         else:
             st.markdown("<h3 style='color:#FF3F6C; margin:0; font-weight:900;'>MYNTRA</h3>", unsafe_allow_html=True)
+            
     with h_col2:
-        st.markdown(clean_html("""
-        <div style="text-align:right;">
-            <div class="top-nav-title">My Wishlist</div>
-            <div class="top-nav-sub">5 items saved · 12 days left for Diwali</div>
-        </div>
-        """), unsafe_allow_html=True)
+        btn_c1, btn_c2, btn_c3 = st.columns(3)
+        with btn_c1:
+            st.markdown("<div style='text-align:center; cursor:pointer; font-size:16px;'>🔍</div>", unsafe_allow_html=True)
+        with btn_c2:
+            if st.button(f"❤️ {wishlist_cnt}", key="top_wish_btn"):
+                st.session_state.current_screen = "wishlist"
+                st.rerun()
+        with btn_c3:
+            st.markdown(f"<div style='text-align:center; font-size:16px;'>🛍️ {cart_cnt}</div>", unsafe_allow_html=True)
 
-st.markdown("<hr style='border-color:#EAEAEC; margin-top:6px; margin-bottom:14px;'>", unsafe_allow_html=True)
+st.markdown("<hr style='border-color:#EAEAEC; margin-top:4px; margin-bottom:10px;'>", unsafe_allow_html=True)
 
 # =========================================================
-# SCREEN 1: WISHLIST HOME PAGE
+# PAGE 1: HOME SCREEN (Catalog Grid of 20 Products)
 # =========================================================
-if st.session_state.current_screen == "wishlist":
+if st.session_state.current_screen == "home":
     
-    # Prominent Decision Mode CTA Box
+    # Pink Banner Chip
     st.markdown(clean_html("""
-    <div class="decision-cta-box">
-        <div class="decision-cta-title">🎯 Hard to Choose What to Buy?</div>
-        <div class="decision-cta-sub">Compare wishlisted items side-by-side & pick your Diwali outfit!</div>
+    <div class="pink-banner-chip">
+        <span>🪔 Diwali picks · Shop before stock runs out</span>
     </div>
     """), unsafe_allow_html=True)
 
-    if st.button("🚀 OPEN DECISION MODE (5 ITEMS)", type="primary", use_container_width=True):
-        st.session_state.current_screen = "decision"
-        st.rerun()
+    st.markdown("<div class='section-title'>Trending Kurtas & Sets</div>", unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # Occasion Section 1: Diwali 2024 🪔
-    diwali_items = [item for item in WISHLIST_PRODUCTS if item["occasion_type"] == "diwali"]
-    st.markdown(clean_html(f"""
-    <div class="section-header-box diwali">
-        <span>🪔 Diwali 2024 ({len(diwali_items)} Items)</span>
-        <span style="font-size:11px; font-weight:700;">12 days left</span>
-    </div>
-    """), unsafe_allow_html=True)
-
-    for item in diwali_items:
-        img_b64 = get_image_base64(item["image_path"])
-        img_html = f'<img src="{img_b64}" class="wishlist-thumb" />' if img_b64 else ''
-        discount_pct = int(((item["original_price"] - item["price"]) / item["original_price"]) * 100)
-        
-        card_html = f"""
-        <div class="wishlist-card">
-            {img_html}
-            <div class="wishlist-info">
-                <div class="brand-name">{item['brand']}</div>
-                <div class="prod-name">{item['name']}</div>
-                <div><span class="pill-tag" style="background:{item['tag_bg']}; color:{item['tag_color']};">{item['occasion']}</span></div>
-                <div class="price-wrap">
-                    <span class="price-current">₹{item['price']:,}</span>
-                    <span class="price-mrp">₹{item['original_price']:,}</span>
-                    <span style="font-size:11px; font-weight:800; color:#FF905A;">({discount_pct}% OFF)</span>
-                </div>
-            </div>
-            <div class="heart-icon">❤️</div>
-        </div>
-        """
-        st.markdown(clean_html(card_html), unsafe_allow_html=True)
-
-    # Occasion Section 2: College Fest ✨
-    college_items = [item for item in WISHLIST_PRODUCTS if item["occasion_type"] == "college"]
-    st.markdown(clean_html(f"""
-    <div class="section-header-box college">
-        <span>✨ College Fest ({len(college_items)} Items)</span>
-        <span style="font-size:11px; font-weight:700;">Upcoming</span>
-    </div>
-    """), unsafe_allow_html=True)
-
-    for item in college_items:
-        img_b64 = get_image_base64(item["image_path"])
-        img_html = f'<img src="{img_b64}" class="wishlist-thumb" />' if img_b64 else ''
-        discount_pct = int(((item["original_price"] - item["price"]) / item["original_price"]) * 100)
-        
-        card_html = f"""
-        <div class="wishlist-card">
-            {img_html}
-            <div class="wishlist-info">
-                <div class="brand-name">{item['brand']}</div>
-                <div class="prod-name">{item['name']}</div>
-                <div><span class="pill-tag" style="background:{item['tag_bg']}; color:{item['tag_color']};">{item['occasion']}</span></div>
-                <div class="price-wrap">
-                    <span class="price-current">₹{item['price']:,}</span>
-                    <span class="price-mrp">₹{item['original_price']:,}</span>
-                    <span style="font-size:11px; font-weight:800; color:#FF905A;">({discount_pct}% OFF)</span>
-                </div>
-            </div>
-            <div class="heart-icon">❤️</div>
-        </div>
-        """
-        st.markdown(clean_html(card_html), unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("✨ START DECISION MODE COMPARISON", type="primary", use_container_width=True):
-        st.session_state.current_screen = "decision"
-        st.rerun()
-
-# =========================================================
-# SCREEN 2: DECISION MODE PAGE (/decision)
-# =========================================================
-elif st.session_state.current_screen == "decision":
-    
-    col_back, col_title = st.columns([1, 3])
-    with col_back:
-        if st.button("← BACK", use_container_width=True):
-            st.session_state.current_screen = "wishlist"
-            st.rerun()
-    with col_title:
-        st.markdown("<div style='font-size:16px; font-weight:900; color:#282C3F; text-align:right;'>🎯 DECISION MODE</div>", unsafe_allow_html=True)
-
-    # Urgency Banner
-    st.markdown(clean_html("""
-    <div class="urgency-banner">
-        ⚡ Diwali is in 12 days — time to decide & order!
-    </div>
-    """), unsafe_allow_html=True)
-
-    # Occasion Filter Selector
-    selected_occ = st.radio(
-        "Select Occasion Group:",
-        options=["Diwali 2024 🪔 (3 Items)", "College Fest ✨ (2 Items)", "All Wishlist Items (5)"],
-        horizontal=True,
-        key="dec_occ_select"
-    )
-
-    if "Diwali" in selected_occ:
-        filtered_products = [item for item in WISHLIST_PRODUCTS if item["occasion_type"] == "diwali"]
-    elif "College" in selected_occ:
-        filtered_products = [item for item in WISHLIST_PRODUCTS if item["occasion_type"] == "college"]
-    else:
-        filtered_products = WISHLIST_PRODUCTS
-
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("<div style='font-size:13px; font-weight:800; color:#535766; margin-bottom:10px;'>SIDE-BY-SIDE COMPARISON:</div>", unsafe_allow_html=True)
-
-    # Side-by-Side 2 Column Grid for Decision Mode Comparison
-    for row_start in range(0, len(filtered_products), 2):
-        row_prods = filtered_products[row_start:row_start + 2]
+    # Render 20 products in 2-column grid
+    for i in range(0, len(PRODUCTS), 2):
+        row_prods = PRODUCTS[i:i+2]
         cols = st.columns(len(row_prods))
         
-        for idx, item in enumerate(row_prods):
+        for idx, prod in enumerate(row_prods):
             with cols[idx]:
-                img_b64 = get_image_base64(item["image_path"])
-                img_html = f'<img src="{img_b64}" class="decision-thumb" />' if img_b64 else ''
-                discount_pct = int(((item["original_price"] - item["price"]) / item["original_price"]) * 100)
-
+                is_wishlisted = prod["id"] in st.session_state.wishlist_ids
+                img_b64 = get_image_base64(prod["image_path"])
+                
+                img_tag = f'<img src="{img_b64}" class="grid-img" />' if img_b64 else ''
+                heart_symbol = "❤️" if is_wishlisted else "♡"
+                
                 card_html = f"""
-                <div class="decision-card">
-                    <div>
-                        {img_html}
-                        <div class="brand-name">{item['brand']}</div>
-                        <div class="prod-name">{item['name']}</div>
-                        <div style="margin:4px 0;"><span class="pill-tag" style="background:{item['tag_bg']}; color:{item['tag_color']};">{item['occasion']}</span></div>
-                        <div class="price-wrap" style="justify-content:center; margin-bottom:8px;">
-                            <span class="price-current">₹{item['price']:,}</span>
-                            <span class="price-mrp">₹{item['original_price']:,}</span>
+                <div class="grid-card">
+                    <div class="grid-img-wrap">
+                        {img_tag}
+                    </div>
+                    <div class="grid-card-body">
+                        <div class="card-brand">{prod['brand']}</div>
+                        <div class="card-title">{prod['name']}</div>
+                        <div class="card-price-row">
+                            <span class="card-price">₹{prod['price']:,}</span>
+                            <span class="card-rating">⭐ {prod['rating']}</span>
                         </div>
+                        <span class="occasion-pill">{prod['occasion']}</span>
                     </div>
                 </div>
                 """
                 st.markdown(clean_html(card_html), unsafe_allow_html=True)
-                st.markdown("<div style='height:4px;'></div>", unsafe_allow_html=True)
                 
-                if st.button("CHOOSE THIS", key=f"choose_{item['id']}", type="primary", use_container_width=True):
-                    st.session_state.chosen_product = item
-                    st.session_state.current_screen = "confirmation"
+                # Interactive Heart Toggle Button under each card
+                heart_label = "❤️ WISHLISTED" if is_wishlisted else "♡ WISHLIST"
+                if st.button(heart_label, key=f"home_heart_{prod['id']}", type="primary" if is_wishlisted else "secondary", use_container_width=True):
+                    toggle_wishlist(prod["id"])
                     st.rerun()
 
-        st.markdown("<div style='height:14px;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
 
 # =========================================================
-# CONFIRMATION MODAL / SCREEN (After "Choose This")
+# PAGE 2: WISHLIST SCREEN
 # =========================================================
-elif st.session_state.current_screen == "confirmation":
-    chosen = st.session_state.chosen_product
-    if chosen:
-        st.balloons()
-        
-        st.markdown(clean_html("""
-        <div style="background:#FFF5F7; border:2px solid #FF3F6C; border-radius:12px; padding:20px; text-align:center; margin-bottom:20px;">
-            <div style="font-size:24px; margin-bottom:6px;">🎉</div>
-            <div style="font-size:18px; font-weight:900; color:#FF3F6C; margin-bottom:4px;">GREAT CHOICE! READY TO BUY?</div>
-            <div style="font-size:13px; color:#535766;">You picked the perfect outfit for your occasion.</div>
-        </div>
-        """), unsafe_allow_html=True)
+elif st.session_state.current_screen == "wishlist":
+    
+    st.markdown(f"<div class='section-title' style='margin-bottom:2px;'>My Wishlist</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='font-size:12px; color:#696B79; margin-bottom:12px;'>{len(st.session_state.wishlist_ids)} items saved</div>", unsafe_allow_html=True)
 
-        img_b64 = get_image_base64(chosen["image_path"])
-        img_html = f'<img src="{img_b64}" style="width:100%; height:240px; border-radius:8px; object-fit:cover; margin-bottom:12px;" />' if img_b64 else ''
-        discount_pct = int(((chosen["original_price"] - chosen["price"]) / chosen["original_price"]) * 100)
+    # Banner Chip
+    st.markdown(clean_html(f"""
+    <div class="pink-banner-chip">
+        <span>You have {len(st.session_state.wishlist_ids)} items saved for Diwali 2024 · 12 days left</span>
+    </div>
+    """), unsafe_allow_html=True)
 
-        card_html = f"""
-        <div style="background:#FFFFFF; border:1px solid #EAEAEC; border-radius:10px; padding:16px; margin-bottom:20px; box-shadow:0 4px 12px rgba(0,0,0,0.06);">
-            {img_html}
-            <div style="font-size:16px; font-weight:900; color:#282C3F; text-transform:uppercase;">{chosen['brand']}</div>
-            <div style="font-size:14px; color:#535766; margin-bottom:8px;">{chosen['name']}</div>
-            <div style="margin-bottom:12px;"><span class="pill-tag" style="background:{chosen['tag_bg']}; color:{chosen['tag_color']}; font-size:11px;">{chosen['occasion']}</span></div>
-            <div style="display:flex; align-items:center; gap:8px;">
-                <span style="font-size:20px; font-weight:900; color:#282C3F;">₹{chosen['price']:,}</span>
-                <span style="font-size:14px; text-decoration:line-through; color:#7E818C;">₹{chosen['original_price']:,}</span>
-                <span style="font-size:14px; font-weight:800; color:#FF905A;">({discount_pct}% OFF)</span>
-            </div>
-        </div>
-        """
-        st.markdown(clean_html(card_html), unsafe_allow_html=True)
+    # Full-Width Pink "DECISION MODE" Button
+    if st.button("🚀 DECISION MODE (COMPARE ALL)", type="primary", use_container_width=True):
+        st.session_state.selected_for_compare = st.session_state.wishlist_ids.copy()
+        if not st.session_state.body_profile["is_saved"]:
+            st.session_state.show_profile_modal = True
+        else:
+            st.session_state.current_screen = "comparison"
+        st.rerun()
 
-        st.markdown("### SELECT YOUR SIZE:")
-        selected_size = st.radio("Size", options=["S", "M", "L", "XL"], index=1, horizontal=True, key="conf_size")
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    wishlist_prods = [p for p in PRODUCTS if p["id"] in st.session_state.wishlist_ids]
+
+    if not wishlist_prods:
+        st.info("Your wishlist is empty. Tap ♡ on Home screen to save items!")
+        if st.button("← RETURN TO HOME", use_container_width=True):
+            st.session_state.current_screen = "home"
+            st.rerun()
+    else:
+        for prod in wishlist_prods:
+            is_selected = prod["id"] in st.session_state.selected_for_compare
+            
+            c_chk, c_card = st.columns([1, 6])
+            
+            with c_chk:
+                st.markdown("<div style='height:36px;'></div>", unsafe_allow_html=True)
+                st.checkbox(
+                    f"Select {prod['brand']} {prod['name']}",
+                    value=is_selected,
+                    key=f"chk_sel_{prod['id']}",
+                    on_change=toggle_compare_item,
+                    args=(prod["id"],),
+                    label_visibility="collapsed"
+                )
+
+            with c_card:
+                img_b64 = get_image_base64(prod["image_path"])
+                img_html = f'<img src="{img_b64}" class="wishlist-thumb" />' if img_b64 else ''
+                
+                row_html = f"""
+                <div class="wishlist-row-card">
+                    {img_html}
+                    <div class="wishlist-details">
+                        <div class="card-brand">{prod['brand']}</div>
+                        <div class="card-title">{prod['name']}</div>
+                        <span class="occasion-pill">{prod['occasion']}</span>
+                        <div class="card-price-row" style="margin-top:4px;">
+                            <span class="card-price">₹{prod['price']:,}</span>
+                            <span class="card-rating">⭐ {prod['rating']}</span>
+                        </div>
+                    </div>
+                </div>
+                """
+                st.markdown(clean_html(row_html), unsafe_allow_html=True)
+                
+                c_del1, c_del2 = st.columns([3, 1])
+                with c_del2:
+                    if st.button("❤️ REMOVE", key=f"w_rem_{prod['id']}", use_container_width=True):
+                        toggle_wishlist(prod["id"])
+                        st.rerun()
+
+            st.markdown("<div style='height:4px;'></div>", unsafe_allow_html=True)
+
+    # Sticky Pink Button for Comparing Selected
+    sel_count = len(st.session_state.selected_for_compare)
+    if sel_count >= 2:
         st.markdown("<br>", unsafe_allow_html=True)
-
-        btn_c1, btn_c2 = st.columns(2)
-        with btn_c1:
-            if st.button("🛍️ GO TO CART", type="primary", use_container_width=True):
-                if chosen not in st.session_state.cart_items:
-                    st.session_state.cart_items.append(chosen)
-                st.session_state.current_screen = "cart"
-                st.rerun()
-        with btn_c2:
-            if st.button("← KEEP BROWSING", use_container_width=True):
-                st.session_state.current_screen = "decision"
-                st.rerun()
+        if st.button(f"COMPARE SELECTED ({sel_count}) →", type="primary", use_container_width=True):
+            if not st.session_state.body_profile["is_saved"]:
+                st.session_state.show_profile_modal = True
+            else:
+                st.session_state.current_screen = "comparison"
+            st.rerun()
 
 # =========================================================
-# SCREEN 3: CART / BAG PAGE
+# PAGE 3: BODY PROFILE SETUP MODAL
 # =========================================================
-elif st.session_state.current_screen == "cart":
-    st.markdown("<h3 style='color:#282C3F; font-weight:900; margin-bottom:14px;'>SHOPPING BAG</h3>", unsafe_allow_html=True)
+if st.session_state.show_profile_modal:
+    st.markdown("""
+    <div style="background: #FFF5F7; border: 2px solid #FF3F6C; border-radius: 12px; padding: 16px; margin-bottom: 20px;">
+        <h4 style="margin: 0 0 4px 0; color: #282C3F; font-weight: 800;">⚡ Quick Fit Setup</h4>
+        <p style="margin: 0; font-size: 12px; color: #696B79;">Takes 30 seconds. Never asked again.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    if not st.session_state.cart_items:
-        st.info("Your shopping bag is empty.")
-        if st.button("← RETURN TO WISHLIST", use_container_width=True):
+    prof_h = st.selectbox(
+        "1. Select Height Range:",
+        options=["5'0\"–5'2\"", "5'3\"–5'5\"", "5'6\"+"],
+        index=1,
+        key="mod_height_sel"
+    )
+
+    prof_s = st.selectbox(
+        "2. Select Usual Size:",
+        options=["XS", "S", "M", "L", "XL"],
+        index=1,
+        key="mod_size_sel"
+    )
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    if st.button("SAVE & COMPARE →", type="primary", use_container_width=True):
+        st.session_state.body_profile = {
+            "height": prof_h,
+            "size": prof_s,
+            "is_saved": True
+        }
+        st.session_state.show_profile_modal = False
+        st.session_state.current_screen = "comparison"
+        st.rerun()
+
+# =========================================================
+# PAGE 4: COMPARISON SCREEN
+# =========================================================
+elif st.session_state.current_screen == "comparison" and not st.session_state.show_profile_modal:
+    
+    col_back, col_chip = st.columns([1, 3])
+    with col_back:
+        if st.button("← BACK", use_container_width=True):
+            st.session_state.current_screen = "wishlist"
+            st.rerun()
+    with col_chip:
+        prof = st.session_state.body_profile
+        if st.button(f"👤 Fit: {prof['size']} · {prof['height']} · EDIT", key="edit_prof_btn", use_container_width=True):
+            st.session_state.show_profile_modal = True
+            st.rerun()
+
+    st.markdown("<div class='section-title' style='margin-top:8px;'>Comparison Matrix</div>", unsafe_allow_html=True)
+
+    comp_prods = [p for p in PRODUCTS if p["id"] in st.session_state.selected_for_compare]
+
+    if not comp_prods:
+        st.warning("No items selected for comparison. Please select 2 or more items from Wishlist!")
+        if st.button("← GO TO WISHLIST"):
             st.session_state.current_screen = "wishlist"
             st.rerun()
     else:
-        for item in st.session_state.cart_items:
-            img_b64 = get_image_base64(item["image_path"])
-            img_html = f'<img src="{img_b64}" style="width:65px; height:80px; border-radius:6px; object-fit:cover;" />' if img_b64 else ''
-            discount_pct = int(((item["original_price"] - item["price"]) / item["original_price"]) * 100)
+        # Highest rated product for AI Recommendation Banner
+        winner_item = max(comp_prods, key=lambda x: x["rating"])
 
-            bag_html = f"""
-            <div style="background:#FFFFFF; border-radius:8px; padding:12px; margin-bottom:12px; display:flex; gap:12px; border:1px solid #EAEAEC;">
-                {img_html}
-                <div>
-                    <div style="font-weight:900; font-size:14px; color:#282C3F; text-transform:uppercase;">{item['brand']}</div>
-                    <div style="font-size:12px; color:#535766; margin-bottom:4px;">{item['name']}</div>
-                    <div style="font-size:11px; color:#535766;">Qty: <b>1</b> · Size: <b>M</b></div>
-                    <div style="margin-top:4px;">
-                        <span style="font-weight:800; font-size:14px; color:#282C3F;">₹{item['price']:,}</span>
-                        <span style="font-size:11px; text-decoration:line-through; color:#7E818C; margin-left:6px;">₹{item['original_price']:,}</span>
-                    </div>
+        # Render 2-column or multi-column comparison table
+        num_items = len(comp_prods)
+        comp_cols = st.columns(num_items)
+
+        for idx, prod in enumerate(comp_prods):
+            user_size = st.session_state.body_profile["size"]
+            user_height = st.session_state.body_profile["height"]
+
+            with comp_cols[idx]:
+                img_b64 = get_image_base64(prod["image_path"])
+                img_html = f'<img src="{img_b64}" style="width:100%; height:120px; border-radius:6px; object-fit:cover; margin-bottom:6px;" />' if img_b64 else ''
+                
+                # Stock pills
+                stock_htmls = []
+                for s, avail in prod["sizes_stock"].items():
+                    cls = "stock-green" if avail else "stock-red"
+                    symbol = "🟢" if avail else "🔴"
+                    stock_htmls.append(f'<span class="stock-pill {cls}">{s}{symbol}</span>')
+                stock_row = "".join(stock_htmls)
+
+                # Keywords
+                kw_htmls = "".join([f'<span class="kw-pill">{kw}</span>' for kw in prod["keywords"]])
+
+                col_card_html = f"""
+                <div class="comp-col-card">
+                    {img_html}
+                    <div style="font-weight:800; text-transform:uppercase; color:#282C3F;">{prod['brand']}</div>
+                    <div style="color:#696B79; font-size:10px; margin-bottom:4px;">{prod['name']}</div>
+                    <div style="font-weight:800; color:#282C3F;">₹{prod['price']:,}</div>
+                    <div style="color:#03A685; font-weight:700; margin-bottom:4px;">⭐ {prod['rating']}</div>
+                    <div style="margin-bottom:4px;">{stock_row}</div>
+                    <div style="font-size:10px; color:#535766; margin-bottom:6px;">🚚 Arrives in {prod['delivery_days']} days</div>
+                    <div class="fit-box">"People your size ({user_size} · {user_height}) say: {prod['fit_note']}"</div>
+                    <div style="margin-bottom:8px;">{kw_htmls}</div>
                 </div>
-            </div>
-            """
-            st.markdown(clean_html(bag_html), unsafe_allow_html=True)
+                """
+                st.markdown(clean_html(col_card_html), unsafe_allow_html=True)
+                
+                # Layer 5: Add to Cart button per column
+                if prod["id"] in st.session_state.cart_ids:
+                    st.button("✓ IN BAG", key=f"cart_btn_{prod['id']}", disabled=True, use_container_width=True)
+                else:
+                    if st.button("ADD TO CART", key=f"cart_btn_{prod['id']}", type="primary", use_container_width=True):
+                        st.session_state.cart_ids.append(prod["id"])
+                        st.toast(f"Added {prod['brand']} {prod['name']} to Bag! 🛍️")
+                        st.rerun()
 
-        mrp_total = sum(i["original_price"] for i in st.session_state.cart_items)
-        subtotal = sum(i["price"] for i in st.session_state.cart_items)
-        discount_total = mrp_total - subtotal
-
-        summary_html = f"""
-        <div style="background:#FFFFFF; border-radius:8px; padding:14px; border:1px solid #EAEAEC; margin-top:16px;">
-            <div style="font-weight:800; font-size:11px; color:#7E818C; text-transform:uppercase; margin-bottom:10px;">PRICE DETAILS ({len(st.session_state.cart_items)} Items)</div>
-            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; color:#282C3F;">
-                <span>Total MRP</span>
-                <span>₹{mrp_total:,}</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; color:#03A685;">
-                <span>Discount on MRP</span>
-                <span>-₹{discount_total:,}</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; color:#282C3F;">
-                <span>Convenience Fee</span>
-                <span style="color:#03A685; font-weight:700;">FREE</span>
-            </div>
-            <hr style="border-color:#EAEAEC; margin:10px 0;">
-            <div style="display:flex; justify-content:space-between; font-size:15px; font-weight:900; color:#282C3F; margin-bottom:14px;">
-                <span>Total Amount</span>
-                <span>₹{subtotal:,}</span>
-            </div>
+        # Layer 4 — AI Recommendation Banner
+        st.markdown(clean_html(f"""
+        <div class="rec-banner">
+            ✨ Based on ratings and fit reviews from people your size ({user_size} · {user_height}), <b>{winner_item['brand']} {winner_item['name']}</b> (⭐{winner_item['rating']}) has the highest confidence score.
         </div>
-        """
-        st.markdown(clean_html(summary_html), unsafe_allow_html=True)
-
-        st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("PLACE ORDER", type="primary", use_container_width=True):
-            st.balloons()
-            st.success("🎉 Order Placed Successfully! Thank you for shopping on Myntra.")
+        """), unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# STICKY BOTTOM NAVIGATION BAR (Mobile Style)
+# STICKY BOTTOM NAVIGATION BAR (Home | Categories | Wishlist | Bag | Profile)
 # ---------------------------------------------------------
-cart_count = len(st.session_state.cart_items)
-wishlist_count = len(WISHLIST_PRODUCTS)
+wishlist_count = len(st.session_state.wishlist_ids)
+cart_count = len(st.session_state.cart_ids)
 
 bottom_nav_html = f"""
 <div class="bottom-nav-bar">
-    <div class="nav-btn {'active' if st.session_state.current_screen == 'wishlist' else ''}">
-        <span style="font-size:16px;">🏠</span>
+    <div class="nav-item {'active' if st.session_state.current_screen == 'home' else ''}">
+        <span style="font-size:15px;">🏠</span>
         <span>Home</span>
     </div>
-    <div class="nav-btn">
-        <span style="font-size:16px;">📂</span>
+    <div class="nav-item">
+        <span style="font-size:15px;">📂</span>
         <span>Categories</span>
     </div>
-    <div class="nav-btn {'active' if st.session_state.current_screen in ['wishlist', 'decision'] else ''}">
-        <span style="font-size:16px;">❤️</span>
+    <div class="nav-item {'active' if st.session_state.current_screen == 'wishlist' else ''}">
+        <span style="font-size:15px;">❤️</span>
         <span>Wishlist</span>
-        <span class="nav-badge">{wishlist_count}</span>
+        {f'<span class="nav-badge">{wishlist_count}</span>' if wishlist_count > 0 else ''}
     </div>
-    <div class="nav-btn {'active' if st.session_state.current_screen == 'cart' else ''}">
-        <span style="font-size:16px;">🛍️</span>
+    <div class="nav-item">
+        <span style="font-size:15px;">🛍️</span>
         <span>Bag</span>
-        {'<span class="nav-badge">' + str(cart_count) + '</span>' if cart_count > 0 else ''}
+        {f'<span class="nav-badge">{cart_count}</span>' if cart_count > 0 else ''}
     </div>
-    <div class="nav-btn">
-        <span style="font-size:16px;">👤</span>
+    <div class="nav-item">
+        <span style="font-size:15px;">👤</span>
         <span>Profile</span>
     </div>
 </div>

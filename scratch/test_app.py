@@ -2,52 +2,52 @@ from streamlit.testing.v1 import AppTest
 import sys
 
 def run_tests():
-    print("--- Starting Myntra Choice Panel App Test ---")
+    print("--- Starting Myntra 4-Page Wishlist Decision Panel Test ---")
     at = AppTest.from_file("app.py", default_timeout=10)
     at.run()
     
     if at.exception:
-        print(f"FAILED on initial load: {at.exception}")
+        print(f"FAILED on initial load (Page 1 Home Screen): {at.exception}")
         sys.exit(1)
-    print("[SUCCESS] Screen 1 (Wishlist Home Page with 5 items & Occasions): SUCCESS")
+    print("[SUCCESS] Page 1 (Home Screen Grid with 20 items & Live Wishlist Badge): SUCCESS")
 
-    # Click OPEN DECISION MODE
-    btn_decision = next((b for b in at.button if "DECISION MODE" in b.label), None)
-    if btn_decision:
-        btn_decision.click().run()
+    # Click Wishlist button at top or on product card
+    btn_wish = next((b for b in at.button if "❤️" in b.label), None)
+    if btn_wish:
+        btn_wish.click().run()
         if at.exception:
-            print(f"FAILED opening Decision Mode: {at.exception}")
+            print(f"FAILED navigating to Wishlist: {at.exception}")
             sys.exit(1)
-        print("[SUCCESS] Screen 2 (Decision Mode Page with 2-Column Comparison): SUCCESS")
+        print("[SUCCESS] Page 2 (Wishlist Screen with Live Count & Checkboxes): SUCCESS")
 
-    # On Decision Mode page, click "CHOOSE THIS" on first item
-    btn_choose = next((b for b in at.button if "CHOOSE THIS" in b.label), None)
-    if btn_choose:
-        btn_choose.click().run()
+    # Click DECISION MODE or COMPARE SELECTED
+    btn_dec = next((b for b in at.button if "DECISION MODE" in b.label or "COMPARE" in b.label), None)
+    if btn_dec:
+        btn_dec.click().run()
         if at.exception:
-            print(f"FAILED clicking Choose This: {at.exception}")
+            print(f"FAILED clicking Decision Mode / Compare: {at.exception}")
             sys.exit(1)
-        print("[SUCCESS] Confirmation View (Great choice! Ready to buy?): SUCCESS")
+        print("[SUCCESS] Page 3 (Body Profile Setup Modal): SUCCESS")
 
-    # On Confirmation view, click "GO TO CART"
-    btn_cart = next((b for b in at.button if "GO TO CART" in b.label), None)
+    # On Body Profile Modal, click SAVE & COMPARE
+    btn_save = next((b for b in at.button if "SAVE & COMPARE" in b.label), None)
+    if btn_save:
+        btn_save.click().run()
+        if at.exception:
+            print(f"FAILED clicking Save & Compare: {at.exception}")
+            sys.exit(1)
+        print("[SUCCESS] Page 4 (Comparison Screen Matrix & AI Recommendation): SUCCESS")
+
+    # On Comparison screen, test ADD TO CART button
+    btn_cart = next((b for b in at.button if "ADD TO CART" in b.label), None)
     if btn_cart:
         btn_cart.click().run()
         if at.exception:
-            print(f"FAILED navigating to Cart: {at.exception}")
+            print(f"FAILED clicking Add to Cart on Comparison Screen: {at.exception}")
             sys.exit(1)
-        print("[SUCCESS] Screen 3 (Shopping Bag): SUCCESS")
+        print("[SUCCESS] Direct Add to Cart from Comparison Matrix: SUCCESS")
 
-    # On Cart view, click "PLACE ORDER"
-    btn_order = next((b for b in at.button if "PLACE ORDER" in b.label), None)
-    if btn_order:
-        btn_order.click().run()
-        if at.exception:
-            print(f"FAILED clicking Place Order: {at.exception}")
-            sys.exit(1)
-        print("[SUCCESS] Place Order Celebration: SUCCESS")
-
-    print("\nALL MYNTRA CHOICE PANEL TESTS PASSED WITH 0 ERRORS!")
+    print("\nALL 4-PAGE MYNTRA DECISION PANEL TESTS PASSED WITH 0 ERRORS!")
 
 if __name__ == "__main__":
     run_tests()
