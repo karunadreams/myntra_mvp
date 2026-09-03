@@ -1008,17 +1008,28 @@ elif st.session_state.current_screen == "categories":
     st.markdown("<div class='section-title'>Explore Categories</div>", unsafe_allow_html=True)
     st.markdown("<div style='font-size:12px; color:#696B79; margin-bottom:14px;'>Find ethnic wear & festive outfits</div>", unsafe_allow_html=True)
 
-    cat_list = [
-        {"name": "Kurtas & Kurta Sets", "desc": "Diwali & Festive Collection · 20 Products", "icon": "🪔"}
-    ]
+    cat_html = """
+    <a href="?screen=home" target="_self" style="text-decoration:none;">
+        <div style="background:#FFF5F7; border:1.5px solid #FF3F6C; border-radius:12px; padding:16px; margin-bottom:14px; box-shadow:0 4px 12px rgba(255, 63, 108, 0.12); cursor:pointer; display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div style="font-size:28px;">🪔</div>
+                <div>
+                    <div style="font-weight:900; font-size:15px; color:#282C3F;">Kurtas & Kurta Sets</div>
+                    <div style="font-size:12px; color:#FF3F6C; font-weight:700;">Diwali & Festive Collection · 20 Products</div>
+                </div>
+            </div>
+            <div style="background:#FF3F6C; color:#FFFFFF; font-weight:800; font-size:11px; padding:8px 12px; border-radius:8px; white-space:nowrap;">
+                VIEW ALL →
+            </div>
+        </div>
+    </a>
+    """
+    st.markdown(clean_html(cat_html), unsafe_allow_html=True)
 
-    for idx, cat in enumerate(cat_list):
-        btn_label = f"{cat['icon']}  {cat['name']}\n{cat['desc']}"
-        if st.button(btn_label, key=f"category_item_{idx}", use_container_width=True):
-            st.session_state.show_profile_modal = False
-            st.session_state.current_screen = "home"
-            st.rerun()
-        st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
+    if st.button("🪔 EXPLORE ALL 20 KURTAS & SETS ON HOME", type="primary", use_container_width=True, key="cat_home_btn"):
+        st.session_state.show_profile_modal = False
+        st.session_state.current_screen = "home"
+        st.rerun()
 
 # =========================================================
 # PROFILE SCREEN (Interactive Body Fit Profile Settings)
