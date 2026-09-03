@@ -752,35 +752,19 @@ st.markdown("""
     }
 
     /* Native Streamlit Heart Button Positioned inside Top-Right Corner of Product Image */
-    div[data-testid="stElementContainer"]:has(button[key*="home_heart_"]),
-    div[data-testid="element-container"]:has(button[key*="home_heart_"]),
-    div.stElementContainer:has(button[key*="home_heart_"]),
-    div.element-container:has(button[key*="home_heart_"]),
-    div[data-testid="stButton"]:has(button[key*="home_heart_"]),
-    div.stButton:has(button[key*="home_heart_"]) {
-        position: absolute !important;
-        top: 10px !important;
-        right: 10px !important;
-        width: 32px !important;
-        height: 32px !important;
-        min-width: 32px !important;
-        min-height: 32px !important;
-        z-index: 999999 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-
     button[key*="home_heart_"] {
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 32px !important;
-        height: 32px !important;
-        min-width: 32px !important;
-        min-height: 32px !important;
+        position: relative !important;
+        top: 10px !important;
+        left: calc(100% - 44px) !important;
+        margin-bottom: -32px !important;
+        z-index: 999999 !important;
         background: rgba(255, 255, 255, 0.95) !important;
         border: 1px solid #EAEAEC !important;
         border-radius: 50% !important;
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
         padding: 0 !important;
         display: flex !important;
         align-items: center !important;
@@ -788,14 +772,6 @@ st.markdown("""
         font-size: 16px !important;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22) !important;
         cursor: pointer !important;
-        margin: 0 !important;
-        z-index: 999999 !important;
-    }
-
-    div[data-testid="column"]:has(button[key*="home_heart_"]),
-    div.stColumn:has(button[key*="home_heart_"]),
-    div[data-testid="stColumn"]:has(button[key*="home_heart_"]) {
-        position: relative !important;
     }
 
     /* FIX 2: Sticky Selective Compare Button above Bottom Navigation Bar */
