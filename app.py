@@ -598,11 +598,8 @@ st.markdown("""
         text-align: center;
     }
 
-    /* Always Fixed Sticky Bottom Navigation Bar (Never disappears on scroll) */
-    div[data-testid="stHorizontalBlock"]:has(#fixed-bottom-nav-anchor),
-    div[data-testid="stHorizontalBlock"]:has(button[key*="bnav_"]),
-    div[data-testid="element-container"]:has(button[key*="bnav_"]),
-    div.element-container:has(button[key*="bnav_"]) {
+    /* Always Fixed Sticky Bottom Navigation Bar (Floating at viewport bottom) */
+    div[data-testid="stHorizontalBlock"]:has(button[key*="bnav_"]) {
         position: fixed !important;
         bottom: 0 !important;
         left: 50% !important;
@@ -610,28 +607,32 @@ st.markdown("""
         width: 100% !important;
         max-width: 430px !important;
         background: #FFFFFF !important;
-        border-top: 1.5px solid #EAEAEC !important;
-        padding: 6px 8px 10px 8px !important;
+        border-top: 2px solid #EAEAEC !important;
+        padding: 4px 4px 8px 4px !important;
         z-index: 999999 !important;
-        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.12) !important;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
         margin: 0 !important;
     }
 
     div[data-testid="column"]:has(button[key*="bnav_"]) {
-        padding: 0 2px !important;
+        padding: 0 1px !important;
+        min-width: 0 !important;
+        flex: 1 1 0% !important;
     }
 
     button[key*="bnav_"] {
-        font-size: 10px !important;
+        font-size: 9.5px !important;
         font-weight: 800 !important;
-        padding: 2px 0 !important;
-        height: 44px !important;
-        min-height: 44px !important;
-        line-height: 1.2 !important;
+        padding: 2px 1px !important;
+        height: 42px !important;
+        min-height: 42px !important;
+        line-height: 1.1 !important;
         white-space: nowrap !important;
         border-radius: 8px !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        letter-spacing: -0.2px !important;
+        text-transform: none !important;
     }
 </style>
 """, unsafe_allow_html=True)
