@@ -640,6 +640,11 @@ st.markdown("""
 # ---------------------------------------------------------
 # SESSION STATE INITIALIZATION
 # ---------------------------------------------------------
+if "screen" in st.query_params:
+    qp_scr = st.query_params["screen"]
+    if qp_scr in ["home", "wishlist", "comparison", "categories", "profile", "cart"]:
+        st.session_state.current_screen = qp_scr
+
 if "current_screen" not in st.session_state:
     st.session_state.current_screen = "home"  # "home", "wishlist", "comparison", "categories", "profile", "cart"
 
@@ -1096,43 +1101,95 @@ elif st.session_state.current_screen == "cart":
             st.success("🎉 Order Placed Successfully! Thank you for shopping on Myntra.")
 
 # ---------------------------------------------------------
-# ALWAYS FIXED STICKY BOTTOM NAVIGATION BAR
+# ALWAYS FIXED STICKY BOTTOM NAVIGATION BAR (HTML/CSS)
 # ---------------------------------------------------------
 wishlist_count = len(st.session_state.wishlist_ids)
 cart_count = len(st.session_state.cart_ids)
+curr = st.session_state.current_screen
 
-with st.container():
-    st.markdown('<div id="fixed-bottom-nav-anchor" style="display:none;"></div>', unsafe_allow_html=True)
-    b_col1, b_col2, b_col3, b_col4, b_col5 = st.columns(5)
-    
-    with b_col1:
-        if st.button("🏠 Home", key="bnav_home", type="primary" if st.session_state.current_screen == "home" else "secondary", use_container_width=True):
-            st.session_state.show_profile_modal = False
-            st.session_state.current_screen = "home"
-            st.rerun()
-            
-    with b_col2:
-        if st.button("📂 Category", key="bnav_cat", type="primary" if st.session_state.current_screen == "categories" else "secondary", use_container_width=True):
-            st.session_state.show_profile_modal = False
-            st.session_state.current_screen = "categories"
-            st.rerun()
-            
-    with b_col3:
-        w_lbl = f"❤️ Wishlist ({wishlist_count})" if wishlist_count > 0 else "❤️ Wishlist"
-        if st.button(w_lbl, key="bnav_wish", type="primary" if st.session_state.current_screen == "wishlist" else "secondary", use_container_width=True):
-            st.session_state.show_profile_modal = False
-            st.session_state.current_screen = "wishlist"
-            st.rerun()
-            
-    with b_col4:
-        c_lbl = f"🛍️ Bag ({cart_count})" if cart_count > 0 else "🛍️ Bag"
-        if st.button(c_lbl, key="bnav_bag", type="primary" if st.session_state.current_screen == "cart" else "secondary", use_container_width=True):
-            st.session_state.show_profile_modal = False
-            st.session_state.current_screen = "cart"
-            st.rerun()
-            
-    with b_col5:
-        if st.button("👤 Profile", key="bnav_prof", type="primary" if st.session_state.current_screen == "profile" else "secondary", use_container_width=True):
-            st.session_state.show_profile_modal = False
-            st.session_state.current_screen = "profile"
-            st.rerun()
+wish_badge = f'<span class="bnav-badge">{wishlist_count}</span>' if wishlist_count > 0 else ''
+cart_badge = f'<span class="bnav-badge">{cart_count}</span>' if cart_count > 0 else ''
+
+sticky_nav_html = f"""
+<style>
+    .myntra-sticky-bnav {{
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 100% !important;
+        max-width: 430px !important;
+        background: #FFFFFF !important;
+        border-top: 1.5px solid #EAEAEC !important;
+        display: flex !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+        padding: 8px 0 10px 0 !important;
+        z-index: 9999999 !important;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
+    }}
+
+    .bnav-link {{
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-decoration: none !important;
+        font-size: 10px !important;
+        font-weight: 700 !important;
+        color: #696B79 !important;
+        position: relative !important;
+        width: 20% !important;
+        text-align: center !important;
+        line-height: 1.2 !important;
+    }}
+
+    .bnav-link.active {{
+        color: #FF3F6C !important;
+    }}
+
+    .bnav-icon {{
+        font-size: 16px !important;
+        margin-bottom: 2px !important;
+    }}
+
+    .bnav-badge {{
+        position: absolute !important;
+        top: -4px !important;
+        right: 14px !important;
+        background: #FF3F6C !important;
+        color: #FFFFFF !important;
+        font-size: 9px !important;
+        font-weight: 800 !important;
+        border-radius: 10px !important;
+        padding: 1px 5px !important;
+        line-height: 1 !important;
+    }}
+</style>
+
+<div class="myntra-sticky-bnav">
+    <a href="?screen=home" target="_self" class="bnav-link {'active' if curr == 'home' else ''}">
+        <span class="bnav-icon">🏠</span>
+        <span>Home</span>
+    </a>
+    <a href="?screen=categories" target="_self" class="bnav-link {'active' if curr == 'categories' else ''}">
+        <span class="bnav-icon">📂</span>
+        <span>Categories</span>
+    </a>
+    <a href="?screen=wishlist" target="_self" class="bnav-link {'active' if curr in ['wishlist', 'comparison'] else ''}">
+        <span class="bnav-icon">❤️</span>
+        <span>Wishlist</span>
+        {wish_badge}
+    </a>
+    <a href="?screen=cart" target="_self" class="bnav-link {'active' if curr == 'cart' else ''}">
+        <span class="bnav-icon">🛍️</span>
+        <span>Bag</span>
+        {cart_badge}
+    </a>
+    <a href="?screen=profile" target="_self" class="bnav-link {'active' if curr == 'profile' else ''}">
+        <span class="bnav-icon">👤</span>
+        <span>Profile</span>
+    </a>
+</div>
+"""
+st.markdown(clean_html(sticky_nav_html), unsafe_allow_html=True)
