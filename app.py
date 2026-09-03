@@ -674,18 +674,17 @@ st.markdown("""
     }
 
     div[data-testid="stHorizontalBlock"]:has(#sticky-bnav-target) button {
-        font-size: 8.5px !important;
+        font-size: 15px !important;
         font-weight: 800 !important;
-        padding: 2px 0 !important;
-        height: 42px !important;
-        min-height: 42px !important;
-        line-height: 1.1 !important;
+        padding: 4px 0 !important;
+        height: 44px !important;
+        min-height: 44px !important;
+        line-height: 1 !important;
         white-space: nowrap !important;
         word-break: keep-all !important;
         text-transform: none !important;
-        border-radius: 8px !important;
+        border-radius: 10px !important;
         overflow: visible !important;
-        letter-spacing: -0.2px !important;
     }
 
     /* Wishlist Remove Button - Clean Single Line */
@@ -1203,7 +1202,7 @@ elif st.session_state.current_screen == "cart":
             st.success("🎉 Order Placed Successfully! Thank you for shopping on Myntra.")
 
 # ---------------------------------------------------------
-# ALWAYS FIXED STICKY BOTTOM NAVIGATION BAR (Streamlit Session Buttons)
+# ALWAYS FIXED STICKY BOTTOM NAVIGATION BAR (Emoji Only Buttons)
 # ---------------------------------------------------------
 wishlist_count = len(st.session_state.wishlist_ids)
 cart_count = len(st.session_state.cart_ids)
@@ -1213,33 +1212,33 @@ with st.container():
     
     with b_col1:
         st.markdown('<div id="sticky-bnav-target" style="display:none;"></div>', unsafe_allow_html=True)
-        if st.button("🏠 Home", key="bnav_home", type="primary" if st.session_state.current_screen == "home" else "secondary", use_container_width=True):
+        if st.button("🏠", key="bnav_home", type="primary" if st.session_state.current_screen == "home" else "secondary", use_container_width=True):
             st.session_state.show_profile_modal = False
             st.session_state.current_screen = "home"
             st.rerun()
             
     with b_col2:
-        if st.button("📂 Category", key="bnav_cat", type="primary" if st.session_state.current_screen == "categories" else "secondary", use_container_width=True):
+        if st.button("📂", key="bnav_cat", type="primary" if st.session_state.current_screen == "categories" else "secondary", use_container_width=True):
             st.session_state.show_profile_modal = False
             st.session_state.current_screen = "categories"
             st.rerun()
             
     with b_col3:
-        w_lbl = f"❤️ Wishlist ({wishlist_count})" if wishlist_count > 0 else "❤️ Wishlist"
+        w_lbl = f"❤️ {wishlist_count}" if wishlist_count > 0 else "❤️"
         if st.button(w_lbl, key="bnav_wish", type="primary" if st.session_state.current_screen in ["wishlist", "comparison"] else "secondary", use_container_width=True):
             st.session_state.show_profile_modal = False
             st.session_state.current_screen = "wishlist"
             st.rerun()
             
     with b_col4:
-        c_lbl = f"🛍️ Bag ({cart_count})" if cart_count > 0 else "🛍️ Bag"
+        c_lbl = f"🛍️ {cart_count}" if cart_count > 0 else "🛍️"
         if st.button(c_lbl, key="bnav_bag", type="primary" if st.session_state.current_screen == "cart" else "secondary", use_container_width=True):
             st.session_state.show_profile_modal = False
             st.session_state.current_screen = "cart"
             st.rerun()
             
     with b_col5:
-        if st.button("👤 Profile", key="bnav_prof", type="primary" if st.session_state.current_screen == "profile" else "secondary", use_container_width=True):
+        if st.button("👤", key="bnav_prof", type="primary" if st.session_state.current_screen == "profile" else "secondary", use_container_width=True):
             st.session_state.show_profile_modal = False
             st.session_state.current_screen = "profile"
             st.rerun()
