@@ -667,6 +667,25 @@ st.markdown("""
         margin: 0 !important;
     }
 
+    /* Mobile Viewport Optimization (< 480px) */
+    @media (max-width: 480px) {
+        .block-container {
+            max-width: 100% !important;
+            border-radius: 0 !important;
+            padding-left: 8px !important;
+            padding-right: 8px !important;
+        }
+
+        div[data-testid="stHorizontalBlock"]:has(#sticky-bnav-target),
+        div[data-testid="element-container"]:has(#sticky-bnav-target),
+        div.stElementContainer:has(#sticky-bnav-target),
+        div.element-container:has(#sticky-bnav-target) {
+            max-width: 100% !important;
+            left: 0 !important;
+            transform: none !important;
+        }
+    }
+
     div[data-testid="stHorizontalBlock"]:has(#sticky-bnav-target) div[data-testid="column"] {
         padding: 0 1px !important;
         min-width: 0 !important;
