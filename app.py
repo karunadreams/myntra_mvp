@@ -598,7 +598,16 @@ st.markdown("""
         text-align: center;
     }
 
-    /* Always Fixed Sticky Bottom Navigation Bar (Floating at viewport bottom) */
+    /* Lock fixed bottom navigation bar directly to viewport window */
+    div[data-testid="stAppViewContainer"], section.main {
+        position: static !important;
+    }
+
+    .block-container {
+        position: static !important;
+    }
+
+    /* Always Fixed Sticky Bottom Navigation Bar (Floating locked at viewport bottom) */
     div[data-testid="stHorizontalBlock"]:has(button[key*="bnav_"]),
     div[data-testid="element-container"]:has(button[key*="bnav_"]) {
         position: fixed !important;
@@ -610,8 +619,8 @@ st.markdown("""
         background: #FFFFFF !important;
         border-top: 2px solid #EAEAEC !important;
         padding: 4px 2px 8px 2px !important;
-        z-index: 9999999 !important;
-        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
+        z-index: 999999999 !important;
+        box-shadow: 0 -4px 25px rgba(0, 0, 0, 0.18) !important;
         margin: 0 !important;
     }
 
