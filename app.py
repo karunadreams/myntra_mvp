@@ -705,10 +705,13 @@ logo_b64 = get_image_base64("assets/myntra_logo.jpg")
 
 # Helper to toggle item selection for comparison
 def toggle_compare_item(prod_id: int):
-    if prod_id in st.session_state.selected_for_compare:
-        st.session_state.selected_for_compare.remove(prod_id)
+    chk_val = st.session_state.get(f"chk_sel_{prod_id}", True)
+    if chk_val:
+        if prod_id not in st.session_state.selected_for_compare:
+            st.session_state.selected_for_compare.append(prod_id)
     else:
-        st.session_state.selected_for_compare.append(prod_id)
+        if prod_id in st.session_state.selected_for_compare:
+            st.session_state.selected_for_compare.remove(prod_id)
 
 # Helper to toggle wishlist status on heart click
 def toggle_wishlist(prod_id: int):
@@ -716,10 +719,12 @@ def toggle_wishlist(prod_id: int):
         st.session_state.wishlist_ids.remove(prod_id)
         if prod_id in st.session_state.selected_for_compare:
             st.session_state.selected_for_compare.remove(prod_id)
+        st.session_state[f"chk_sel_{prod_id}"] = False
     else:
         st.session_state.wishlist_ids.append(prod_id)
         if prod_id not in st.session_state.selected_for_compare:
             st.session_state.selected_for_compare.append(prod_id)
+        st.session_state[f"chk_sel_{prod_id}"] = True
 
 # ---------------------------------------------------------
 # INTERACTIVE TOP NAVBAR HEADER
@@ -829,8 +834,14 @@ elif st.session_state.current_screen == "wishlist":
 
     wishlist_prods = [p for p in PRODUCTS if p["id"] in st.session_state.wishlist_ids]
 
+    # Ensure all wishlisted items are in selected_for_compare by default and checkbox keys are True
+    for p in wishlist_prods:
+        if p["id"] not in st.session_state.selected_for_compare:
+            st.session_state.selected_for_compare.append(p["id"])
+        st.session_state[f"chk_sel_{p['id']}"] = True
+
     if not wishlist_prods:
-        st.info("Your wishlist is empty. Click Home at the bottom or ♡ on products to add items!")
+        st.info("Your wishlist is empty. Tap ♡ on any product on Home screen to save items here!")
         if st.button("🏠 RETURN TO HOME SCREEN", type="primary", use_container_width=True):
             st.session_state.current_screen = "home"
             st.rerun()
@@ -879,10 +890,11 @@ elif st.session_state.current_screen == "wishlist":
 
             st.markdown("<div style='height:4px;'></div>", unsafe_allow_html=True)
 
-    sel_count = len(st.session_state.selected_for_compare)
-    if sel_count >= 2:
+    sel_count = len([p_id for p_id in st.session_state.selected_for_compare if p_id in st.session_state.wishlist_ids])
+    if sel_count >= 1:
         st.markdown("<br>", unsafe_allow_html=True)
-        if st.button(f"COMPARE SELECTED ({sel_count}) →", type="primary", use_container_width=True):
+        btn_txt = f"⚡ DECISION MODE · COMPARE {sel_count} SELECTED ITEM" if sel_count == 1 else f"⚡ DECISION MODE · COMPARE {sel_count} SELECTED ITEMS"
+        if st.button(f"{btn_txt} →", type="primary", use_container_width=True):
             if not st.session_state.body_profile["is_saved"]:
                 st.session_state.show_profile_modal = True
             else:
