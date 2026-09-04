@@ -33,8 +33,36 @@ def run_tests():
             sys.exit(1)
         print("[SUCCESS] Navigated to Wishlist Screen: SUCCESS")
 
-    # 3. Click Compare Selected / DECISION MODE button on Wishlist screen
-    btn_comp = next((b for b in at.button if "btn_compare_selected" in (b.key or "") or "DECISION MODE" in b.label), None)
+    # 2b. Verify DECISION MODE (COMPARE ALL) button is REMOVED
+    btn_compare_all = next((b for b in at.button if "COMPARE ALL" in b.label), None)
+    assert btn_compare_all is None, "Error: 'COMPARE ALL' button should be removed!"
+    print("[SUCCESS] Verified 'COMPARE ALL' button removed: SUCCESS")
+
+    # 2c. Verify 1-item compare disabled (min 2 required)
+    chk_1 = next((c for c in at.checkbox if "chk_sel_1" in (c.key or "")), None)
+    chk_2 = next((c for c in at.checkbox if "chk_sel_2" in (c.key or "")), None)
+    chk_3 = next((c for c in at.checkbox if "chk_sel_3" in (c.key or "")), None)
+    chk_4 = next((c for c in at.checkbox if "chk_sel_4" in (c.key or "")), None)
+
+    # Uncheck checkboxes dynamically until only 1 item is selected
+    while len([c for c in at.checkbox if c.value]) > 1:
+        c = next((c for c in at.checkbox if c.value and (c.key or "") != "chk_sel_1"), None)
+        if not c:
+            break
+        c.uncheck().run()
+
+    btn_comp_disabled = next((b for b in at.button if "btn_compare_selected" in (b.key or "")), None)
+    assert btn_comp_disabled is not None and btn_comp_disabled.disabled, f"Error: Compare button should be disabled when < 2 items selected! Button label: {btn_comp_disabled.label if btn_comp_disabled else 'None'}, disabled: {btn_comp_disabled.disabled if btn_comp_disabled else 'None'}"
+    print("[SUCCESS] Verified Compare button disabled when < 2 items selected: SUCCESS")
+
+    # Re-check item 2 to have 2 items selected
+    chk_2 = next((c for c in at.checkbox if "chk_sel_2" in (c.key or "")), None)
+    if chk_2:
+        chk_2.check().run()
+
+    # 3. Click Compare Selected button on Wishlist screen
+    btn_comp = next((b for b in at.button if "btn_compare_selected" in (b.key or "")), None)
+    assert btn_comp is not None and not btn_comp.disabled, "Error: Compare button should be enabled when 2+ items selected!"
     if btn_comp:
         btn_comp.click().run()
         if at.exception:

@@ -1029,23 +1029,13 @@ if st.session_state.current_screen == "home":
 elif st.session_state.current_screen == "wishlist":
     
     st.markdown(f"<div class='section-title' style='margin-bottom:2px;'>My Wishlist</div>", unsafe_allow_html=True)
-    st.markdown(f"<div style='font-size:12px; color:#696B79; margin-bottom:12px;'>{len(st.session_state.wishlist_ids)} items saved · Select up to 4 items to compare</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='font-size:12px; color:#696B79; margin-bottom:12px;'>{len(st.session_state.wishlist_ids)} items saved · Select 2 to 4 items to compare</div>", unsafe_allow_html=True)
 
     st.markdown(clean_html(f"""
     <div class="pink-banner-chip">
         <span>You have {len(st.session_state.wishlist_ids)} items saved for Diwali 2026 · 12 days left</span>
     </div>
     """), unsafe_allow_html=True)
-
-    if st.button("🚀 DECISION MODE (COMPARE ALL)", type="primary", use_container_width=True):
-        st.session_state.selected_for_compare = st.session_state.wishlist_ids[:4].copy()
-        if len(st.session_state.wishlist_ids) > 4:
-            st.toast("⚠️ Maximum 4 items can be compared at once. Selected top 4 items.", icon="ℹ️")
-        if not st.session_state.body_profile["is_saved"]:
-            st.session_state.show_profile_modal = True
-        else:
-            st.session_state.current_screen = "comparison"
-        st.rerun()
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -1117,20 +1107,22 @@ elif st.session_state.current_screen == "wishlist":
 
             st.markdown("<div style='height:4px;'></div>", unsafe_allow_html=True)
 
-        # Sticky Selective Compare Button when 1 or more items selected
+        # Sticky Selective Compare Button (Enforces min 2, max 4 items for comparison)
         checked_ids = [p_id for p_id in st.session_state.wishlist_ids if st.session_state.get(f"chk_sel_{p_id}", False)]
         X = len(checked_ids)
-        if X >= 1:
-            btn_label = f"⚡ Compare Selected ({min(X, 4)}) →" if X > 1 else f"⚡ Compare Selected (1) →"
-            if st.button(btn_label, key="btn_compare_selected", type="primary", use_container_width=True):
-                if X > 4:
-                    st.toast("⚠️ Maximum 4 items can be selected for comparison!", icon="⚠️")
-                st.session_state.selected_for_compare = checked_ids[:4].copy()
-                if not st.session_state.body_profile["is_saved"]:
-                    st.session_state.show_profile_modal = True
-                else:
-                    st.session_state.current_screen = "comparison"
-                st.rerun()
+        if wishlist_prods:
+            if X < 2:
+                btn_label = "⚡ Select 2 to 4 items to compare (0 selected)" if X == 0 else "⚡ Select at least 2 items to compare (1 selected)"
+                st.button(btn_label, key="btn_compare_selected", type="secondary", use_container_width=True, disabled=True)
+            else:
+                btn_label = f"⚡ Compare Selected ({min(X, 4)}) →"
+                if st.button(btn_label, key="btn_compare_selected", type="primary", use_container_width=True):
+                    st.session_state.selected_for_compare = checked_ids[:4].copy()
+                    if not st.session_state.body_profile["is_saved"]:
+                        st.session_state.show_profile_modal = True
+                    else:
+                        st.session_state.current_screen = "comparison"
+                    st.rerun()
 
         # Clear scroll space at bottom above sticky bottom navigation bar
         st.markdown("<div style='height:120px;'></div>", unsafe_allow_html=True)
