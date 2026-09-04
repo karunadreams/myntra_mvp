@@ -1267,6 +1267,10 @@ elif st.session_state.current_screen == "comparison" and not st.session_state.sh
         
         for col, prod in [(c_left, prod_a), (c_right, prod_b)]:
             with col:
+                is_recommended = (prod["id"] == pair_winner["id"])
+                border_css = 'border: 2px solid #FF3F6C !important; box-shadow: 0 4px 16px rgba(255, 63, 108, 0.25) !important;' if is_recommended else ''
+                rec_badge = '<div style="background:#FF3F6C; color:#FFFFFF; font-size:9px; font-weight:800; padding:3px 6px; border-radius:4px; margin-bottom:6px; text-align:center; letter-spacing:0.5px;">✨ RECOMMENDED</div>' if is_recommended else ''
+
                 img_b64 = get_image_base64(prod["image_path"])
                 img_html = f'<img src="{img_b64}" style="width:100%; height:145px; border-radius:8px; object-fit:cover; margin-bottom:6px;" />' if img_b64 else ''
                 
@@ -1279,9 +1283,9 @@ elif st.session_state.current_screen == "comparison" and not st.session_state.sh
 
                 kw_htmls = "".join([f'<span class="kw-pill">{kw}</span>' for kw in prod["keywords"]])
 
-                # FIX 5: Added Occasion Pill Tag in Comparison Card
                 col_card_html = f"""
-                <div class="comp-col-card">
+                <div class="comp-col-card" style="{border_css}">
+                    {rec_badge}
                     {img_html}
                     <div style="font-weight:900; font-size:12px; text-transform:uppercase; color:#282C3F; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{prod['brand']}</div>
                     <div style="color:#696B79; font-size:10px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{prod['name']}</div>
