@@ -899,12 +899,16 @@ for prod in PRODUCTS:
 
 logo_b64 = get_image_base64("assets/myntra_logo.jpg")
 
-# Helper to toggle item selection for comparison
+# Helper to toggle item selection for comparison (Max 4 items allowed)
 def toggle_compare_item(prod_id: int):
     chk_val = st.session_state.get(f"chk_sel_{prod_id}", True)
     if chk_val:
         if prod_id not in st.session_state.selected_for_compare:
-            st.session_state.selected_for_compare.append(prod_id)
+            if len(st.session_state.selected_for_compare) >= 4:
+                st.session_state[f"chk_sel_{prod_id}"] = False
+                st.toast("⚠️ Maximum 4 items can be selected for comparison!", icon="⚠️")
+            else:
+                st.session_state.selected_for_compare.append(prod_id)
     else:
         if prod_id in st.session_state.selected_for_compare:
             st.session_state.selected_for_compare.remove(prod_id)
@@ -920,11 +924,14 @@ def toggle_wishlist(prod_id: int):
             del st.session_state[key_name]
     else:
         st.session_state.wishlist_ids.append(prod_id)
-        if prod_id not in st.session_state.selected_for_compare:
-            st.session_state.selected_for_compare.append(prod_id)
         key_name = f"chk_sel_{prod_id}"
-        if key_name in st.session_state:
-            del st.session_state[key_name]
+        if len(st.session_state.selected_for_compare) < 4:
+            if prod_id not in st.session_state.selected_for_compare:
+                st.session_state.selected_for_compare.append(prod_id)
+            if key_name in st.session_state:
+                del st.session_state[key_name]
+        else:
+            st.session_state[key_name] = False
 
 # ---------------------------------------------------------
 # INTERACTIVE TOP NAVBAR HEADER
@@ -1022,7 +1029,7 @@ if st.session_state.current_screen == "home":
 elif st.session_state.current_screen == "wishlist":
     
     st.markdown(f"<div class='section-title' style='margin-bottom:2px;'>My Wishlist</div>", unsafe_allow_html=True)
-    st.markdown(f"<div style='font-size:12px; color:#696B79; margin-bottom:12px;'>{len(st.session_state.wishlist_ids)} items saved</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='font-size:12px; color:#696B79; margin-bottom:12px;'>{len(st.session_state.wishlist_ids)} items saved · Select up to 4 items to compare</div>", unsafe_allow_html=True)
 
     st.markdown(clean_html(f"""
     <div class="pink-banner-chip">
@@ -1031,7 +1038,9 @@ elif st.session_state.current_screen == "wishlist":
     """), unsafe_allow_html=True)
 
     if st.button("🚀 DECISION MODE (COMPARE ALL)", type="primary", use_container_width=True):
-        st.session_state.selected_for_compare = st.session_state.wishlist_ids.copy()
+        st.session_state.selected_for_compare = st.session_state.wishlist_ids[:4].copy()
+        if len(st.session_state.wishlist_ids) > 4:
+            st.toast("⚠️ Maximum 4 items can be compared at once. Selected top 4 items.", icon="ℹ️")
         if not st.session_state.body_profile["is_saved"]:
             st.session_state.show_profile_modal = True
         else:
@@ -1042,13 +1051,21 @@ elif st.session_state.current_screen == "wishlist":
 
     wishlist_prods = [p for p in PRODUCTS if p["id"] in st.session_state.wishlist_ids]
 
-    # Ensure all wishlisted items are checked (True) by default for selection & comparison
+    # Ensure wishlisted items up to max 4 are checked (True) by default for selection & comparison
     for p in wishlist_prods:
         chk_key = f"chk_sel_{p['id']}"
         if chk_key not in st.session_state:
-            st.session_state[chk_key] = True
-        if st.session_state[chk_key] and p["id"] not in st.session_state.selected_for_compare:
-            st.session_state.selected_for_compare.append(p["id"])
+            if len(st.session_state.selected_for_compare) < 4:
+                st.session_state[chk_key] = True
+                if p["id"] not in st.session_state.selected_for_compare:
+                    st.session_state.selected_for_compare.append(p["id"])
+            else:
+                st.session_state[chk_key] = False
+        elif st.session_state[chk_key] and p["id"] not in st.session_state.selected_for_compare:
+            if len(st.session_state.selected_for_compare) < 4:
+                st.session_state.selected_for_compare.append(p["id"])
+            else:
+                st.session_state[chk_key] = False
 
     if not wishlist_prods:
         st.info("Your wishlist is empty. Tap 🤍 on any product on Home screen to save items here!")
@@ -1058,7 +1075,7 @@ elif st.session_state.current_screen == "wishlist":
     else:
         for prod in wishlist_prods:
             chk_key = f"chk_sel_{prod['id']}"
-            is_selected = st.session_state.get(chk_key, True)
+            is_selected = st.session_state.get(chk_key, False)
             
             c_chk, c_card = st.columns([1, 6])
             
@@ -1104,9 +1121,11 @@ elif st.session_state.current_screen == "wishlist":
         checked_ids = [p_id for p_id in st.session_state.wishlist_ids if st.session_state.get(f"chk_sel_{p_id}", False)]
         X = len(checked_ids)
         if X >= 1:
-            btn_label = f"⚡ Compare Selected ({X}) →" if X > 1 else f"⚡ Compare Selected (1) →"
+            btn_label = f"⚡ Compare Selected ({min(X, 4)}) →" if X > 1 else f"⚡ Compare Selected (1) →"
             if st.button(btn_label, key="btn_compare_selected", type="primary", use_container_width=True):
-                st.session_state.selected_for_compare = checked_ids.copy()
+                if X > 4:
+                    st.toast("⚠️ Maximum 4 items can be selected for comparison!", icon="⚠️")
+                st.session_state.selected_for_compare = checked_ids[:4].copy()
                 if not st.session_state.body_profile["is_saved"]:
                     st.session_state.show_profile_modal = True
                 else:
