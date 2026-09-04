@@ -1200,9 +1200,13 @@ elif st.session_state.current_screen == "comparison" and not st.session_state.sh
 
         kw_htmls = "".join([f'<span class="kw-pill">{kw}</span>' for kw in prod["keywords"]])
 
+        border_css = 'border: 2px solid #FF3F6C !important; box-shadow: 0 4px 16px rgba(255, 63, 108, 0.25) !important;'
+        rec_badge = '<div style="background:#FF3F6C; color:#FFFFFF; font-size:9px; font-weight:800; padding:3px 6px; border-radius:4px; margin-bottom:6px; text-align:center; letter-spacing:0.5px;">✨ RECOMMENDED</div>'
+
         # FIX 5: Added Occasion Pill Tag in Comparison Card
         col_card_html = f"""
-        <div class="comp-col-card">
+        <div class="comp-col-card" style="{border_css}">
+            {rec_badge}
             {img_html}
             <div style="font-weight:900; font-size:15px; text-transform:uppercase; color:#282C3F;">{prod['brand']}</div>
             <div style="color:#696B79; font-size:12px; margin-bottom:2px;">{prod['name']}</div>
